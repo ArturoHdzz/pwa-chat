@@ -1,0 +1,65 @@
+<aside [class]="sidebarClasses()">
+  <div class="flex items-center justify-between p-4 border-b border-slate-700 min-h-[70px]">
+    <div class="flex items-center" *ngIf="!isCollapsed()">
+      <h3 class="text-xl font-semibold text-blue-400 m-0">DMS</h3>
+    </div>
+    <button 
+      type="button"
+      (click)="onToggleSidebar()"
+      class="inline-flex items-center p-2 text-gray-400 rounded-lg hover:bg-slate-700 hover:text-white focus:outline-none focus:ring-2 focus:ring-gray-600 transition-all duration-200"
+      [attr.aria-label]="isCollapsed() ? 'Expandir sidebar' : 'Contraer sidebar'">
+      <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+        <path fill-rule="evenodd" d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 15a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd"></path>
+      </svg>
+    </button>
+  </div>
+
+  <nav class="flex-1 overflow-y-auto py-4">
+    <ul class="space-y-2 font-medium px-3">
+      <li *ngFor="let item of navigationItems">
+        <a 
+          [routerLink]="item.route"
+          routerLinkActive="bg-blue-600 text-white"
+          class="flex items-center p-2 text-gray-300 rounded-lg hover:bg-slate-700 hover:text-white group transition-all duration-200"
+          [title]="isCollapsed() ? item.label : ''"
+          (click)="onNavigate(item.route)">
+          
+          <ng-container [ngSwitch]="item.icon">
+            <svg *ngSwitchCase="'home'" class="w-5 h-5 text-gray-500 transition duration-75 group-hover:text-white flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+              <path d="m19.707 9.293-2-2-7-7a1 1 0 0 0-1.414 0l-7 7-2 2a1 1 0 0 0 1.414 1.414L2 10.414V18a2 2 0 0 0 2 2h3a1 1 0 0 0 1-1v-4a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v4a1 1 0 0 0 1 1h3a2 2 0 0 0 2-2v-7.586l.293.293a1 1 0 0 0 1.414-1.414Z"/>
+            </svg>
+            
+            <svg *ngSwitchCase="'users'" class="w-5 h-5 text-gray-500 transition duration-75 group-hover:text-white flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+              <path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z"/>
+            </svg>
+
+            <svg *ngSwitchCase="'operaciones'" class="w-5 h-5 text-gray-500 transition duration-75 group-hover:text-white flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+              <path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z"/>
+            </svg>
+          </ng-container>
+          
+          <span class="flex-1 ms-3 whitespace-nowrap" *ngIf="!isCollapsed()">{{ item.label }}</span>
+        </a>
+      </li>
+    </ul>
+  </nav>
+
+  <div class="p-4 border-t border-slate-700">
+    <button 
+      type="button"
+      (click)="onLogout()"
+      class="w-full flex items-center p-2 text-red-400 rounded-lg hover:bg-red-900/20 hover:text-red-300 group transition-all duration-200"
+      [title]="isCollapsed() ? 'Cerrar sesión' : ''">
+      <svg class="w-5 h-5 flex-shrink-0 transition duration-75" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
+      </svg>
+      <span class="flex-1 ms-3 whitespace-nowrap" *ngIf="!isCollapsed()">Cerrar sesión</span>
+    </button>
+  </div>
+</aside>
+
+<div 
+  *ngIf="isMobileOpen()" 
+  class="fixed inset-0 bg-black bg-opacity-50 z-40 sm:hidden"
+  (click)="onCloseMobileOverlay()">
+</div>
