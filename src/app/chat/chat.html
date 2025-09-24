@@ -1,0 +1,51 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Chat</ion-title>
+    <ion-buttons slot="end">
+      <ion-button fill="clear" aria-label="Más">
+        <ion-icon name="ellipsis-vertical"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" class="chat-content">
+  <div class="messages">
+    <ng-container *ngFor="let m of messages(); trackBy: trackById">
+      <div class="row" [class.me]="m.me">
+        <img *ngIf="!m.me" class="avatar" [src]="m.avatar || defaultAvatar" alt="avatar" />
+        <div class="bubble" [class.me]="m.me">
+          <p class="text">{{ m.text }}</p>
+          <span class="meta">{{ m.time }}</span>
+        </div>
+        <img *ngIf="m.me" class="avatar me" [src]="myAvatar" alt="yo" />
+      </div>
+    </ng-container>
+  </div>
+</ion-content>
+
+<ion-footer class="composer">
+  <ion-toolbar>
+    <ion-item lines="none" class="composer-item">
+      <ion-button slot="start" fill="clear" aria-label="Adjuntar">
+        <ion-icon name="attach-outline"></ion-icon>
+      </ion-button>
+
+      <ion-input
+        [(ngModel)]="draft"
+        placeholder="Escribe un mensaje"
+        (keyup.enter)="send()"
+        class="input">
+      </ion-input>
+
+      <ion-button slot="end" shape="round" (click)="send()">
+        <ion-icon name="send"></ion-icon>
+      </ion-button>
+    </ion-item>
+  </ion-toolbar>
+</ion-footer>
+
+

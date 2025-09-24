@@ -1,1 +1,117 @@
 /* You can add global styles to this file, and also import other style files */
+@import "@ionic/angular/css/core.css";
+@import "@ionic/angular/css/normalize.css";
+@import "@ionic/angular/css/structure.css";
+@import "@ionic/angular/css/typography.css";
+
+@import "@ionic/angular/css/display.css";
+@import "@ionic/angular/css/padding.css";
+@import "@ionic/angular/css/text-alignment.css";
+@import "@ionic/angular/css/text-transformation.css";
+@import "@ionic/angular/css/flex-utils.css";
+
+:root {
+  /* Colores base */
+  --color-primary: #0d6efd; /* mismo theme_color del manifest */
+  --color-primary-600: #0a58ca;
+  --color-bg: #ffffff;
+  --color-muted: #f3f4f6;
+  --color-text: #111827;
+  --color-subtle: #6b7280;
+  --color-danger: #ef4444;
+
+  /* Paleta chat que ya usas */
+  --chat-bg: #f8fafc;
+  --chat-bubble: #ffffff;
+  --chat-bubble-muted: #f3f4f6;
+  --chat-bubble-me: #0d6efd;
+  --chat-text: #111827;
+}
+
+/* Helpers generales */
+.auth-page {
+  --ion-background-color: var(--chat-bg);
+  min-height: 100%;
+}
+
+.auth-card {
+  margin: 22px auto;
+  padding: 18px;
+  width: min(520px, 92vw);
+  background: var(--color-bg);
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(2, 6, 23, 0.06);
+  border: 1px solid #e5e7eb;
+}
+
+.auth-title {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--color-text);
+  margin: 8px 0 6px;
+}
+
+.auth-subtitle {
+  color: var(--color-subtle);
+  margin: 0 0 16px;
+  font-size: 14px;
+}
+
+.auth-footer {
+  text-align: center;
+  font-size: 13px;
+  color: var(--color-subtle);
+  margin-top: 10px;
+}
+
+.auth-logo {
+  display: grid;
+  place-items: center;
+  gap: 8px;
+  margin: 4px 0 6px;
+}
+
+.brand-dot {
+  width: 44px; height: 44px; border-radius: 12px;
+  background: linear-gradient(180deg, var(--color-primary), var(--color-primary-600));
+  box-shadow: 0 8px 20px rgba(13, 110, 253, .25);
+}
+
+/* Inputs Ionic */
+ion-item.auth {
+  --background: var(--color-bg);
+  --border-radius: 12px;
+  --padding-start: 10px;
+  --highlight-color-focused: var(--color-primary);
+  --inner-padding-end: 6px;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  margin-top: 10px;
+}
+
+ion-input.auth {
+  --padding-start: 10px;
+  --padding-end: 10px;
+  --background: transparent;
+}
+
+ion-button.auth-primary {
+  --background: var(--color-primary);
+  --background-activated: var(--color-primary-600);
+  --border-radius: 12px;
+  height: 44px;
+  margin-top: 14px;
+  font-weight: 600;
+}
+
+.link {
+  color: var(--color-primary);
+  text-decoration: none;
+}
+
+.error {
+  color: var(--color-danger);
+  font-size: 12px;
+  margin: 6px 2px 0;
+}
+

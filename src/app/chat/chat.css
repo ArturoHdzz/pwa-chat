@@ -1,0 +1,66 @@
+
+  /* Fondo general */
+  .chat-content { --background: var(--chat-bg); }
+
+  .messages {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 12px 14px 90px; 
+  }
+
+  .row {
+    display: grid;
+    grid-template-columns: 36px 1fr 36px;
+    align-items: end;
+    column-gap: 8px;
+  }
+  .row.me { grid-template-columns: 36px 1fr 36px; }
+
+  .avatar {
+    width: 32px; height: 32px; border-radius: 9999px;
+    box-shadow: 0 1px 2px rgba(0,0,0,.08);
+  }
+  .avatar.me { justify-self: end; }
+
+  .bubble {
+    max-width: min(78vw, 620px);
+    padding: 10px 12px;
+    border-radius: 14px;
+    background: var(--chat-bubble);
+    color: var(--chat-text);
+    box-shadow: 0 1px 1px rgba(0,0,0,.06);
+    justify-self: start;
+  }
+  .bubble:not(.me) {
+    border-bottom-left-radius: 6px;
+    background: linear-gradient(#fff, var(--chat-bubble-muted));
+  }
+  .bubble.me {
+    background: var(--chat-bubble-me);
+    color: #fff;
+    justify-self: end;
+    border-bottom-right-radius: 6px;
+  }
+
+  .text { margin: 0 0 4px 0; line-height: 1.35; font-size: 15px; white-space: pre-wrap; word-break: break-word; }
+  .meta { font-size: 11px; opacity: .75; }
+
+  .composer ion-toolbar {
+    --background: #ffffff;
+    --padding-start: 14px;
+    --padding-end: 14px;
+    border-top: 1px solid #e5e7eb;
+  }
+  .composer-item { --background: transparent; }
+  .input {
+    --padding-start: 12px;
+    --padding-end: 12px;
+    --border-radius: 12px;
+    --background: #f3f4f6;
+    border-radius: 12px;
+  }
+
+  @media (max-width: 360px) {
+    .bubble { max-width: 86vw; }
+  }

@@ -1,8 +1,8 @@
 {
   "id": "/",
-  "name": "pwa",
-  "short_name": "pwa",
-  "description": "Mi PWA",
+  "name": "Enterprise Flow",
+  "short_name": "Enterprise Flow",
+  "description": "A simple chat PWA built with Angular and Ionic",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
