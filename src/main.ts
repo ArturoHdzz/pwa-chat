@@ -1,16 +1,14 @@
 import { bootstrapApplication } from '@angular/platform-browser';
-import { appConfig } from './app/app.config';
+import { provideRouter } from '@angular/router';
+import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { App } from './app/app';
+import { routes } from './app/app.routes';
+import { authInterceptor } from './app/shared/interceptor/auth-interceptor';
 
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/ngsw-worker.js').then((registration: ServiceWorkerRegistration) => {
-      console.log('service Worker registrado con exito:', registration);
-    }).catch((error: unknown) => {
-      console.error('error en el registro del servicio worker:', error);
-    });
-  })
-}
-
-bootstrapApplication(App, appConfig)
-  .catch((err: unknown) => console.error('erro al inicializar la aplicacion:' , err));
+bootstrapApplication(App, {
+  providers: [
+    provideRouter(routes),
+    provideHttpClient(withInterceptors([authInterceptor]))
+  ]
+})
+  .catch((err) => console.error(err));

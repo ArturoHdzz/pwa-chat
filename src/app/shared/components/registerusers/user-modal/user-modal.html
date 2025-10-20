@@ -1,0 +1,245 @@
+<div *ngIf="isOpen" class="fixed inset-0 z-50 overflow-y-auto">
+  <div class="fixed inset-0 bg-black bg-opacity-50 transition-opacity" (click)="onClose()"></div>
+  
+  <div class="flex min-h-full items-center justify-center p-4">
+    <div class="relative bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto"
+         (click)="$event.stopPropagation()">
+      
+      <div class="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">
+        <h2 class="text-xl font-semibold text-gray-900 dark:text-white">
+          Editar Usuario
+        </h2>
+        <button 
+          type="button"
+          (click)="onClose()"
+          class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+          </svg>
+        </button>
+      </div>
+
+      <div class="p-6">
+        <div *ngIf="successMessage()" class="mb-4 bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-md flex items-center">
+          <svg class="w-5 h-5 mr-3 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+          </svg>
+          {{ successMessage() }}
+        </div>
+
+        <div *ngIf="errorMessage()" class="mb-4 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-md flex items-center">
+          <svg class="w-5 h-5 mr-3 text-red-500" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+          </svg>
+          {{ errorMessage() }}
+        </div>
+
+        <div class="mb-6 p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
+          <div class="flex items-center justify-between">
+            <div>
+              <h3 class="text-sm font-medium text-gray-900 dark:text-white">Estado del Usuario</h3>
+              <p class="text-sm text-gray-600 dark:text-gray-400">
+                Usuario {{ user?.activo ? 'activo' : 'inactivo' }} en el sistema
+              </p>
+            </div>
+            <button
+              type="button"
+              (click)="onToggleStatus()"
+              [disabled]="isTogglingStatus()"
+              [class]="user?.activo ? 'bg-red-600 hover:bg-red-700 disabled:bg-red-400' : 'bg-green-600 hover:bg-green-700 disabled:bg-green-400'"
+              class="px-4 py-2 text-white text-sm font-medium rounded-md transition-colors flex items-center space-x-2 min-w-[100px] justify-center">
+              <svg *ngIf="isTogglingStatus()" class="animate-spin h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
+              <span>{{ isTogglingStatus() ? 'Cambiando...' : (user?.activo ? 'Desactivar' : 'Activar') }}</span>
+            </button>
+          </div>
+        </div>
+
+        <form [formGroup]="userForm" (ngSubmit)="onSubmit()" class="space-y-6">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label for="edit-name" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                Nombre *
+              </label>
+              <input
+                type="text"
+                id="edit-name"
+                formControlName="name"
+                class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                [class.border-red-500]="formControls['name'].invalid && formControls['name'].touched">
+              <div *ngIf="formControls['name'].invalid && formControls['name'].touched" 
+                   class="mt-1 text-sm text-red-600">
+                {{ getFieldError('name') }}
+              </div>
+            </div>
+
+            <div>
+              <label for="edit-apellido-paterno" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                Apellido Paterno *
+              </label>
+              <input
+                type="text"
+                id="edit-apellido-paterno"
+                formControlName="apellido_paterno"
+                class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                [class.border-red-500]="formControls['apellido_paterno'].invalid && formControls['apellido_paterno'].touched">
+              <div *ngIf="formControls['apellido_paterno'].invalid && formControls['apellido_paterno'].touched" 
+                   class="mt-1 text-sm text-red-600">
+                {{ getFieldError('apellido_paterno') }}
+              </div>
+            </div>
+
+            <div>
+              <label for="edit-apellido-materno" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                Apellido Materno *
+              </label>
+              <input
+                type="text"
+                id="edit-apellido-materno"
+                formControlName="apellido_materno"
+                class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                [class.border-red-500]="formControls['apellido_materno'].invalid && formControls['apellido_materno'].touched">
+              <div *ngIf="formControls['apellido_materno'].invalid && formControls['apellido_materno'].touched" 
+                   class="mt-1 text-sm text-red-600">
+                {{ getFieldError('apellido_materno') }}
+              </div>
+            </div>
+
+            <div>
+              <label for="edit-telefono" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                Teléfono *
+              </label>
+              <input
+                type="tel"
+                id="edit-telefono"
+                formControlName="telefono"
+                placeholder="1234567890"
+                class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                [class.border-red-500]="formControls['telefono'].invalid && formControls['telefono'].touched">
+              <div *ngIf="formControls['telefono'].invalid && formControls['telefono'].touched" 
+                   class="mt-1 text-sm text-red-600">
+                {{ getFieldError('telefono') }}
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <label for="edit-email" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              Email *
+            </label>
+            <input
+              type="email"
+              id="edit-email"
+              formControlName="email"
+              class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+              [class.border-red-500]="formControls['email'].invalid && formControls['email'].touched">
+            <div *ngIf="formControls['email'].invalid && formControls['email'].touched" 
+                 class="mt-1 text-sm text-red-600">
+              {{ getFieldError('email') }}
+            </div>
+          </div>
+
+          <div class="border-t border-gray-200 dark:border-gray-700 pt-6">
+            <h4 class="text-lg font-medium text-gray-900 dark:text-white mb-4">
+              Cambiar Contraseña (Opcional)
+            </h4>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label for="edit-password" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  Nueva Contraseña
+                </label>
+                <input
+                  type="password"
+                  id="edit-password"
+                  formControlName="password"
+                  placeholder="Dejar vacío para no cambiar"
+                  class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                  [class.border-red-500]="formControls['password'].invalid && formControls['password'].touched">
+                <div *ngIf="formControls['password'].invalid && formControls['password'].touched" 
+                     class="mt-1 text-sm text-red-600">
+                  {{ getFieldError('password') }}
+                </div>
+              </div>
+
+              <div>
+                <label for="edit-confirm-password" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  Confirmar Nueva Contraseña
+                </label>
+                <input
+                  type="password"
+                  id="edit-confirm-password"
+                  formControlName="confirmPassword"
+                  class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                  [class.border-red-500]="formControls['confirmPassword'].invalid && formControls['confirmPassword'].touched">
+                <div *ngIf="formControls['confirmPassword'].invalid && formControls['confirmPassword'].touched" 
+                     class="mt-1 text-sm text-red-600">
+                  {{ getFieldError('confirmPassword') }}
+                </div>
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+
+      <div class="flex flex-col sm:flex-row justify-between items-center px-6 py-4 bg-gray-50 dark:bg-gray-700 rounded-b-lg space-y-3 sm:space-y-0">
+        <div>
+          <button
+            *ngIf="!showDeleteConfirm()"
+            type="button"
+            (click)="onShowDeleteConfirm()"
+            [disabled]="isLoading() || isTogglingStatus()"
+            class="px-4 py-2 bg-red-600 hover:bg-red-700 disabled:bg-red-400 text-white text-sm font-medium rounded-md transition-colors">
+            Eliminar Usuario
+          </button>
+
+          <div *ngIf="showDeleteConfirm()" class="flex items-center space-x-2">
+            <span class="text-sm text-red-600 dark:text-red-400">¿Estás seguro?</span>
+            <button
+              type="button"
+              (click)="onDeleteUser()"
+              [disabled]="isLoading()"
+              class="px-3 py-1 bg-red-600 hover:bg-red-700 disabled:bg-red-400 text-white text-sm rounded flex items-center">
+              <svg *ngIf="isLoading()" class="animate-spin -ml-1 mr-1 h-3 w-3 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
+              {{ isLoading() ? 'Eliminando...' : 'Sí, eliminar' }}
+            </button>
+            <button
+              type="button"
+              (click)="onCancelDelete()"
+              [disabled]="isLoading()"
+              class="px-3 py-1 bg-gray-500 hover:bg-gray-600 disabled:bg-gray-400 text-white text-sm rounded">
+              Cancelar
+            </button>
+          </div>
+        </div>
+
+        <div class="flex space-x-3">
+          <button
+            type="button"
+            (click)="onClose()"
+            [disabled]="isLoading() || isTogglingStatus()"
+            class="px-4 py-2 bg-gray-500 hover:bg-gray-600 disabled:bg-gray-400 text-white font-medium rounded-md transition-colors">
+            Cancelar
+          </button>
+          
+          <button
+            type="submit"
+            (click)="onSubmit()"
+            [disabled]="isLoading() || userForm.invalid || isTogglingStatus()"
+            class="px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white font-medium rounded-md transition-colors flex items-center">
+            <svg *ngIf="isLoading()" class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+            {{ isLoading() ? 'Guardando...' : 'Guardar Cambios' }}
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
