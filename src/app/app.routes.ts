@@ -1,17 +1,15 @@
 import { Routes } from '@angular/router';
 import { authGuard } from './shared/guards/auth-guard';
 import { Chat } from './chat/chat';
-import { Login } from './auth/login/login';
 import { Register } from './auth/register/register';
+import { Login } from './shared/components/login/login';
 
 export const routes: Routes = [
     {
         path: 'login', 
         loadComponent: () => import('./shared/components/login/login').then(m => m.Login)
     },
-     { path: 'chat', component: Chat },
-      { path: 'l', component: Login },
-     
+     { path: 'chat', component: Chat },     
     {
         path: '',
         canActivate: [authGuard],
