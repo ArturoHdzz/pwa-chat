@@ -3,87 +3,84 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Document</title>
+    <title>Login</title>
   </head>
   <body>
-    <div class="min-h-screen flex items-center justify-center px-6 py-12">
-      <div
-        class="w-full max-w-6xl grid grid-cols-1 md:grid-cols-2 bg-white shadow-2xl rounded-3xl overflow-hidden"
-      >
-        <div class="bg-shoe-image bg-cover bg-center hidden md:block relative">
-          <div
-            class="absolute inset-0 bg-black bg-opacity-40 flex flex-col justify-center items-center"
-          >
+    <div class="min-h-screen flex items-center justify-center px-6 py-12 bg-white">
+      <div class="w-full max-w-6xl grid grid-cols-1 md:grid-cols-2 bg-white shadow-xl rounded-3xl overflow-hidden border border-gray-200">
+        
+        <div class="bg-gradient-to-br from-gray-700 to-gray-900 bg-cover bg-center hidden md:block relative">
+          <div class="absolute inset-0 bg-black bg-opacity-30 flex flex-col justify-center items-center p-8">
             <div class="mb-8">
-              <img
-                src="https://upload.wikimedia.org/wikipedia/commons/a/a7/React-icon.svg"
-                alt="Logo"
-                class="h-16 w-16 rounded-full shadow-lg border-4 border-white"
-              />
+              <div class="h-16 w-16 rounded-full bg-white shadow-lg flex items-center justify-center">
+                <svg class="h-10 w-10 text-black" fill="currentColor" viewBox="0 0 20 20">
+                  <path d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"/>
+                </svg>
+              </div>
             </div>
-            <h3
-              class="text-white text-2xl font-bold text-center drop-shadow-lg"
-            >
+            <h3 class="text-white text-2xl font-bold text-center drop-shadow-lg">
               Ingresa a tu cuenta
             </h3>
             <p class="text-gray-200 mt-2 text-center max-w-xs">
-              ¡Bienvenido de nuevo! Inicia sesión para seguir explorando los mejores zapatos para ti.
+              ¡Bienvenido de nuevo! Inicia sesión para continuar.
             </p>
           </div>
         </div>
 
-        <!-- Login Form -->
         <div class="p-10 sm:p-16 flex flex-col justify-center bg-white">
           <div class="flex flex-col items-center mb-8">
-            <img
-              src="https://upload.wikimedia.org/wikipedia/commons/a/a7/React-icon.svg"
-              alt="Logo"
-              class="h-12 w-12 rounded-full mb-2"
-            />
-            <h2 class="text-3xl font-extrabold text-gray-800">
-              Inicia sesión en tu cuenta
+            <div class="h-12 w-12 rounded-full bg-black mb-2 flex items-center justify-center shadow-md">
+              <svg class="h-8 w-8 text-white" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"/>
+              </svg>
+            </div>
+            <h2 class="text-3xl font-extrabold text-black">
+              Inicia sesión
             </h2>
           </div>
 
           <form [formGroup]="form" (ngSubmit)="onSubmit()" class="space-y-6" aria-label="Login form">
-            <div *ngIf="error" class="bg-red-100 border border-red-400 text-red-700 px-4 py-2 rounded mb-2 text-sm" role="alert">
+            <div *ngIf="error" class="bg-gray-100 border border-gray-300 text-black px-4 py-2 rounded mb-2 text-sm shadow-sm" role="alert">
               {{ error }}
             </div>
+            
             <div class="relative">
               <input
                 type="email"
                 formControlName="email"
                 aria-label="Correo electrónico"
                 autocomplete="username"
-                class="peer w-full border-b-2 border-gray-300 focus:outline-none focus:border-blue-500 text-gray-900 py-3 px-1"
+                class="peer w-full border-b-2 border-gray-300 focus:outline-none focus:border-black text-black bg-white py-3 px-1"
                 placeholder="Correo electrónico"
               />
-              <div *ngIf="form.get('email')?.invalid && form.get('email')?.touched" class="text-red-500 text-xs mt-1">
+              <div *ngIf="form.get('email')?.invalid && form.get('email')?.touched" class="text-gray-600 text-xs mt-1">
                 Ingresa un correo válido.
               </div>
             </div>
+            
             <div class="relative">
               <input
                 type="password"
                 formControlName="password"
                 aria-label="Contraseña"
                 autocomplete="current-password"
-                class="peer w-full border-b-2 border-gray-300 focus:outline-none focus:border-blue-500 text-gray-900 py-3 px-1"
+                class="peer w-full border-b-2 border-gray-300 focus:outline-none focus:border-black text-black bg-white py-3 px-1"
                 placeholder="Contraseña"
               />
-              <div *ngIf="form.get('password')?.invalid && form.get('password')?.touched" class="text-red-500 text-xs mt-1">
+              <div *ngIf="form.get('password')?.invalid && form.get('password')?.touched" class="text-gray-600 text-xs mt-1">
                 Ingresa tu contraseña.
               </div>
             </div>
+            
             <button
               type="submit"
-              [disabled]="form.invalid"
-              class="w-full bg-gradient-to-r from-blue-600 to-blue-400 hover:from-blue-700 hover:to-blue-500 text-white py-3 rounded-xl font-semibold transition duration-300 shadow-lg flex items-center justify-center gap-2 mt-2"
-            >
-              <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M5 12h14M12 5l7 7-7 7"/>
+              [disabled]="form.invalid || isLoading"
+              class="w-full bg-black hover:bg-gray-800 disabled:bg-gray-400 text-white py-3 rounded-xl font-semibold transition duration-300 shadow-lg flex items-center justify-center gap-2 mt-2">
+              <svg *ngIf="isLoading" class="animate-spin h-5 w-5" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
               </svg>
-              Ingresar
+              <span>{{ isLoading ? 'Ingresando...' : 'Ingresar' }}</span>
             </button>
           </form>
         </div>
