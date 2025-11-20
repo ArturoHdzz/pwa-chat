@@ -1,27 +1,59 @@
 <ion-header>
-  <ion-toolbar color="primary">
+  <ion-toolbar class="chat-toolbar">
     <ion-buttons slot="start">
-      <ion-back-button defaultHref="/"></ion-back-button>
+      <ion-back-button
+        defaultHref="/"
+        text=""
+        icon="chevron-back-outline">
+      </ion-back-button>
     </ion-buttons>
-    <ion-title>Chat</ion-title>
+
+    <ion-title>
+      <div class="chat-header-title">
+
+        <img src="icons/icon-72x72.svg" alt="Enterprise Flow Logo" class="logo-icon" />
+        <div class="titles">
+          <span >Enterprise Flow</span>
+          <span class="title-sub">Canal de proyecto</span>
+        </div>
+      </div>
+    </ion-title>
+
     <ion-buttons slot="end">
-      <ion-button fill="clear" aria-label="Más">
+      <ion-button fill="clear" aria-label="Buscar">
+        <ion-icon name="search-outline"></ion-icon>
+      </ion-button>
+      <ion-button fill="clear" aria-label="Más opciones">
         <ion-icon name="ellipsis-vertical"></ion-icon>
       </ion-button>
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true" class="chat-content">
+<ion-content class="chat-content">
+  <div class="day-divider">
+    <ion-icon name="chatbubbles-outline"></ion-icon>
+    <span>Hoy</span>
+  </div>
+
   <div class="messages">
     <ng-container *ngFor="let m of messages(); trackBy: trackById">
       <div class="row" [class.me]="m.me">
-        <img *ngIf="!m.me" class="avatar" [src]="m.avatar || defaultAvatar" alt="avatar" />
+        <ion-avatar *ngIf="!m.me" class="avatar">
+          <img [src]="m.avatar || defaultAvatar" alt="avatar" />
+        </ion-avatar>
+
         <div class="bubble" [class.me]="m.me">
           <p class="text">{{ m.text }}</p>
-          <span class="meta">{{ m.time }}</span>
+          <span class="meta">
+            <ion-icon name="time-outline"></ion-icon>
+            {{ m.time }}
+          </span>
         </div>
-        <img *ngIf="m.me" class="avatar me" [src]="myAvatar" alt="yo" />
+
+        <ion-avatar *ngIf="m.me" class="avatar me">
+          <img [src]="myAvatar" alt="yo" />
+        </ion-avatar>
       </div>
     </ng-container>
   </div>
@@ -30,6 +62,10 @@
 <ion-footer class="composer">
   <ion-toolbar>
     <ion-item lines="none" class="composer-item">
+      <ion-button slot="start" fill="clear" size="small" aria-label="Emoji">
+        <ion-icon name="happy-outline"></ion-icon>
+      </ion-button>
+
       <ion-button slot="start" fill="clear" aria-label="Adjuntar">
         <ion-icon name="attach-outline"></ion-icon>
       </ion-button>
@@ -41,11 +77,18 @@
         class="input">
       </ion-input>
 
-      <ion-button slot="end" shape="round" (click)="send()">
+      <ion-button slot="end" fill="clear" size="small" aria-label="Grabar audio">
+        <ion-icon name="mic-outline"></ion-icon>
+      </ion-button>
+
+      <ion-button
+        slot="end"
+        shape="round"
+        class="send-btn"
+        (click)="send()"
+        aria-label="Enviar mensaje">
         <ion-icon name="send"></ion-icon>
       </ion-button>
     </ion-item>
   </ion-toolbar>
 </ion-footer>
-
-

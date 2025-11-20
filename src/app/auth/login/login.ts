@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import {
@@ -7,14 +7,15 @@ import {
 } from '@ionic/angular/standalone';
 import { Router } from '@angular/router';
 @Component({
+  standalone: true,
   selector: 'app-login',
-   imports: [
+  imports: [
     CommonModule, FormsModule,
     IonContent, IonHeader, IonToolbar, IonTitle, IonButtons, IonButton, IonIcon,
     IonItem, IonInput, IonLabel, IonNote, IonSpinner, IonRouterLink
   ],
   templateUrl: './login.html',
-  styleUrl: './login.css'
+  styleUrls: ['./login.css']
 })
 export class Login {
 email = '';
@@ -34,9 +35,9 @@ email = '';
     }
     try {
       this.loading.set(true);
-      // TODO: reemplazar con tu auth real (Supabase / API)
+
       await new Promise(res => setTimeout(res, 800));
-      // Simulación OK -> ir al chat
+
       this.router.navigateByUrl('/chat');
     } catch (e: any) {
       this.error.set('No pudimos iniciar sesión');
@@ -45,3 +46,4 @@ email = '';
     }
   }
 }
+

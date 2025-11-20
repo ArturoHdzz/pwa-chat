@@ -20,14 +20,23 @@
   --color-subtle: #6b7280;
   --color-danger: #ef4444;
 
-  /* Paleta chat que ya usas */
+
   --chat-bg: #f8fafc;
   --chat-bubble: #ffffff;
   --chat-bubble-muted: #f3f4f6;
   --chat-bubble-me: #0d6efd;
   --chat-text: #111827;
-}
 
+  --ion-color-primary: #10304e;   
+  --ion-color-primary-rgb: 16,48,78;
+  --ion-color-light-tint: #e6edf4;
+}
+:host {
+  --ef-primary: #10304e;         
+  --ef-primary-soft: #ffffff;   
+  --ef-bg: #edf1f5;               
+  --ef-text: #102a43;
+}
 /* Helpers generales */
 .auth-page {
   --ion-background-color: var(--chat-bg);
