@@ -2,8 +2,8 @@ import { Component, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import {
-  IonContent, IonHeader, IonToolbar, IonTitle, IonButtons, IonButton, IonIcon,
-  IonItem, IonInput, IonLabel, IonNote, IonSpinner, IonRouterLink
+  IonContent, IonButton, IonIcon,
+  IonItem, IonInput,  IonNote, IonSpinner, 
 } from '@ionic/angular/standalone';
 import { Router } from '@angular/router';
 @Component({
@@ -11,8 +11,8 @@ import { Router } from '@angular/router';
   selector: 'app-login',
   imports: [
     CommonModule, FormsModule,
-    IonContent, IonHeader, IonToolbar, IonTitle, IonButtons, IonButton, IonIcon,
-    IonItem, IonInput, IonLabel, IonNote, IonSpinner, IonRouterLink
+    IonContent,IonButton, IonIcon,
+    IonItem, IonInput, IonNote, IonSpinner, 
   ],
   templateUrl: './login.html',
   styleUrls: ['./login.css']

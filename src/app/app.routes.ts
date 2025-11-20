@@ -9,6 +9,9 @@ export const routes: Routes = [
         path: 'login', 
         loadComponent: () => import('./shared/components/login/login').then(m => m.Login)
     },
+     { path: 'chat', component: Chat },
+      { path: 'l', component: Login },
+     
     {
         path: '',
         canActivate: [authGuard],
