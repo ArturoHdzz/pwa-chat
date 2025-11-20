@@ -1,0 +1,8 @@
+:host {
+  display: block;
+}
+
+aside {
+  background-color: white;
+  border-right: 1px solid #e5e7eb;
+}
