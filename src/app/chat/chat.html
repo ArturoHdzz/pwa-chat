@@ -45,6 +45,10 @@
 
         <div class="bubble" [class.me]="m.me">
           <p class="text">{{ m.text }}</p>
+          <img *ngIf="m.image"
+     [src]="m.image"
+     class="rounded-xl max-h-64 object-cover mb-2"/>
+
           <span class="meta">
             <ion-icon name="time-outline"></ion-icon>
             {{ m.time }}
@@ -76,10 +80,19 @@
         (keyup.enter)="send()"
         class="input">
       </ion-input>
+       
 
       <ion-button slot="end" fill="clear" size="small" aria-label="Grabar audio">
         <ion-icon name="mic-outline"></ion-icon>
       </ion-button>
+      <ion-button slot="start" fill="clear" size="small" aria-label="Camara" (click)="takePhoto()">
+        <ion-icon name="image-outline"></ion-icon>
+      </ion-button>
+       <ion-button slot="start" fill="clear" (click)="openCameraWeb()">
+          <ion-icon name="camera-outline"></ion-icon>
+        </ion-button>
+
+
 
       <ion-button
         slot="end"

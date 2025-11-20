@@ -12,6 +12,8 @@ import {
   attachOutline,
   micOutline,
   send,
+   cameraOutline,     
+  imageOutline ,
   timeOutline
 } from 'ionicons/icons';
 import { App } from './app/app';
@@ -26,6 +28,8 @@ addIcons({
   'mic-outline': micOutline,
   'send': send,
   'time-outline': timeOutline,
+  'camera-outline': cameraOutline,
+  'image-outline': imageOutline
 });
 
 // if ('serviceWorker' in navigator) {

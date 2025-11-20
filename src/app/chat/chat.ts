@@ -1,9 +1,11 @@
 import { Component, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
 
 import {
   IonHeader, IonToolbar, IonTitle, IonButtons, IonBackButton, IonButton, IonIcon,
+  
   IonContent, IonFooter, IonItem, IonInput, IonAvatar
 } from '@ionic/angular/standalone';
 
@@ -13,6 +15,7 @@ type ChatMsg = {
   me: boolean;     
   time: string;    
   avatar?: string; 
+  image?: string;
 };
 
 @Component({
@@ -28,6 +31,7 @@ type ChatMsg = {
 })
 export class Chat {
   draft = '';
+  
   defaultAvatar = 'https://i.pravatar.cc/80?img=13';
   myAvatar = 'https://i.pravatar.cc/80?img=5';
 
@@ -86,4 +90,38 @@ export class Chat {
       ]);
     }, 700);
   }
+  async openCameraWeb() {
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+    // aquí podrías mostrar un <video> con la cámara
+  } catch (err) {
+    console.error('No se pudo acceder a la cámara', err);
+  }
+}
+
+
+  async takePhoto() {
+  const image = await Camera.getPhoto({
+    quality: 80,
+    allowEditing: false,
+    resultType: CameraResultType.DataUrl,
+    source: CameraSource.Camera
+  });
+
+  const photo = image.dataUrl;
+  const now = new Date();
+  const hh = String(now.getHours()).padStart(2, '0');
+  const mm = String(now.getMinutes()).padStart(2, '0');
+
+  this.messages.update(arr => [
+    ...arr,
+    {
+      id: crypto.randomUUID(),
+      text: '',
+      me: true,
+      time: `${hh}:${mm}`,
+      image: photo
+    }
+  ]);
+}
 }
