@@ -1,0 +1,227 @@
+<div class="min-h-screen bg-gray-50 dark:bg-gray-900 py-6">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    
+    <div class="mb-8">
+      <h1 class="text-3xl font-bold text-gray-900 dark:text-white">Gestión de Usuarios</h1>
+      <p class="mt-2 text-sm text-gray-600 dark:text-gray-400">
+        Registra nuevos usuarios y administra los existentes
+      </p>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+      
+      <div class="bg-white dark:bg-gray-800 shadow rounded-lg">
+        <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+          <h2 class="text-xl font-semibold text-gray-900 dark:text-white">
+            Registrar Nuevo Usuario
+          </h2>
+        </div>
+
+        <form [formGroup]="userForm" (ngSubmit)="onSubmit()" class="p-6 space-y-6">
+          
+          <div *ngIf="successMessage()" class="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-md">
+            {{ successMessage() }}
+          </div>
+
+          <div *ngIf="errorMessage()" class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-md">
+            {{ errorMessage() }}
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            
+            <div>
+              <label for="name" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                Nombre *
+              </label>
+              <input
+                type="text"
+                id="name"
+                formControlName="name"
+                class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                [class.border-red-500]="formControls['name'].invalid && formControls['name'].touched">
+              <div *ngIf="formControls['name'].invalid && formControls['name'].touched" 
+                   class="mt-1 text-sm text-red-600">
+                {{ getFieldError('name') }}
+              </div>
+            </div>
+
+            <div>
+              <label for="apellido_paterno" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                Apellido Paterno *
+              </label>
+              <input
+                type="text"
+                id="apellido_paterno"
+                formControlName="apellido_paterno"
+                class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                [class.border-red-500]="formControls['apellido_paterno'].invalid && formControls['apellido_paterno'].touched">
+              <div *ngIf="formControls['apellido_paterno'].invalid && formControls['apellido_paterno'].touched" 
+                   class="mt-1 text-sm text-red-600">
+                {{ getFieldError('apellido_paterno') }}
+              </div>
+            </div>
+
+            <div>
+              <label for="apellido_materno" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                Apellido Materno *
+              </label>
+              <input
+                type="text"
+                id="apellido_materno"
+                formControlName="apellido_materno"
+                class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                [class.border-red-500]="formControls['apellido_materno'].invalid && formControls['apellido_materno'].touched">
+              <div *ngIf="formControls['apellido_materno'].invalid && formControls['apellido_materno'].touched" 
+                   class="mt-1 text-sm text-red-600">
+                {{ getFieldError('apellido_materno') }}
+              </div>
+            </div>
+
+            <div>
+              <label for="telefono" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                Teléfono *
+              </label>
+              <input
+                type="tel"
+                id="telefono"
+                formControlName="telefono"
+                placeholder="1234567890"
+                class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                [class.border-red-500]="formControls['telefono'].invalid && formControls['telefono'].touched">
+              <div *ngIf="formControls['telefono'].invalid && formControls['telefono'].touched" 
+                   class="mt-1 text-sm text-red-600">
+                {{ getFieldError('telefono') }}
+              </div>
+            </div>
+          </div>
+
+          <div class="space-y-4">
+            
+            <div>
+              <label for="email" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                Email *
+              </label>
+              <input
+                type="email"
+                id="email"
+                formControlName="email"
+                class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                [class.border-red-500]="formControls['email'].invalid && formControls['email'].touched">
+              <div *ngIf="formControls['email'].invalid && formControls['email'].touched" 
+                   class="mt-1 text-sm text-red-600">
+                {{ getFieldError('email') }}
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label for="password" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  Contraseña *
+                </label>
+                <input
+                  type="password"
+                  id="password"
+                  formControlName="password"
+                  class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                  [class.border-red-500]="formControls['password'].invalid && formControls['password'].touched">
+                <div *ngIf="formControls['password'].invalid && formControls['password'].touched" 
+                     class="mt-1 text-sm text-red-600">
+                  {{ getFieldError('password') }}
+                </div>
+              </div>
+
+              <div>
+                <label for="confirmPassword" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  Confirmar Contraseña *
+                </label>
+                <input
+                  type="password"
+                  id="confirmPassword"
+                  formControlName="confirmPassword"
+                  class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                  [class.border-red-500]="formControls['confirmPassword'].invalid && formControls['confirmPassword'].touched">
+                <div *ngIf="formControls['confirmPassword'].invalid && formControls['confirmPassword'].touched" 
+                     class="mt-1 text-sm text-red-600">
+                  {{ getFieldError('confirmPassword') }}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="flex flex-col sm:flex-row gap-3 pt-4">
+            <button
+              type="submit"
+              [disabled]="isLoading()"
+              class="flex-1 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white font-medium py-2 px-4 rounded-md transition-colors duration-200 flex items-center justify-center">
+              <svg *ngIf="isLoading()" class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
+              {{ isLoading() ? 'Registrando...' : 'Registrar Usuario' }}
+            </button>
+            
+            <button
+              type="button"
+              (click)="onReset()"
+              [disabled]="isLoading()"
+              class="flex-1 bg-gray-500 hover:bg-gray-600 disabled:bg-gray-400 text-white font-medium py-2 px-4 rounded-md transition-colors duration-200">
+              Limpiar
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <div class="bg-white dark:bg-gray-800 shadow rounded-lg">
+        <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+          <h2 class="text-xl font-semibold text-gray-900 dark:text-white">
+            Usuarios Registrados ({{ users().length }})
+          </h2>
+        </div>
+
+        <div class="p-6">
+          <div *ngIf="users().length === 0" class="text-center py-8 text-gray-500">
+            No hay usuarios registrados
+          </div>
+
+          <div *ngIf="users().length > 0" class="space-y-4 max-h-96 overflow-y-auto">
+            <div *ngFor="let user of users()" 
+                 class="border border-gray-200 dark:border-gray-700 rounded-lg p-4 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+              <div class="flex items-center justify-between">
+                <div class="flex-1">
+                  <h3 class="font-medium text-gray-900 dark:text-white">
+                    {{ user.name }} {{ user.apellido_paterno }} {{ user.apellido_materno }}
+                  </h3>
+                  <p class="text-sm text-gray-600 dark:text-gray-400">{{ user.email }}</p>
+                  <p class="text-sm text-gray-600 dark:text-gray-400">{{ user.telefono }}</p>
+                </div>
+                <div class="flex items-center space-x-3">
+                  <span [class]="user.activo ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'" 
+                        class="px-2 py-1 text-xs font-medium rounded-full">
+                    {{ user.activo ? 'Activo' : 'Inactivo' }}
+                  </span>
+                  <button
+                    type="button"
+                    (click)="onEditUser(user)"
+                    class="p-2 text-blue-600 hover:text-blue-800 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-full transition-colors">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                    </svg>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <app-user-modal
+    [user]="selectedUser()"
+    [isOpen]="isModalOpen()"
+    (closeModal)="onCloseModal()"
+    (userUpdated)="onUserUpdated($event)"
+    (userDeleted)="onUserDeleted($event)">
+  </app-user-modal>
+</div>

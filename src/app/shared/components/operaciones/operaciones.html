@@ -1,0 +1,105 @@
+<h2 class="text-2xl font-bold text-center mb-6">Lista de Operaciones</h2>
+
+<div *ngIf="operaciones.length === 0" class="text-center text-gray-500">
+  No hay operaciones disponibles.
+</div>
+
+<div *ngIf="operaciones.length > 0" class="overflow-x-auto">
+  <table class="min-w-full border border-gray-300 text-sm">
+    <thead>
+      <tr class="bg-gray-800 text-white text-left">
+        <th class="px-3 py-2">ID</th>
+        <th class="px-3 py-2">Lote No</th>
+        <th class="px-3 py-2">Orden Compra</th>
+        <th class="px-3 py-2">Contrato</th>
+        <th class="px-3 py-2">Fecha Documento</th>
+        <th class="px-3 py-2">POL</th>
+        <th class="px-3 py-2">Fecha Salida</th>
+        <th class="px-3 py-2">POD</th>
+        <th class="px-3 py-2">Fecha Llegada</th>
+        <th class="px-3 py-2">Fix Ref</th>
+        <th class="px-3 py-2">Modelo</th>
+        <th class="px-3 py-2">Serie</th>
+        <th class="px-3 py-2">VIN</th>
+        <th class="px-3 py-2">Número Motor</th>
+        <th class="px-3 py-2">Tipo Motor</th>
+        <th class="px-3 py-2">Versión</th>
+        <th class="px-3 py-2">Año Modelo</th>
+        <th class="px-3 py-2">Barco</th>
+        <th class="px-3 py-2">Contenedor</th>
+        <th class="px-3 py-2">Candado</th>
+        <th class="px-3 py-2">Orden Embarque</th>
+        <th class="px-3 py-2">Bill of Landing</th>
+        <th class="px-3 py-2">Pedimento</th>
+        <th class="px-3 py-2">Fecha Pedimento</th>
+        <th class="px-3 py-2">Certificado Origen</th>
+        <th class="px-3 py-2">Fecha Cert Origen</th>
+        <th class="px-3 py-2">Comm Inv</th>
+        <th class="px-3 py-2">Fecha Comm Inv</th>
+        <th class="px-3 py-2">FCI</th>
+        <th class="px-3 py-2">Tag ID</th>
+        <th class="px-3 py-2">NCI/NRPV</th>
+        <th class="px-3 py-2">Llave Ignición</th>
+        <th class="px-3 py-2">Cedis</th>
+        <th class="px-3 py-2">Punto de Venta</th>
+        <th class="px-3 py-2">Factura</th>
+        <th class="px-3 py-2">Factura A</th>
+        <th class="px-3 py-2">Fecha Factura</th>
+        <th class="px-3 py-2">Destino</th>
+        <th class="px-3 py-2">Entidad</th>
+        <th class="px-3 py-2">Importe</th>
+        <th class="px-3 py-2">IVA</th>
+        <th class="px-3 py-2">Venta</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <tr *ngFor="let op of operaciones" class="border-b hover:bg-gray-50">
+        <td class="px-3 py-2">{{ op.id }}</td>
+        <td class="px-3 py-2">{{ op.lote_no }}</td>
+        <td class="px-3 py-2">{{ op.numero_orden_compra }}</td>
+        <td class="px-3 py-2">{{ op.contrato }}</td>
+        <td class="px-3 py-2">{{ op.fecha_documento | date:'dd/MM/yyyy' }}</td>
+        <td class="px-3 py-2">{{ op.pol }}</td>
+        <td class="px-3 py-2">{{ op.fecha_salida | date:'dd/MM/yyyy' }}</td>
+        <td class="px-3 py-2">{{ op.pod }}</td>
+        <td class="px-3 py-2">{{ op.fecha_llegada | date:'dd/MM/yyyy' }}</td>
+        <td class="px-3 py-2">{{ op.fix_ref }}</td>
+        <td class="px-3 py-2">{{ op.modelo }}</td>
+        <td class="px-3 py-2">{{ op.serie }}</td>
+        <td class="px-3 py-2">{{ op.vin }}</td>
+        <td class="px-3 py-2">{{ op.numero_motor }}</td>
+        <td class="px-3 py-2">{{ op.tipo_motor }}</td>
+        <td class="px-3 py-2">{{ op.version }}</td>
+        <td class="px-3 py-2">{{ op.ano_modelo }}</td>
+        <td class="px-3 py-2">{{ op.barco }}</td>
+        <td class="px-3 py-2">{{ op.contenedor }}</td>
+        <td class="px-3 py-2">{{ op.candado }}</td>
+        <td class="px-3 py-2">{{ op.orden_embarque }}</td>
+        <td class="px-3 py-2">{{ op.bill_of_landing }}</td>
+        <td class="px-3 py-2">{{ op.pedimento }}</td>
+        <td class="px-3 py-2">{{ op.fecha_pedimento | date:'dd/MM/yyyy' }}</td>
+        <td class="px-3 py-2">{{ op.certificado_origen }}</td>
+        <td class="px-3 py-2">{{ op.fecha_cert_origen | date:'dd/MM/yyyy' }}</td>
+        <td class="px-3 py-2">{{ op.comm_inv }}</td>
+        <td class="px-3 py-2">{{ op.fecha_comm_inv | date:'dd/MM/yyyy' }}</td>
+        <td class="px-3 py-2">{{ op.fci }}</td>
+        <td class="px-3 py-2">{{ op.tag_id }}</td>
+        <td class="px-3 py-2">{{ op.nci_nrpv }}</td>
+        <td class="px-3 py-2">{{ op.llave_ignicion }}</td>
+        <td class="px-3 py-2">{{ op.cedis }}</td>
+        <td class="px-3 py-2">{{ op.punto_venta }}</td>
+        <td class="px-3 py-2">{{ op.factura }}</td>
+        <td class="px-3 py-2">{{ op.factura_a }}</td>
+        <td class="px-3 py-2">{{ op.fecha_factura | date:'dd/MM/yyyy' }}</td>
+        <td class="px-3 py-2">{{ op.destino }}</td>
+        <td class="px-3 py-2">{{ op.entidad }}</td>
+        <td class="px-3 py-2">{{ op.importe }}</td>
+        <td class="px-3 py-2">{{ op.iva }}</td>
+        <td class="px-3 py-2">{{ op.venta }}</td>
+        <td class="px-3 py-2">{{ op.created_at | date:'dd/MM/yyyy HH:mm' }}</td>
+        <td class="px-3 py-2">{{ op.updated_at | date:'dd/MM/yyyy HH:mm' }}</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
