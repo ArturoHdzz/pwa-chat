@@ -2,10 +2,11 @@ import { Component, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
-
+import { inject, OnInit } from '@angular/core';
+import { ChatService } from '../shared/services/chat-service';
 import {
   IonHeader, IonToolbar, IonTitle, IonButtons, IonBackButton, IonButton, IonIcon,
-  
+
   IonContent, IonFooter, IonItem, IonInput, IonAvatar
 } from '@ionic/angular/standalone';
 
@@ -24,12 +25,20 @@ type ChatMsg = {
     CommonModule,
     FormsModule,
     IonHeader, IonToolbar, IonTitle, IonButtons, IonBackButton,
-    IonButton, IonIcon, IonContent, IonFooter, IonItem, IonInput, IonAvatar
+    IonButton, IonIcon, IonContent, IonFooter, IonItem, IonInput, 
+    IonAvatar
   ],
   templateUrl: './chat.html',
   styleUrl: './chat.css'
 })
-export class Chat {
+export class Chat implements OnInit {
+   private chatService = inject(ChatService);
+
+  conversationId = '...uuid_de_conv...';
+
+    ngOnInit() {
+    this.chatService.loadMessages(this.conversationId);
+  }
   draft = '';
   
   defaultAvatar = 'https://i.pravatar.cc/80?img=13';
@@ -61,35 +70,10 @@ export class Chat {
   send() {
     const text = this.draft?.trim();
     if (!text) return;
-
-    const now = new Date();
-    const hh = String(now.getHours()).padStart(2, '0');
-    const mm = String(now.getMinutes()).padStart(2, '0');
-
-    this.messages.update(arr => [
-      ...arr,
-      { id: crypto.randomUUID(), text, me: true, time: `${hh}:${mm}` }
-    ]);
+    this.chatService.sendMessage(this.conversationId, text);
     this.draft = '';
-
-    // Simulación de respuesta (eliminar en producción)
-    setTimeout(() => {
-      const time = new Date();
-      const hh2 = String(time.getHours()).padStart(2, '0');
-      const mm2 = String(time.getMinutes()).padStart(2, '0');
-
-      this.messages.update(arr => [
-        ...arr,
-        {
-          id: crypto.randomUUID(),
-          text: 'Recibido ✅',
-          me: false,
-          time: `${hh2}:${mm2}`,
-          avatar: this.defaultAvatar
-        }
-      ]);
-    }, 700);
   }
+
   async openCameraWeb() {
   try {
     const stream = await navigator.mediaDevices.getUserMedia({ video: true });
