@@ -12,9 +12,18 @@ import {
   attachOutline,
   micOutline,
   send,
-   cameraOutline,     
+  cameraOutline,     
   imageOutline ,
-  timeOutline
+  timeOutline,
+  notificationsOutline,
+  peopleOutline,
+  calendarOutline,
+  ellipsisHorizontal,
+  funnelOutline,
+  mailUnreadOutline,
+  atOutline,
+  
+  createOutline
 } from 'ionicons/icons';
 import { App } from './app/app';
 addIcons({
@@ -29,7 +38,15 @@ addIcons({
   'send': send,
   'time-outline': timeOutline,
   'camera-outline': cameraOutline,
-  'image-outline': imageOutline
+  'image-outline': imageOutline,
+  'ellipsis-horizontal': ellipsisHorizontal,
+  'funnel-outline': funnelOutline,
+  'mail-unread-outline': mailUnreadOutline,
+  'at-outline': atOutline,
+  'notifications-outline': notificationsOutline,
+  'people-outline': peopleOutline,
+  'calendar-outline': calendarOutline,
+  'create-outline': createOutline
 });
 
 // if ('serviceWorker' in navigator) {
