@@ -35,12 +35,12 @@ export class Sidebar {
       icon: 'home',
       route: '/home'
     },
-    {
-      id: 'users',
-      label: 'Usuarios',
-      icon: 'users',
-      route: '/users'
-    },
+    // {
+    //   id: 'users',
+    //   label: 'Usuarios',
+    //   icon: 'users',
+    //   route: '/users'
+    // },
     {
       id: 'operaciones',
       label: 'Pperaciones(Matrix)',
