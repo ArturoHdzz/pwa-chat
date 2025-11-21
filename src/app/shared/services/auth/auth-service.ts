@@ -14,8 +14,25 @@ export interface LoginResponse {
     apellido_materno: string;
     telefono: string;
     activo: boolean;
+    profile?: {
+      organization: {
+        id: string;
+        name: string;
+      }
+    }
   };
   message: string;
+}
+
+export interface RegisterRequest {
+  name: string;
+  apellido_paterno: string;
+  apellido_materno: string;
+  email: string;
+  telefono: string;
+  password: string;
+  organization_name: string;
+  role: 'jefe' | 'profesor';
 }
 
 @Injectable({
@@ -28,10 +45,13 @@ export class AuthService {
     return this.http.post<LoginResponse>(
       `${environment.apiUrl}/login`,
       { email, password }
-    ).pipe(
-      tap(response => {
-        console.log('Login exitoso:', response);
-      })
+    );
+  }
+
+  register(userData: RegisterRequest): Observable<LoginResponse> {
+    return this.http.post<LoginResponse>(
+      `${environment.apiUrl}/register`,
+      userData
     );
   }
 

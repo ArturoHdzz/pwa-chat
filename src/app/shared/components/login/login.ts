@@ -1,77 +1,137 @@
-import { Component } from '@angular/core';
-import { AuthService } from '../../services/auth/auth-service';
+import { Component, signal } from '@angular/core';
+import { AuthService, RegisterRequest } from '../../services/auth/auth-service';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
-import { NgIf } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 
 @Component({
   selector: 'app-login',
-  imports: [CommonModule, ReactiveFormsModule,
-    NgIf
-  ],
+  imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './login.html',
   styleUrl: './login.css'
 })
 export class Login {
   error = '';
   isLoading = false;
-  form;
+  showRegister = signal(false);
+  
+  loginForm;
+  registerForm;
 
   constructor(
     private auth: AuthService, 
     private router: Router, 
     private fb: FormBuilder
   ) {
-    this.form = this.fb.group({
+    this.loginForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required, Validators.minLength(6)]]
     });
+
+    this.registerForm = this.fb.group({
+      name: ['', [Validators.required, Validators.minLength(2)]],
+      apellido_paterno: ['', [Validators.required, Validators.minLength(2)]],
+      apellido_materno: ['', [Validators.required, Validators.minLength(2)]],
+      email: ['', [Validators.required, Validators.email]],
+      telefono: ['', [Validators.required, Validators.pattern(/^[0-9]{10}$/)]],
+      password: ['', [Validators.required, Validators.minLength(8)]],
+      confirmPassword: ['', [Validators.required]],
+      organization_name: ['', [Validators.required, Validators.minLength(3)]],
+      role: ['jefe', [Validators.required]]
+    }, { validators: this.passwordMatchValidator });
   }
 
-  onSubmit() {
-    if (this.form.invalid) {
-      this.form.markAllAsTouched();
+  private passwordMatchValidator(form: any) {
+    const password = form.get('password');
+    const confirmPassword = form.get('confirmPassword');
+    
+    if (password?.value && confirmPassword?.value && password.value !== confirmPassword.value) {
+      confirmPassword.setErrors({ passwordMismatch: true });
+      return { passwordMismatch: true };
+    }
+    
+    return null;
+  }
+
+  toggleForm() {
+    this.showRegister.set(!this.showRegister());
+    this.error = '';
+  }
+
+  onLogin() {
+    if (this.loginForm.invalid) {
+      this.loginForm.markAllAsTouched();
       return;
     }
 
     this.isLoading = true;
     this.error = '';
 
-    const { email, password } = this.form.value;
+    const { email, password } = this.loginForm.value;
 
     this.auth.login(email!, password!).subscribe({
       next: (res) => {
-        console.log('Respuesta del login:', res);
         this.auth.guardarToken(res.token, res.user);
         this.isLoading = false;
         this.router.navigate(['/home']);
       },
       error: (err) => {
-        console.error('Error en login:', err);
         this.isLoading = false;
-        
+        this.error = err.error?.message || 'Error al iniciar sesión';
+      }
+    });
+  }
+
+  onRegister() {
+    if (this.registerForm.invalid) {
+      this.registerForm.markAllAsTouched();
+      return;
+    }
+
+    this.isLoading = true;
+    this.error = '';
+
+    const formValue = this.registerForm.value;
+
+    const userData: RegisterRequest = {
+      name: formValue.name!,
+      apellido_paterno: formValue.apellido_paterno!,
+      apellido_materno: formValue.apellido_materno!,
+      email: formValue.email!,
+      telefono: formValue.telefono!,
+      password: formValue.password!,
+      organization_name: formValue.organization_name!,
+      role: formValue.role! as 'jefe' | 'profesor'
+    };
+
+    this.auth.register(userData).subscribe({
+      next: (res) => {
+        this.auth.guardarToken(res.token, res.user);
+        this.isLoading = false;
+        this.router.navigate(['/home']);
+      },
+      error: (err) => {
+        this.isLoading = false;
         if (err.error?.errors) {
-          const errores = err.error.errors;
-          this.error = Object.values(errores)
-            .map((e: any) => Array.isArray(e) ? e[0] : e)
-            .join(' ');
-        } else if (err.error?.message) {
-          this.error = err.error.message;
-        } else if (err.status === 0) {
-          this.error = 'No se puede conectar con el servidor. Verifica que Laravel esté corriendo.';
+          const errors = Object.values(err.error.errors).flat();
+          this.error = errors.join(', ');
         } else {
-          this.error = 'Error desconocido. Intenta de nuevo.';
+          this.error = err.error?.message || 'Error al registrar usuario';
         }
       }
     });
   }
 
-  get emailControl() {
-    return this.form.get('email');
-  }
+  getFieldError(fieldName: string, formGroup: any): string {
+    const field = formGroup.get(fieldName);
+    if (!field?.errors || !field.touched) return '';
 
-  get passwordControl() {
-    return this.form.get('password');
+    if (field.errors['required']) return 'Este campo es requerido';
+    if (field.errors['email']) return 'Email inválido';
+    if (field.errors['minlength']) return `Mínimo ${field.errors['minlength'].requiredLength} caracteres`;
+    if (field.errors['pattern']) return 'Formato inválido (10 dígitos)';
+    if (field.errors['passwordMismatch']) return 'Las contraseñas no coinciden';
+    
+    return 'Campo inválido';
   }
 }
