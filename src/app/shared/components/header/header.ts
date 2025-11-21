@@ -1,6 +1,7 @@
-import { Component, Input, Output, EventEmitter, signal, OnInit } from '@angular/core';
+import { Component, Input, Output, EventEmitter, signal, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
+import { Subscription } from 'rxjs';
 import { UserProfile } from '../../models/profile.model';
 import { AuthService } from '../../services/auth/auth-service';
 
@@ -10,12 +11,14 @@ import { AuthService } from '../../services/auth/auth-service';
   templateUrl: './header.html',
   styleUrl: './header.css'
 })
-export class Header implements OnInit {
+export class Header implements OnInit, OnDestroy {
   @Input() showMobileToggle = false;
   @Output() mobileToggle = new EventEmitter<void>();
 
   readonly showProfileDropdown = signal(false);
   readonly currentUser = signal<UserProfile | null>(null);
+
+  private userSubscription?: Subscription;
 
   constructor(
     private router: Router,
@@ -23,7 +26,19 @@ export class Header implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    this.userSubscription = this.authService.user$.subscribe(user => {
+      if (user) {
+        this.currentUser.set(user);
+      }
+    });
+
     this.loadUserProfile();
+  }
+
+  ngOnDestroy(): void {
+    if (this.userSubscription) {
+      this.userSubscription.unsubscribe();
+    }
   }
 
   private loadUserProfile(): void {
@@ -42,9 +57,6 @@ export class Header implements OnInit {
     this.authService.auth().subscribe({
       next: (user) => {
         this.currentUser.set(user);
-        if (typeof window !== 'undefined' && localStorage) {
-          localStorage.setItem('user', JSON.stringify(user));
-        }
       },
       error: (error) => {
         console.error('Error loading user profile:', error);
@@ -75,6 +87,7 @@ export class Header implements OnInit {
   }
 
   onLogout(): void {
+    this.closeProfileDropdown();
     this.authService.logout().subscribe({
       next: () => {
         this.router.navigate(['/login']);

@@ -71,7 +71,6 @@ export class Login {
 
     this.auth.login(email!, password!).subscribe({
       next: (res) => {
-        this.auth.guardarToken(res.token, res.user);
         this.isLoading = false;
         this.router.navigate(['/home']);
       },
@@ -106,7 +105,6 @@ export class Login {
 
     this.auth.register(userData).subscribe({
       next: (res) => {
-        this.auth.guardarToken(res.token, res.user);
         this.isLoading = false;
         this.router.navigate(['/home']);
       },

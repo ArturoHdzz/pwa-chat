@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
-import { Observable, tap } from 'rxjs';
+import { Observable, tap, BehaviorSubject } from 'rxjs';
 import { environment } from '../../../../environments/environment';
 
 export interface LoginResponse {
@@ -15,6 +15,9 @@ export interface LoginResponse {
     telefono: string;
     activo: boolean;
     profile?: {
+      id: string;
+      display_name: string;
+      role: 'jefe' | 'profesor';
       organization: {
         id: string;
         name: string;
@@ -39,12 +42,36 @@ export interface RegisterRequest {
   providedIn: 'root'
 })
 export class AuthService {
-  constructor(private http: HttpClient, private router: Router) {}
+  private userSubject = new BehaviorSubject<any>(null);
+  public user$ = this.userSubject.asObservable();
+
+  constructor(private http: HttpClient, private router: Router) {
+    this.loadInitialUser();
+  }
+
+  private loadInitialUser(): void {
+    if (typeof window !== 'undefined' && localStorage) {
+      const userStr = localStorage.getItem('user');
+      if (userStr) {
+        try {
+          const user = JSON.parse(userStr);
+          this.userSubject.next(user);
+        } catch (error) {
+          console.error('Error parsing user data:', error);
+        }
+      }
+    }
+  }
 
   login(email: string, password: string): Observable<LoginResponse> {
     return this.http.post<LoginResponse>(
       `${environment.apiUrl}/login`,
       { email, password }
+    ).pipe(
+      tap(response => {
+        this.guardarToken(response.token, response.user);
+        this.userSubject.next(response.user); 
+      })
     );
   }
 
@@ -52,6 +79,11 @@ export class AuthService {
     return this.http.post<LoginResponse>(
       `${environment.apiUrl}/register`,
       userData
+    ).pipe(
+      tap(response => {
+        this.guardarToken(response.token, response.user);
+        this.userSubject.next(response.user); 
+      })
     );
   }
 
@@ -60,6 +92,7 @@ export class AuthService {
       localStorage.setItem('token', token);
       if (user) {
         localStorage.setItem('user', JSON.stringify(user));
+        this.userSubject.next(user); 
       }
     }
   }
@@ -84,10 +117,18 @@ export class AuthService {
       localStorage.removeItem('token');
       localStorage.removeItem('user');
     }
+    this.userSubject.next(null); 
   }
 
   auth(): Observable<any> {
-    return this.http.get(`${environment.apiUrl}/me`);
+    return this.http.get(`${environment.apiUrl}/me`).pipe(
+      tap(user => {
+        if (typeof window !== 'undefined' && localStorage) {
+          localStorage.setItem('user', JSON.stringify(user));
+        }
+        this.userSubject.next(user); 
+      })
+    );
   }
 
   getToken(): string | null {
@@ -99,5 +140,9 @@ export class AuthService {
 
   isAuthenticated(): boolean {
     return !!this.getToken();
+  }
+
+  getCurrentUser(): any {
+    return this.userSubject.value;
   }
 }
