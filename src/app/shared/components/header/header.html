@@ -15,7 +15,7 @@
       </button>
       
       <h1 class="text-lg font-semibold text-black sm:hidden">
-        DMS
+        Enterprise Flow
       </h1>
     </div>
 
@@ -32,15 +32,137 @@
       </ol>
     </nav>
 
-    <div class="flex items-center">
+    <div class="flex items-center relative">
       <button 
         type="button"
-        class="flex items-center text-sm rounded-full hover:ring-4 hover:ring-gray-300 transition-all duration-200">
-        <img 
-          class="w-8 h-8 rounded-full" 
-          src="icons/icon-72x72.svg" 
-          alt="King Long México">
+        (click)="toggleProfileDropdown()"
+        class="flex items-center text-sm rounded-full hover:ring-4 hover:ring-gray-300 transition-all duration-200 p-1">
+        <div class="w-8 h-8 rounded-full bg-black text-white flex items-center justify-center font-semibold">
+          {{ getUserInitials() }}
+        </div>
+        <svg class="w-4 h-4 ml-2 text-gray-600" fill="currentColor" viewBox="0 0 20 20">
+          <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+        </svg>
       </button>
+
+      <div *ngIf="showProfileDropdown()" 
+           class="absolute right-0 top-12 mt-2 w-80 bg-white rounded-lg shadow-xl border border-gray-200 z-50">
+        
+        <div class="px-4 py-3 border-b border-gray-200 bg-gray-50">
+          <p class="text-sm font-semibold text-black">Información del Usuario</p>
+        </div>
+
+        <div class="p-4 space-y-3">
+          <div class="flex items-center space-x-3">
+            <div class="w-12 h-12 rounded-full bg-black text-white flex items-center justify-center font-bold text-lg">
+              {{ getUserInitials() }}
+            </div>
+            <div class="flex-1">
+              <p class="text-sm font-semibold text-black">
+                {{ currentUser()?.name }} {{ currentUser()?.apellido_paterno }}
+              </p>
+              <p class="text-xs text-gray-600">{{ currentUser()?.email }}</p>
+            </div>
+          </div>
+
+          <div class="border-t border-gray-200 pt-3 space-y-2">
+            <div class="flex items-start">
+              <svg class="w-4 h-4 text-gray-600 mt-0.5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+              </svg>
+              <div class="flex-1">
+                <p class="text-xs text-gray-500">Nombre completo</p>
+                <p class="text-sm text-black font-medium">
+                  {{ currentUser()?.name }} {{ currentUser()?.apellido_paterno }} {{ currentUser()?.apellido_materno }}
+                </p>
+              </div>
+            </div>
+
+            <div class="flex items-start">
+              <svg class="w-4 h-4 text-gray-600 mt-0.5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+              </svg>
+              <div class="flex-1">
+                <p class="text-xs text-gray-500">Email</p>
+                <p class="text-sm text-black font-medium">{{ currentUser()?.email }}</p>
+              </div>
+            </div>
+
+            <div class="flex items-start">
+              <svg class="w-4 h-4 text-gray-600 mt-0.5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path>
+              </svg>
+              <div class="flex-1">
+                <p class="text-xs text-gray-500">Teléfono</p>
+                <p class="text-sm text-black font-medium">{{ currentUser()?.telefono }}</p>
+              </div>
+            </div>
+
+            <div *ngIf="currentUser()?.profile" class="flex items-start">
+              <svg class="w-4 h-4 text-gray-600 mt-0.5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+              </svg>
+              <div class="flex-1">
+                <p class="text-xs text-gray-500">Organización</p>
+                <p class="text-sm text-black font-medium">{{ currentUser()?.profile?.organization?.name }}</p>
+              </div>
+            </div>
+
+            <div *ngIf="currentUser()?.profile" class="flex items-start">
+              <svg class="w-4 h-4 text-gray-600 mt-0.5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"></path>
+              </svg>
+              <div class="flex-1">
+                <p class="text-xs text-gray-500">Rol</p>
+                <span class="inline-block px-2 py-1 text-xs font-medium rounded-full" 
+                      [class]="currentUser()?.profile?.role === 'jefe' ? 'bg-black text-white' : 'bg-gray-200 text-black'">
+                  {{ currentUser()?.profile?.role === 'jefe' ? 'Jefe' : 'Profesor' }}
+                </span>
+              </div>
+            </div>
+
+            <div class="flex items-start">
+              <svg class="w-4 h-4 text-gray-600 mt-0.5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+              </svg>
+              <div class="flex-1">
+                <p class="text-xs text-gray-500">Estado</p>
+                <span class="inline-block px-2 py-1 text-xs font-medium rounded-full" 
+                      [class]="currentUser()?.activo ? 'bg-gray-200 text-black' : 'bg-gray-400 text-white'">
+                  {{ currentUser()?.activo ? 'Activo' : 'Inactivo' }}
+                </span>
+              </div>
+            </div>
+
+            <div *ngIf="currentUser()?.ultimo_login" class="flex items-start">
+              <svg class="w-4 h-4 text-gray-600 mt-0.5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+              </svg>
+              <div class="flex-1">
+                <p class="text-xs text-gray-500">Último acceso</p>
+                <p class="text-sm text-black font-medium">{{ currentUser()?.ultimo_login | date:'dd/MM/yyyy HH:mm' }}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="px-4 py-3 border-t border-gray-200 bg-gray-50">
+          <button 
+            type="button"
+            (click)="onLogout()"
+            class="w-full flex items-center justify-center px-4 py-2 bg-black hover:bg-gray-800 text-white text-sm font-medium rounded-md transition-colors">
+            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
+            </svg>
+            Cerrar sesión
+          </button>
+        </div>
+      </div>
     </div>
   </div>
 </header>
+
+<div *ngIf="showProfileDropdown()" 
+     (click)="closeProfileDropdown()"
+     class="fixed inset-0 z-40">
+</div>
