@@ -1,0 +1,74 @@
+<ion-header>
+  <ion-toolbar class="chatlist-toolbar">
+    <div class="chatlist-header">
+      <div class="chatlist-title-left" (click)="openProfile()">
+        
+        <ion-icon name="person-circle-outline" class="user-icon"></ion-icon>
+
+        <div class="title-block">
+          <span class="time-label">{{ timeLabel }}</span>
+          <h1 class="page-title">{{ title }}</h1>
+
+          <span class="org-label" *ngIf="selectedOrgName">
+            {{ selectedOrgName }}
+          </span>
+        </div>
+      </div>
+
+      <div class="chatlist-actions">
+        <ion-button fill="clear">
+          <ion-icon name="search-outline"></ion-icon>
+        </ion-button>
+        <ion-button fill="clear">
+          <ion-icon name="ellipsis-horizontal"></ion-icon>
+        </ion-button>
+      </div>
+    </div>
+  </ion-toolbar>
+</ion-header>
+
+<ion-modal
+  [isOpen]="isModalOpen()"
+  (didDismiss)="closeProfile()"
+>
+  <ng-template>
+    <ion-header>
+      <ion-toolbar>
+        <ion-title style="margin-left: 10px;"> Cuenta</ion-title>
+        <ion-buttons slot="end">
+          <ion-button (click)="closeProfile()">
+            Cerrar
+          </ion-button>
+        </ion-buttons>
+      </ion-toolbar>
+    </ion-header>
+
+    <ion-content>
+      <ion-item lines="full">
+         <ion-icon name="person-circle-outline" class="user-icon"></ion-icon>
+
+        <ion-label style="margin-left: 6px;">
+          <h2>{{ userName }}</h2>
+          <p>{{ userEmail }}</p>
+        </ion-label>
+      </ion-item>
+
+      <ion-item *ngIf="organizations?.length">
+        <ion-label>Organización</ion-label>
+        <ion-select
+          [value]="selectedOrgId"
+          interface="popover"
+          placeholder="Selecciona organización"
+          (ionChange)="onOrgSelect($event.detail.value)"
+        >
+          <ion-select-option
+            *ngFor="let org of organizations"
+            [value]="org.id"
+          >
+            {{ org.name }}
+          </ion-select-option>
+        </ion-select>
+      </ion-item>
+    </ion-content>
+  </ng-template>
+</ion-modal>

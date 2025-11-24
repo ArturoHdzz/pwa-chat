@@ -146,3 +146,17 @@
   border-radius: 999px;
   box-shadow: 0 12px 22px rgba(79, 70, 229, 0.4);
 }
+
+.new-chat-fab {
+  --background: #6366f1;
+  --color: rgb(18, 17, 17);
+  width: 58px;
+  height: 58px;
+  border-radius: 50%;
+
+  box-shadow: 0 6px 14px rgba(99, 102, 241, 0.35);
+}
+
+ion-fab.fab-above-tabs {
+  bottom: 80px; 
+}

@@ -27,80 +27,95 @@
     </ion-buttons>
   </ion-toolbar>
 </ion-header> -->
-<div class="h-[83vh]">
-<ion-content class="chat-content">
-  <div class="day-divider">
-    <ion-icon name="chatbubbles-outline"></ion-icon>
-    <span>Hoy</span>
-  </div>
+<div class="chat-wrapper">
+  <ion-content class="chat-content">
+    <div class="day-divider">
+      <ion-icon name="chatbubbles-outline"></ion-icon>
+      <span>Hoy</span>
+    </div>
 
-  <div class="messages">
-    <ng-container *ngFor="let m of messages(); trackBy: trackById">
-      <div class="row" [class.me]="m.me">
-        <ion-avatar *ngIf="!m.me" class="avatar">
-          <img [src]="m.avatar || defaultAvatar" alt="avatar" />
-        </ion-avatar>
+    <div class="messages">
+      <ng-container *ngFor="let m of messages(); trackBy: trackById">
+        <div class="row" [class.me]="m.me">
+          <ion-avatar *ngIf="!m.me" class="avatar">
+            <img [src]="m.avatar || defaultAvatar" alt="avatar" />
+          </ion-avatar>
 
-        <div class="bubble" [class.me]="m.me">
-          <p class="text">{{ m.text }}</p>
-          <img *ngIf="m.image"
-     [src]="m.image"
-     class="rounded-xl max-h-64 object-cover mb-2"/>
+          <div class="bubble" [class.me]="m.me">
+            <p class="text">{{ m.text }}</p>
 
-          <span class="meta">
-            <ion-icon name="time-outline"></ion-icon>
-            {{ m.time }}
-          </span>
+            <img
+              *ngIf="m.image"
+              [src]="m.image"
+              class="rounded-xl max-h-64 object-cover mb-2"
+            />
+
+            <span class="meta">
+              <ion-icon name="time-outline"></ion-icon>
+              {{ m.time }}
+            </span>
+          </div>
+
+          <ion-avatar *ngIf="m.me" class="avatar me">
+            <img [src]="myAvatar" alt="yo" />
+          </ion-avatar>
         </div>
+      </ng-container>
+    </div>
+  </ion-content>
 
-        <ion-avatar *ngIf="m.me" class="avatar me">
-          <img [src]="myAvatar" alt="yo" />
-        </ion-avatar>
-      </div>
-    </ng-container>
-  </div>
-</ion-content>
+  <ion-footer class="composer">
+    <ion-toolbar>
+      <ion-item lines="none" class="composer-item">
+        <ion-button slot="start" fill="clear" size="small" aria-label="Emoji">
+          <ion-icon name="happy-outline"></ion-icon>
+        </ion-button>
 
-<ion-footer class="composer">
-  <ion-toolbar>
-    <ion-item lines="none" class="composer-item">
-      <ion-button slot="start" fill="clear" size="small" aria-label="Emoji">
-        <ion-icon name="happy-outline"></ion-icon>
-      </ion-button>
+        <ion-button slot="start" fill="clear" aria-label="Adjuntar">
+          <ion-icon name="attach-outline"></ion-icon>
+        </ion-button>
 
-      <ion-button slot="start" fill="clear" aria-label="Adjuntar">
-        <ion-icon name="attach-outline"></ion-icon>
-      </ion-button>
+        <ion-input
+          [(ngModel)]="draft"
+          placeholder="Escribe un mensaje"
+          (keyup.enter)="send()"
+          class="input"
+        >
+        </ion-input>
 
-      <ion-input
-        [(ngModel)]="draft"
-        placeholder="Escribe un mensaje"
-        (keyup.enter)="send()"
-        class="input">
-      </ion-input>
-       
+        <ion-button slot="end" fill="clear" size="small" aria-label="Grabar audio">
+          <ion-icon name="mic-outline"></ion-icon>
+        </ion-button>
 
-      <ion-button slot="end" fill="clear" size="small" aria-label="Grabar audio">
-        <ion-icon name="mic-outline"></ion-icon>
-      </ion-button>
-      <ion-button slot="start" fill="clear" size="small" aria-label="Camara" (click)="takePhoto()">
-        <ion-icon name="image-outline"></ion-icon>
-      </ion-button>
-       <ion-button slot="start" fill="clear" (click)="openCameraWeb()">
+        <ion-button
+          slot="start"
+          fill="clear"
+          size="small"
+          aria-label="Camara"
+          (click)="takePhoto()"
+        >
+          <ion-icon name="image-outline"></ion-icon>
+        </ion-button>
+
+        <ion-button
+          slot="start"
+          fill="clear"
+          (click)="openCameraWeb()"
+          aria-label="Camara web"
+        >
           <ion-icon name="camera-outline"></ion-icon>
         </ion-button>
 
-
-
-      <ion-button
-        slot="end"
-        shape="round"
-        class="send-btn"
-        (click)="send()"
-        aria-label="Enviar mensaje">
-        <ion-icon name="send"></ion-icon>
-      </ion-button>
-    </ion-item>
-  </ion-toolbar>
-</ion-footer>
+        <ion-button
+          slot="end"
+          shape="round"
+          class="send-btn"
+          (click)="send()"
+          aria-label="Enviar mensaje"
+        >
+          <ion-icon name="send"></ion-icon>
+        </ion-button>
+      </ion-item>
+    </ion-toolbar>
+  </ion-footer>
 </div>

@@ -1,92 +1,12 @@
-<ion-header>
-  <ion-toolbar class="chatlist-toolbar">
-    <div class="chatlist-header">
-      <div class="chatlist-title-left">
-    
-        <div class="title-block">
-          <span class="time-label">11:15</span>
-          <h1 class="page-title">Chat</h1>
-        </div>
-      </div>
-
-      <div class="chatlist-actions">
-        <ion-button fill="clear">
-          <ion-icon name="search-outline"></ion-icon>
-        </ion-button>
-        <ion-button fill="clear">
-          <ion-icon name="ellipsis-horizontal"></ion-icon>
-        </ion-button>
-      </div>
-    </div>
-
-    <!-- Filtros -->
-    <div class="filters-row">
-      <ion-chip
-        [outline]="filter() !== 'recent'"
-        (click)="setFilter('recent')"
-      >
-        <ion-icon name="funnel-outline"></ion-icon>
-        <ion-label>Recientes</ion-label>
-      </ion-chip>
-
-      <ion-chip
-        [outline]="filter() !== 'unread'"
-        (click)="setFilter('unread')"
-      >
-        <ion-icon name="mail-unread-outline"></ion-icon>
-        <ion-label>No leído</ion-label>
-      </ion-chip>
-
-      <ion-chip
-        [outline]="filter() !== 'mentions'"
-        (click)="setFilter('mentions')"
-      >
-        <ion-icon name="at-outline"></ion-icon>
-        <ion-label>Menciones</ion-label>
-      </ion-chip>
-
-      <ion-chip
-        [outline]="filter() !== 'conversations'"
-        (click)="setFilter('conversations')"
-      >
-        <ion-icon name="chatbubbles-outline"></ion-icon>
-        <ion-label>Conversaciones</ion-label>
-      </ion-chip>
-    </div>
-  </ion-toolbar>
-</ion-header>
-
-<ion-content>
-
-  <ng-container >
-    <ion-item>
-      <ion-label>Organización</ion-label>
-      <ion-select
-    [value]="selectedOrganizationId()"
-    placeholder="Selecciona organización"
-    interface="popover"
-    (ionChange)="selectOrganization($event.detail.value)"
-  >
-    <ion-select-option
-      *ngFor="let org of organizations()"
-      [value]="org.id"
-    >
-      {{ org.name }}
-    </ion-select-option>
-      </ion-select>
-    </ion-item>
-  </ng-container>
-
-  <!-- Si solo hay una, solo la mostramos -->
-  <ng-template #singleOrgInfo>
-    <ion-item *ngIf="organizations().length === 1">
-      <ion-label>
-        <strong>Organización</strong><br />
-        {{ organizations()[0].name }}
-      </ion-label>
-    </ion-item>
-  </ng-template>
-
+<app-chat-header
+  [title]="'Chat'"
+  [timeLabel]="'11:15'"
+  [organizations]="organizations()"
+  [selectedOrgId]="selectedOrganizationId()"
+  (organizationChange)="selectOrganization($event)"
+>
+</app-chat-header>
+<ion-content class="chatlist-content">
   <ion-list>
     <ion-item
       button
@@ -99,9 +19,9 @@
           {{ conv.initials }}
         </div>
       </ion-avatar>
-      <ion-label>
-        <h2>{{ conv.name }}  ({{ conv.display_name}})</h2>
-     
+
+      <ion-label style="margin-left:10px">
+        <h2>{{ conv.name }} ({{ conv.display_name }})</h2>
         <p>{{ conv.lastMessage }}</p>
       </ion-label>
 
@@ -111,4 +31,11 @@
     </ion-item>
   </ion-list>
 </ion-content>
+
+  <ion-fab class="fab-above-tabs" vertical="bottom" horizontal="end" slot="fixed">
+  <ion-fab-button (click)="newChat()">
+    <ion-icon name="add-outline"></ion-icon>
+  </ion-fab-button>
+</ion-fab>
+
 

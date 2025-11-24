@@ -1,0 +1,62 @@
+.chatlist-toolbar {
+  --background: #ffffff;
+  --color: #111827;
+  border-bottom: 1px solid #e5e7eb;
+  padding-bottom: 6px;
+}
+
+.chatlist-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-inline: 10px;
+  padding-top: 4px;
+}
+
+.chatlist-title-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.user-avatar {
+  width: 40px;
+  height: 40px;
+}
+
+.title-block {
+  display: flex;
+  flex-direction: column;
+}
+
+.time-label {
+  font-size: 0.72rem;
+  color: #9ca3af;
+}
+
+.page-title {
+  margin: 0;
+  font-size: 1.6rem;
+  font-weight: 700;
+}
+
+.org-label {
+  font-size: 0.75rem;
+  color: #4b5563;
+}
+
+.chatlist-actions ion-button {
+  --padding-start: 4px;
+  --padding-end: 4px;
+}
+
+.user-icon {
+  font-size: 32px;
+  color: #0a0a0a; 
+  cursor: pointer;
+}
+.user-icon:hover {
+  color: #2c71b6; 
+  width: 38px;
+  height: 38px;
+}

@@ -22,7 +22,8 @@ import {
   funnelOutline,
   mailUnreadOutline,
   atOutline,
-  
+  personCircleOutline,
+  addOutline,
   createOutline
 } from 'ionicons/icons';
 import { App } from './app/app';
@@ -46,7 +47,9 @@ addIcons({
   'notifications-outline': notificationsOutline,
   'people-outline': peopleOutline,
   'calendar-outline': calendarOutline,
-  'create-outline': createOutline
+  'create-outline': createOutline,
+  'person-circle-outline': personCircleOutline,
+  'add-outline': addOutline,
 });
 
 // if ('serviceWorker' in navigator) {

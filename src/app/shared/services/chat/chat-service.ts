@@ -7,6 +7,7 @@ export type ChatMessageDto = {
   body: string;
   created_at: string;
   sender_id: string;
+  is_me: boolean;
 };
 
 
@@ -28,6 +29,9 @@ export type ConversationDto = {
     id: string;
     name: string;
   };
+  last_message: string;
+  last_from_me: boolean;
+  last_date: string;
 };
 
 
@@ -51,8 +55,10 @@ export class ChatService {
 
   loadMessages(conversationId: string) {
     this.http
-      .get<ChatMessageDto[]>(`${this.api}/conversations/${conversationId}/messages`)
-      .subscribe(msgs => this.messages.set(msgs));
+       .get<{ data: ChatMessageDto[] }>(`${this.api}/conversations/${conversationId}/messages`)
+        .subscribe(res => {
+        this.messages.set(res.data ?? []);
+      });
   }
 
   sendMessage(conversationId: string, body: string) {

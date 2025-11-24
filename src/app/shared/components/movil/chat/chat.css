@@ -2,6 +2,7 @@
   /* Fondo general */
 .chat-content {
   --background: var(--ef-bg);
+   --padding-bottom: 80px;
 }
 
 .chat-toolbar {
@@ -157,4 +158,26 @@
 }
 ion-content {
   --padding-bottom: 90px; 
+}
+
+
+
+.chat-wrapper {
+  display: flex;
+  flex-direction: column;
+  /* altura total de la ventana menos la toolbar superior y el tab bar inferior.
+     Ajusta 112px si tu header/tab miden distinto */
+  height: calc(100vh - 67px);
+}
+
+/* el contenido ocupa todo el espacio disponible arriba del footer */
+.chat-content {
+  flex: 1;
+  --background: #ffffff;
+  --padding-bottom: 12px; /* un poco de aire sobre el composer */
+}
+
+.composer {
+  border-top: 1px solid #e5e7eb;
+  flex-shrink: 0;
 }

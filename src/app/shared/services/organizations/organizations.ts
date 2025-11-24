@@ -14,9 +14,13 @@ export type OrganizationDto = {
   providedIn: 'root'
 })
 export class Organizations {
+  selectedOrgId = signal<string | null>(null);
   private readonly api = `${environment.apiUrl}/organizations`;
     constructor(private http: HttpClient) {}
     getOrganizations() {
         return this.http.get<OrganizationDto[]>(this.api);
     }
+    setSelected(orgId: string) {
+    this.selectedOrgId.set(orgId);
+  }
 }
