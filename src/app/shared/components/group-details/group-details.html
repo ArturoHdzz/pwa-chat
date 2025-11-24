@@ -38,9 +38,9 @@
             <p class="text-sm text-gray-500 mt-1">Gestionar alumnos/empleados</p>
           </div>
 
-          <div class="p-4 bg-gray-50 rounded-lg border border-gray-200 text-center hover:bg-gray-100 transition cursor-pointer group">
+          <div [routerLink]="['/groups', g.id, 'tasks']" class="p-4 bg-gray-50 rounded-lg border border-gray-200 text-center hover:bg-gray-100 transition cursor-pointer group">
             <h4 class="font-semibold text-gray-700 group-hover:text-blue-600">Tareas</h4>
-            <p class="text-sm text-gray-500 mt-1">Asignar y calificar (Próximamente)</p>
+            <p class="text-sm text-gray-500 mt-1">Asignar y calificar</p>
           </div>
 
           <div class="p-4 bg-gray-50 rounded-lg border border-gray-200 text-center hover:bg-gray-100 transition cursor-pointer group">

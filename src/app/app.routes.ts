@@ -37,6 +37,10 @@ export const routes: Routes = [
                 path: 'groups/:id/members',
                 loadComponent: () => import('./shared/components/group-members/group-members/group-members').then(m => m.GroupMembers)
             },
+            {
+                path: 'groups/:id/tasks',
+                loadComponent: () => import('./shared/components/group-tasks/group-tasks').then(m => m.GroupTasks)
+            },
             { path: 'chat', component: Chat },
             { path: '', redirectTo: 'home', pathMatch: 'full' }
         ]
