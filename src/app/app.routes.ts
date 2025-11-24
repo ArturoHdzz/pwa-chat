@@ -27,6 +27,18 @@ export const routes: Routes = [
                 path: 'operaciones',
                 loadComponent: () => import('./shared/components/operaciones/operaciones').then(m => m.Operaciones)
             },
+            {
+                path: 'groups',
+                loadComponent: () => import('./shared/components/groups/groups').then(m => m.Groups)
+            },
+            {
+                path: 'groups/:id',
+                loadComponent: () => import('./shared/components/group-details/group-details').then(m => m.GroupDetails)
+            },
+            {
+                path: 'groups/:id/members',
+                loadComponent: () => import('./shared/components/group-members/group-members/group-members').then(m => m.GroupMembers)
+            },
             { path: 'chat', component: Chat },
             { path: '', redirectTo: 'home', pathMatch: 'full' }
         ]
