@@ -4,8 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
 import { inject, OnInit } from '@angular/core';
 import { ChatService } from '../../../services/chat/chat-service';
-import {
-  IonHeader, IonToolbar, IonTitle, IonButtons, IonBackButton, IonButton, IonIcon,
+import { IonToolbar, IonButton, IonIcon,
 
   IonContent, IonFooter, IonItem, IonInput, IonAvatar
 } from '@ionic/angular/standalone';
@@ -24,8 +23,7 @@ type ChatMsg = {
   selector: 'app-chat',
   imports: [
     CommonModule,
-    FormsModule,
-    IonHeader, IonToolbar, IonTitle, IonButtons, IonBackButton,
+    FormsModule, IonToolbar,
     IonButton, IonIcon, IonContent, IonFooter, IonItem, IonInput, 
     IonAvatar
   ],

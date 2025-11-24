@@ -11,8 +11,6 @@ import { Router } from '@angular/router';
 import {
   IonHeader,
   IonToolbar,
-  IonTitle,
-  IonButtons,
   IonButton,
   IonIcon,
   IonContent,
@@ -50,8 +48,6 @@ const ORG_STORAGE_KEY = 'selectedOrganizationId';
     CommonModule,
     IonHeader,
     IonToolbar,
-    IonTitle,
-    IonButtons,
     IonButton,
     IonIcon,
     IonContent,
