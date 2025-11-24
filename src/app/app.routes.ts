@@ -1,8 +1,6 @@
 import { Routes } from '@angular/router';
 import { authGuard } from './shared/guards/auth-guard';
-import { Chat } from './chat/chat';
-import { Register } from './auth/register/register';
-import { Login } from './shared/components/login/login';
+import { Chat } from './shared/components/movil/chat/chat';
 
 export const routes: Routes = [
     {
@@ -41,6 +39,22 @@ export const routes: Routes = [
             },
             { path: 'chat', component: Chat },
             { path: '', redirectTo: 'home', pathMatch: 'full' }
+        ]
+    },
+    {
+        path: 'm',
+        canActivate: [authGuard],
+        loadComponent: () => import('./shared/components/movil/mobile-shell/mobile-shell').then(m => m.MobileShell),
+        children: [
+            {
+                path: 'chat',
+                loadComponent: () => import('./shared/components/movil/chat-list/chat-list').then(m => m.ChatList)
+            },
+            {
+                path: 'chat/:id',
+                loadComponent: () => import('./shared/components/movil/chat/chat').then(m => m.Chat)
+            },
+            
         ]
     },
     { path: '**', redirectTo: 'login', pathMatch: 'full' }

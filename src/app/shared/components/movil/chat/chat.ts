@@ -3,12 +3,12 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
 import { inject, OnInit } from '@angular/core';
-import { ChatService } from '../shared/services/chat-service';
-import {
-  IonHeader, IonToolbar, IonTitle, IonButtons, IonBackButton, IonButton, IonIcon,
+import { ChatService } from '../../../services/chat/chat-service';
+import { IonToolbar, IonButton, IonIcon,
 
   IonContent, IonFooter, IonItem, IonInput, IonAvatar
 } from '@ionic/angular/standalone';
+import { ActivatedRoute } from '@angular/router';
 
 type ChatMsg = {
   id: string;
@@ -23,8 +23,7 @@ type ChatMsg = {
   selector: 'app-chat',
   imports: [
     CommonModule,
-    FormsModule,
-    IonHeader, IonToolbar, IonTitle, IonButtons, IonBackButton,
+    FormsModule, IonToolbar,
     IonButton, IonIcon, IonContent, IonFooter, IonItem, IonInput, 
     IonAvatar
   ],
@@ -34,10 +33,13 @@ type ChatMsg = {
 export class Chat implements OnInit {
    private chatService = inject(ChatService);
 
-  conversationId = '...uuid_de_conv...';
+    private route = inject(ActivatedRoute);
+    conversationId = this.route.snapshot.paramMap.get('id');
 
-    ngOnInit() {
-    this.chatService.loadMessages(this.conversationId);
+  ngOnInit() {
+    if (this.conversationId) {
+      this.chatService.loadMessages(this.conversationId);
+    }
   }
   draft = '';
   
@@ -70,6 +72,7 @@ export class Chat implements OnInit {
   send() {
     const text = this.draft?.trim();
     if (!text) return;
+    if (!this.conversationId) return;
     this.chatService.sendMessage(this.conversationId, text);
     this.draft = '';
   }
