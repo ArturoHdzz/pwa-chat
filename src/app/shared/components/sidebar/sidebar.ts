@@ -3,6 +3,8 @@ import { Router, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { SidebarService } from '../../services/sidebar/sidebar-service';
 import { NavigationItem } from '../../models/navigation.model';
+import { AuthService } from '../../services/auth/auth-service';
+import { toSignal } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'app-sidebar',
@@ -13,9 +15,12 @@ import { NavigationItem } from '../../models/navigation.model';
 export class Sidebar {
   private readonly sidebarService = inject(SidebarService);
   private readonly router = inject(Router);
+  private readonly authService = inject(AuthService);
 
   readonly isCollapsed = this.sidebarService.isCollapsed;
   readonly isMobileOpen = this.sidebarService.isMobileOpen;
+  
+  private readonly user = toSignal(this.authService.user$);
 
   readonly sidebarClasses = computed(() => {
     const baseClasses = 'fixed top-0 left-0 z-50 h-screen transition-transform duration-300 bg-slate-800 flex flex-col shadow-lg';
@@ -28,26 +33,36 @@ export class Sidebar {
     return `${baseClasses} ${widthClasses} ${mobileClasses}`;
   });
 
-  readonly navigationItems: NavigationItem[] = [
-    {
-      id: 'home',
-      label: 'Inicio',
-      icon: 'home',
-      route: '/home'
-    },
-    {
-      id: 'groups',
-      label: 'Grupos / Clases',
-      icon: 'groups', 
-      route: '/groups'
-    },
-    {
-      id: 'dashboard',
-      label: 'dashboard',
-      icon: 'dashboard',
-      route: '/dashboard'
-    },
-  ];
+  readonly navigationItems = computed(() => {
+    const currentUser = this.user();
+    const role = currentUser?.profile?.role;
+
+    const items: NavigationItem[] = [
+      {
+        id: 'home',
+        label: 'Inicio',
+        icon: 'home',
+        route: '/home'
+      },
+      {
+        id: 'groups',
+        label: 'Grupos / Clases',
+        icon: 'groups', 
+        route: '/groups'
+      }
+    ];
+
+    if (role && role !== 'Alumno' && role !== 'User') {
+      items.push({
+        id: 'dashboard',
+        label: 'Dashboard',
+        icon: 'dashboard',
+        route: '/dashboard'
+      });
+    }
+
+    return items;
+  });
 
   onToggleSidebar(): void {
     this.sidebarService.toggle();
@@ -65,9 +80,7 @@ export class Sidebar {
   }
 
   onLogout(): void {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
-    this.router.navigate(['/login']);
+    this.authService.logout();
   }
 
   private isMobile(): boolean {

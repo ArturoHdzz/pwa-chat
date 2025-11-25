@@ -16,7 +16,7 @@
 
   <nav class="flex-1 overflow-y-auto py-4 bg-white">
     <ul class="space-y-2 font-medium px-3">
-      <li *ngFor="let item of navigationItems">
+      <li *ngFor="let item of navigationItems()">
         <a 
           [routerLink]="item.route"
           routerLinkActive="bg-black text-white"
