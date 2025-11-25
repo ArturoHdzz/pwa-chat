@@ -17,7 +17,7 @@ export interface LoginResponse {
     profile?: {
       id: string;
       display_name: string;
-      role: 'jefe' | 'profesor';
+      role: 'jefe' | 'profesor' | 'Alumno' | 'User'; 
       organization: {
         id: string;
         name: string;

@@ -2,6 +2,7 @@ import { Component, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { DashboardService } from '../../services/dashboard/dashboard-service';
+import { Router } from '@angular/router'; 
 
 @Component({
   selector: 'app-dashboard',
@@ -11,6 +12,7 @@ import { DashboardService } from '../../services/dashboard/dashboard-service';
 })
 export class Dashboard implements OnInit {
   private dashboardService = inject(DashboardService);
+  private router = inject(Router); 
 
   data = signal<any>(null);
   isLoading = signal(true);
@@ -22,6 +24,10 @@ export class Dashboard implements OnInit {
   loadData() {
     this.dashboardService.getDashboardData().subscribe({
       next: (res) => {
+        if (res.is_student) {
+            this.router.navigate(['/groups']);
+            return;
+        }
         this.data.set(res);
         this.isLoading.set(false);
       },
