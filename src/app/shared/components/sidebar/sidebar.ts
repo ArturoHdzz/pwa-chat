@@ -42,11 +42,11 @@ export class Sidebar {
       route: '/groups'
     },
     {
-      id: 'operaciones',
-      label: 'Pperaciones(Matrix)',
-      icon: 'operaciones',
-      route: '/operaciones'
-    }
+      id: 'dashboard',
+      label: 'dashboard',
+      icon: 'dashboard',
+      route: '/dashboard'
+    },
   ];
 
   onToggleSidebar(): void {

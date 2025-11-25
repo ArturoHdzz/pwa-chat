@@ -22,10 +22,6 @@ export const routes: Routes = [
                 loadComponent: () => import('./shared/components/registerusers/registerusers').then(m => m.Registerusers)
             },
             {
-                path: 'operaciones',
-                loadComponent: () => import('./shared/components/operaciones/operaciones').then(m => m.Operaciones)
-            },
-            {
                 path: 'groups',
                 loadComponent: () => import('./shared/components/groups/groups').then(m => m.Groups)
             },
@@ -44,6 +40,10 @@ export const routes: Routes = [
             {
                 path: 'groups/:id/tasks/:taskId/grading',
                 loadComponent: () => import('./shared/components/task-grading/task-grading').then(m => m.TaskGrading)
+            },
+            {
+                path: 'dashboard',
+                loadComponent: () => import('./shared/components/dashboard/dashboard').then(m => m.Dashboard)
             },
             { path: 'chat', component: Chat },
             { path: '', redirectTo: 'home', pathMatch: 'full' }
