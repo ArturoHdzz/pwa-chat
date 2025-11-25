@@ -15,6 +15,8 @@ export class Login {
   isLoading = false;
   showRegister = signal(false);
   
+  isJoiningOrg = signal(false); 
+  
   loginForm;
   registerForm;
 
@@ -36,8 +38,9 @@ export class Login {
       telefono: ['', [Validators.required, Validators.pattern(/^[0-9]{10}$/)]],
       password: ['', [Validators.required, Validators.minLength(8)]],
       confirmPassword: ['', [Validators.required]],
+      role: ['jefe', [Validators.required]],
       organization_name: ['', [Validators.required, Validators.minLength(3)]],
-      role: ['jefe', [Validators.required]]
+      organization_code: [''] 
     }, { validators: this.passwordMatchValidator });
   }
 
@@ -53,9 +56,32 @@ export class Login {
     return null;
   }
 
+  toggleOrgMode(join: boolean) {
+    this.isJoiningOrg.set(join);
+    
+    const nameControl = this.registerForm.get('organization_name');
+    const codeControl = this.registerForm.get('organization_code');
+
+    if (join) {
+      nameControl?.clearValidators();
+      nameControl?.setValue('');
+      codeControl?.setValidators([Validators.required, Validators.minLength(6)]);
+    } else {
+      codeControl?.clearValidators();
+      codeControl?.setValue('');
+      nameControl?.setValidators([Validators.required, Validators.minLength(3)]);
+    }
+    
+    nameControl?.updateValueAndValidity();
+    codeControl?.updateValueAndValidity();
+  }
+
   toggleForm() {
     this.showRegister.set(!this.showRegister());
     this.error = '';
+    if (this.showRegister()) {
+        this.toggleOrgMode(false); 
+    }
   }
 
   onLogin() {
@@ -99,8 +125,13 @@ export class Login {
       email: formValue.email!,
       telefono: formValue.telefono!,
       password: formValue.password!,
-      organization_name: formValue.organization_name!,
-      role: formValue.role! as 'jefe' | 'profesor'
+      role: formValue.role! as 'jefe' | 'profesor',
+      
+      organization_name: this.isJoiningOrg() ? undefined : formValue.organization_name!,
+      
+      organization_code: this.isJoiningOrg() && formValue.organization_code 
+        ? formValue.organization_code.trim() 
+        : undefined
     };
 
     this.auth.register(userData).subscribe({
@@ -112,7 +143,7 @@ export class Login {
         this.isLoading = false;
         if (err.error?.errors) {
           const errors = Object.values(err.error.errors).flat();
-          this.error = errors.join(', ');
+          this.error = errors.join(', '); 
         } else {
           this.error = err.error?.message || 'Error al registrar usuario';
         }

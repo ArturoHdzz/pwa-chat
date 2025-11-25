@@ -31,4 +31,9 @@ export class Dashboard implements OnInit {
       }
     });
   }
+
+  copyCode(code: string) {
+    navigator.clipboard.writeText(code);
+    alert('Código de organización copiado: ' + code);
+  }
 }

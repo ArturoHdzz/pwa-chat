@@ -46,4 +46,8 @@ export class GroupsService {
   removeMember(groupId: string, profileId: string): Observable<any> {
     return this.http.delete(`${this.apiUrl}/${groupId}/members/${profileId}`);
   }
+
+  joinGroup(code: string): Observable<any> {
+    return this.http.post(`${this.apiUrl}/join`, { code });
+  }
 }

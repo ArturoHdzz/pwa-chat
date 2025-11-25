@@ -1,6 +1,6 @@
 import { Component, inject, signal, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormBuilder, ReactiveFormsModule, FormsModule, Validators } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { GroupsService } from '../../services/Groups/groups-service';
 import { Group } from '../../models/group.model';
@@ -8,7 +8,7 @@ import { Group } from '../../models/group.model';
 @Component({
   selector: 'app-groups',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterModule],
+  imports: [CommonModule, ReactiveFormsModule, FormsModule, RouterModule],
   templateUrl: './groups.html'
 })
 export class Groups implements OnInit {
@@ -24,6 +24,9 @@ export class Groups implements OnInit {
     description: [''],
     is_class: [true]
   });
+
+  activeForm = signal<'create' | 'join' | null>(null);
+  joinCode = ''; 
 
   ngOnInit() {
     this.loadGroups();
@@ -43,10 +46,13 @@ export class Groups implements OnInit {
     });
   }
 
-  toggleForm() {
-    this.showForm.update(v => !v);
-    if (!this.showForm()) {
+  toggleForm(type: 'create' | 'join' | null) {
+    this.activeForm.set(this.activeForm() === type ? null : type);
+    if (type === 'create') {
       this.groupForm.reset({ is_class: true });
+    }
+    if (type === 'join') {
+      this.joinCode = '';
     }
   }
 
@@ -56,7 +62,7 @@ export class Groups implements OnInit {
       this.groupsService.createGroup(this.groupForm.value as any).subscribe({
         next: (res) => {
           this.groups.update(current => [res.group, ...current]);
-          this.toggleForm(); 
+          this.toggleForm(null); 
           this.isLoading.set(false);
         },
         error: (err) => {
@@ -65,6 +71,30 @@ export class Groups implements OnInit {
         }
       });
     }
+  }
+
+  onJoinSubmit() {
+    if (!this.joinCode.trim()) return;
+    
+    this.isLoading.set(true);
+    this.groupsService.joinGroup(this.joinCode).subscribe({
+      next: (res) => {
+        this.groups.update(current => [res.group, ...current]);
+        this.toggleForm(null);
+        this.isLoading.set(false);
+        alert('¡Te has unido a la clase!');
+      },
+      error: (err) => {
+        console.error(err);
+        this.isLoading.set(false);
+        alert(err.error?.message || 'Error al unirse al grupo');
+      }
+    });
+  }
+  
+  copyCode(code: string) {
+    navigator.clipboard.writeText(code);
+    alert('Código copiado: ' + code);
   }
 
   deleteGroup(id: string) {
