@@ -1,0 +1,71 @@
+<div class="container mx-auto p-4">
+  <div class="mb-6">
+    <a [routerLink]="['/groups', groupId, 'tasks']" class="text-blue-600 hover:underline mb-2 inline-block">← Volver a Tareas</a>
+    
+    <div *ngIf="isLoading()" class="animate-pulse h-8 bg-gray-200 w-1/3 rounded"></div>
+    
+    <div *ngIf="task" class="bg-white p-6 rounded-xl shadow-sm border border-gray-200 mb-6">
+      <h1 class="text-2xl font-bold text-gray-800">{{ task.title }}</h1>
+      <p class="text-gray-600 mt-2">{{ task.description }}</p>
+      <div class="mt-4 text-sm text-gray-500">
+        Vence: <span class="font-medium">{{ task.due_at | date:'medium' }}</span>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="task" class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+    <div class="p-4 border-b border-gray-100 bg-gray-50">
+      <h3 class="font-semibold text-gray-700">Listado de Alumnos</h3>
+    </div>
+    
+    <div class="overflow-x-auto">
+      <table class="w-full text-left">
+        <thead class="bg-gray-50 text-gray-600 text-sm uppercase">
+          <tr>
+            <th class="p-4">Alumno</th>
+            <th class="p-4">Estado</th>
+            <th class="p-4">Entrega</th>
+            <th class="p-4">Calificación (0-100)</th>
+            <th class="p-4">Acciones</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-100">
+          <tr *ngFor="let student of task.assignees" class="hover:bg-gray-50">
+            <td class="p-4 font-medium text-gray-800">{{ student.display_name }}</td>
+            <td class="p-4">
+              <span [ngClass]="{
+                'bg-yellow-100 text-yellow-800': student.pivot.status === 'pending',
+                'bg-blue-100 text-blue-800': student.pivot.status === 'submitted',
+                'bg-green-100 text-green-800': student.pivot.status === 'graded'
+              }" class="px-2 py-1 rounded-full text-xs font-semibold">
+                {{ student.pivot.status === 'pending' ? 'Pendiente' : (student.pivot.status === 'submitted' ? 'Entregado' : 'Calificado') }}
+              </span>
+            </td>
+            <td class="p-4 text-sm text-gray-600">
+              <div *ngIf="student.pivot.submission_content">
+                {{ student.pivot.submission_content }}
+                <div class="text-xs text-gray-400 mt-1">{{ student.pivot.submitted_at | date:'short' }}</div>
+              </div>
+              <span *ngIf="!student.pivot.submission_content" class="text-gray-400 italic">Sin entrega</span>
+            </td>
+            <td class="p-4">
+              <input 
+                type="number" 
+                min="0" 
+                max="100" 
+                [(ngModel)]="student.pivot.grade"
+                class="w-20 p-2 border rounded text-center focus:ring-2 focus:ring-blue-500 outline-none">
+            </td>
+            <td class="p-4">
+              <button 
+                (click)="saveGrade(student)"
+                class="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700 text-sm transition">
+                Guardar
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

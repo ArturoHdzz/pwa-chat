@@ -4,9 +4,7 @@ import { Observable } from 'rxjs';
 import { environment } from '../../../../environments/environment';
 import { Task, CreateTaskRequest } from '../../models/task.model';
 
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable({ providedIn: 'root' })
 export class TasksService {
   private readonly http = inject(HttpClient);
   private readonly apiUrl = `${environment.apiUrl}/groups`;
@@ -21,5 +19,17 @@ export class TasksService {
 
   deleteTask(groupId: string, taskId: string): Observable<any> {
     return this.http.delete(`${this.apiUrl}/${groupId}/tasks/${taskId}`);
+  }
+
+  getTaskDetails(groupId: string, taskId: string): Observable<any> {
+    return this.http.get(`${this.apiUrl}/${groupId}/tasks/${taskId}`);
+  }
+
+  gradeTask(groupId: string, taskId: string, userId: string, grade: number, feedback: string): Observable<any> {
+    return this.http.post(`${this.apiUrl}/${groupId}/tasks/${taskId}/grade`, {
+      user_id: userId,
+      grade,
+      feedback
+    });
   }
 }

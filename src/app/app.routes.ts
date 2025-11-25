@@ -41,6 +41,10 @@ export const routes: Routes = [
                 path: 'groups/:id/tasks',
                 loadComponent: () => import('./shared/components/group-tasks/group-tasks').then(m => m.GroupTasks)
             },
+            {
+                path: 'groups/:id/tasks/:taskId/grading',
+                loadComponent: () => import('./shared/components/task-grading/task-grading').then(m => m.TaskGrading)
+            },
             { path: 'chat', component: Chat },
             { path: '', redirectTo: 'home', pathMatch: 'full' }
         ]
