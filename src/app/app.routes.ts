@@ -54,6 +54,7 @@ export const routes: Routes = [
         canActivate: [authGuard],
         loadComponent: () => import('./shared/components/movil/mobile-shell/mobile-shell').then(m => m.MobileShell),
         children: [
+            
             {
                 path: 'chat',
                 loadComponent: () => import('./shared/components/movil/chat-list/chat-list').then(m => m.ChatList)
@@ -62,6 +63,10 @@ export const routes: Routes = [
                 path: 'chat/:id',
                 loadComponent: () => import('./shared/components/movil/chat/chat').then(m => m.Chat)
             },
+            {
+              path:'users',
+                loadComponent: () => import('./shared/components/movil/users-list/users-list').then(m => m.UsersList)  
+            }
             
         ]
     },

@@ -158,5 +158,11 @@
 }
 
 ion-fab.fab-above-tabs {
-  bottom: 80px; 
+  bottom: 10px; 
+}
+.empty-message {
+  text-align: center;
+  padding: 30px;
+  color: #888;
+  font-size: 1.1rem;
 }

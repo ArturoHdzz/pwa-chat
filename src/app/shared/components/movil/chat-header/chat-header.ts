@@ -72,4 +72,17 @@ export class ChatHeader {
     this.organizationChange.emit(orgId);
   }
 
+
+
+    getUserInitials(): string {
+    const user = this.user;
+    if (!user) return 'U';
+    
+    const firstInitial = user.name?.charAt(0)?.toUpperCase() || '';
+    const lastInitial = user.apellido_paterno?.charAt(0)?.toUpperCase() || '';
+    
+    return `${firstInitial}${lastInitial}` || 'U';
+  }
+
+
 }

@@ -1,0 +1,33 @@
+<app-chat-header
+  [title]="'Chat'"
+  [timeLabel]="'11:15'"
+  [organizations]="organizations()"
+  [selectedOrgId]="selectedOrganizationId()"
+  (organizationChange)="selectOrganization($event)"
+>
+</app-chat-header>
+<ion-content>
+
+  <h2>{{ data?.organization?.name }}</h2>
+
+  <h3>Usuarios</h3>
+  <ion-list>
+    <ion-item *ngFor="let u of data?.users">
+      <ion-label>
+        <h2>{{ u.display_name }}</h2>
+        <p>{{ u.name }} {{ u.apellido_paterno }} {{ u.apellido_materno }}</p>
+      </ion-label>
+    </ion-item>
+  </ion-list>
+
+  <h3>Grupos</h3>
+  <ion-list>
+    <ion-item *ngFor="let g of data?.groups">
+      <ion-label>
+        <h2>{{ g.name }}</h2>
+        <p>{{ g.description }}</p>
+      </ion-label>
+    </ion-item>
+  </ion-list>
+
+</ion-content>

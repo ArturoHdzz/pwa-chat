@@ -6,8 +6,18 @@
   (organizationChange)="selectOrganization($event)"
 >
 </app-chat-header>
+
+
 <ion-content class="chatlist-content">
-  <ion-list>
+
+  <div *ngIf="filteredConversations().length === 0" class="empty-message">
+    Sin conversaciones. ¡Inicia una nueva!
+  </div>
+
+
+
+
+  <ion-list *ngIf="filteredConversations().length > 0">
     <ion-item
       button
       detail

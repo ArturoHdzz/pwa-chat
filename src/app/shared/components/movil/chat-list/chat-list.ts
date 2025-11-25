@@ -127,6 +127,7 @@ private setSelectedOrganization(orgId: string) {
       next: (convs) => {
         const mapped = convs.map((c) => this.mapConversationDto(c));
         this.conversations.set(mapped);
+        console.log('Conversaciones cargadas:', mapped);
       },
       error: (err) => {
         console.error('Error al cargar conversaciones', err);
@@ -187,6 +188,7 @@ private setSelectedOrganization(orgId: string) {
   }
 
   newChat() {
-    console.log('Nuevo chat');
+    const orgId = this.orgService.selectedOrgId();
+    this.router.navigate(['/m/users',orgId]);
   }
 }
