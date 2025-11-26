@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
 import { ActivatedRoute } from '@angular/router';
-
+import { ChatHeader } from '../chat-header/chat-header';
 import { ChatService, ChatMessageDto } from '../../../services/chat/chat-service';
 
 import {
@@ -32,7 +32,8 @@ type ChatMsg = {
     CommonModule,
     FormsModule, IonToolbar,
     IonButton, IonIcon, IonContent, IonFooter, IonItem, IonInput, 
-    IonAvatar
+    IonAvatar,
+    ChatHeader,
   ],
   templateUrl: './chat.html',
   styleUrl: './chat.css'
@@ -118,5 +119,8 @@ export class Chat implements OnInit {
         image: photo
       }
     ]);
+  }
+ onOrgChange(orgId: string) {
+
   }
 }

@@ -10,6 +10,7 @@ export interface User {
   created_at?: string;
   updated_at?: string;
   display_name?: string;
+  profile_id?: string;
 }
 
 export interface CreateUserRequest {

@@ -1,6 +1,7 @@
 // src/app/chat/chat.service.ts
 import { Injectable, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { Observable } from 'rxjs';
 import { environment } from '../../../../environments/environment';
 export type ChatMessageDto = {
   id: string;
@@ -23,6 +24,7 @@ export type ConversationDto = {
     name: string;
     apellido_paterno: string;
     apellido_materno: string;
+    
   };
 
   group?: {
@@ -49,9 +51,19 @@ export class ChatService {
     });
   }
 
-  postconversation(other_profile_id: string) {
-    return this.http.post<ChatMessageDto>(`${this.api}/conversations/dm`, { other_profile_id });
+  startConversation(participants: (string)[]): Observable<ConversationDto> {
+    return this.http.post<ConversationDto>(`${this.api}/conversations/dm`, {
+      participants,
+    });
   }
+
+
+  startGroupConversation(groupId: string | number): Observable<ConversationDto> {
+    return this.http.post<ConversationDto>(`${this.api}/conversations/group`, {
+      group_id: groupId,
+    });
+  }
+
 
   loadMessages(conversationId: string) {
     this.http

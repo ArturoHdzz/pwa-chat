@@ -66,8 +66,11 @@ export const routes: Routes = [
             {
               path:'users/:orgId',
                 loadComponent: () => import('./shared/components/movil/users-list/users-list').then(m => m.UsersList)  
-            }
-            
+            },
+            {
+                path:'tasks',
+                  loadComponent: () => import('./shared/components/movil/tasks/tasks').then(m => m.Tasks)  
+            }            
         ]
     },
     { path: '**', redirectTo: 'login', pathMatch: 'full' }

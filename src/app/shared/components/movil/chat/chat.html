@@ -1,32 +1,10 @@
-<!-- <ion-header>
-  <ion-toolbar class="chat-toolbar">
-    <ion-buttons slot="start">
-      <ion-back-button
-        defaultHref="/"
-        text=""
-        icon="chevron-back-outline">
-      </ion-back-button>
-    </ion-buttons>
+<app-chat-header
+  [title]="'Chat'"
+  [timeLabel]="'11:15'"
+  (organizationChange)="onOrgChange($event)"
+>
+</app-chat-header>
 
-    <ion-title>
-      <div class="chat-header-title">
-
-      <div class="titles">
-          <span class="title-sub">Canal de proyecto</span>
-        </div>
-      </div>
-    </ion-title>
-
-    <ion-buttons slot="end">
-      <ion-button fill="clear" aria-label="Buscar">
-        <ion-icon name="search-outline"></ion-icon>
-      </ion-button>
-      <ion-button fill="clear" aria-label="Más opciones">
-        <ion-icon name="ellipsis-vertical"></ion-icon>
-      </ion-button>
-    </ion-buttons>
-  </ion-toolbar>
-</ion-header> -->
 <div class="chat-wrapper">
   <ion-content class="chat-content">
     <div class="day-divider">

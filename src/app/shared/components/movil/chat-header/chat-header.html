@@ -100,22 +100,21 @@
         </div>
 
 
-      <ion-item *ngIf="organizations?.length">
-        <ion-label>Organización</ion-label>
-        <ion-select
-          [value]="selectedOrgId"
-          interface="popover"
-          placeholder="Selecciona organización"
-          (ionChange)="onOrgSelect($event.detail.value)"
-        >
-          <ion-select-option
-            *ngFor="let org of organizations"
-            [value]="org.id"
-          >
-            {{ org.name }}
-          </ion-select-option>
-        </ion-select>
-      </ion-item>
+     <ion-item>
+  <ion-label>Organizacion</ion-label>
+  <ion-select
+    [value]="selectedOrgId()"
+    (ionChange)="onOrgSelect($event.detail.value)"
+  >
+    <ion-select-option
+      *ngFor="let org of organizations()"
+      [value]="org.id"
+    >
+      {{ org.name }}
+    </ion-select-option>
+  </ion-select>
+</ion-item>
+
     </ion-content>
   </ng-template>
 </ion-modal>

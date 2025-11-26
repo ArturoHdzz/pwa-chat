@@ -1,9 +1,7 @@
 <app-chat-header
   [title]="'Chat'"
   [timeLabel]="'11:15'"
-  [organizations]="organizations()"
-  [selectedOrgId]="selectedOrganizationId()"
-  (organizationChange)="selectOrganization($event)"
+  (organizationChange)="onOrgChange($event)"
 >
 </app-chat-header>
 

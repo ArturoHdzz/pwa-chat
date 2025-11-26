@@ -78,47 +78,13 @@ export class ChatList implements OnInit {
   });
 
   ngOnInit() {
-    this.loadOrganizations();
+    
   }
-private loadOrganizations() {
-  const storedOrgId = localStorage.getItem(ORG_STORAGE_KEY);
-
-  this.orgService.getOrganizations().subscribe({
-    next: (orgs) => {
-      this.organizations.set(orgs);
-      console.log('Organizaciones cargadas:', orgs);
-      localStorage.setItem('organizations', JSON.stringify(orgs));
-
-      if (orgs.length === 0) {
-        return;
-      }
- const existingStored: OrganizationDto | undefined = storedOrgId
-        ? orgs.find((o) => o.id === storedOrgId)
-        : undefined;
-
-      const orgIdToUse = existingStored?.id ?? orgs[0].id;
-
-      this.setSelectedOrganization(orgIdToUse);
-    },
-    error: (err) => {
-      console.error('Error al cargar organizaciones', err);
-    },
-  });
-}
 
 
-
-selectOrganization(orgId: string) {
-  this.setSelectedOrganization(orgId);
-}
-
-private setSelectedOrganization(orgId: string) {
-  this.selectedOrganizationId.set(orgId);
-  localStorage.setItem(ORG_STORAGE_KEY, orgId);
-  this.orgService.setSelected(orgId);   
-  this.loadConversations(orgId);
-}
-
+  onOrgChange(orgId: string) {
+    this.loadConversations(orgId);
+  }
 
 
 
