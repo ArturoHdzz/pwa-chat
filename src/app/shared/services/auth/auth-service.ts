@@ -17,7 +17,7 @@ export interface LoginResponse {
     profile?: {
       id: string;
       display_name: string;
-      role: 'jefe' | 'profesor';
+      role: 'jefe' | 'profesor' | 'Alumno' | 'User'; 
       organization: {
         id: string;
         name: string;
@@ -34,8 +34,9 @@ export interface RegisterRequest {
   email: string;
   telefono: string;
   password: string;
-  organization_name: string;
   role: 'jefe' | 'profesor';
+  organization_name?: string;
+  organization_code?: string;
 }
 
 @Injectable({

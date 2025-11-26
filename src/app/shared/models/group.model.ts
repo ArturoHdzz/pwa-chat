@@ -6,6 +6,7 @@ export interface Group {
   is_class: boolean;
   created_at?: string;
   updated_at?: string;
+  code?: string;
 }
 
 export interface CreateGroupRequest {
