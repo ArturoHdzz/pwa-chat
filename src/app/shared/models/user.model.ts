@@ -9,6 +9,7 @@ export interface User {
   ultimo_login?: string;
   created_at?: string;
   updated_at?: string;
+  display_name?: string;
 }
 
 export interface CreateUserRequest {

@@ -2,20 +2,21 @@
 import {
   Component,
   signal,
-  computed,
+
   inject,
-  OnInit,
+
 } from '@angular/core';
+import { NgFor } from '@angular/common';
+import { CommonModule } from '@angular/common';
+
 import {
   IonContent,
   IonItem,
   IonAvatar,
   IonLabel,
-  IonBadge,
+
   IonList,
-  IonIcon,
-  IonFabButton,
-  IonFab
+
 } from '@ionic/angular/standalone';
 
 import { ActivatedRoute } from '@angular/router';
@@ -30,7 +31,8 @@ const ORG_STORAGE_KEY = 'selectedOrganizationId';
   IonContent,
   IonList,
   IonItem,
-
+  CommonModule,
+NgFor,
   IonLabel,
   ],
   templateUrl: './users-list.html',

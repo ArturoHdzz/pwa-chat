@@ -64,7 +64,7 @@ export const routes: Routes = [
                 loadComponent: () => import('./shared/components/movil/chat/chat').then(m => m.Chat)
             },
             {
-              path:'users',
+              path:'users/:orgId',
                 loadComponent: () => import('./shared/components/movil/users-list/users-list').then(m => m.UsersList)  
             }
             
