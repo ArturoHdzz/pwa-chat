@@ -18,6 +18,7 @@ import {
   IonBadge,
   IonList,
   IonIcon,
+  IonModal,
   IonFabButton,
   IonFab
 } from '@ionic/angular/standalone';
@@ -54,6 +55,7 @@ const ORG_STORAGE_KEY = 'selectedOrganizationId';
     IonBadge,
     IonList,
     IonFab,
+    IonModal,
     ChatHeader,
   ],
   templateUrl: './chat-list.html',
@@ -64,6 +66,8 @@ export class ChatList implements OnInit {
   isLoading = signal(true);
   private chatService = inject(ChatService);
   private orgService = inject(Organizations);
+  errorOpen = signal(false);
+  errorMessage = signal<string | null>(null);
   currentOrgId = this.orgService.selectedOrgId;
   filter = signal<'recent' | 'unread' | 'mentions' | 'conversations'>('recent');
 
@@ -79,7 +83,10 @@ export class ChatList implements OnInit {
     }
     return list;
   });
-
+ showError(msg: string) {
+    this.errorMessage.set(msg);
+    this.errorOpen.set(true);
+  }
   ngOnInit() {
     
   }
@@ -100,6 +107,7 @@ export class ChatList implements OnInit {
       },
       error: (err) => {
         console.error('Error al cargar conversaciones', err);
+        this.showError(err instanceof Error ? err.message : 'Error al cargar conversaciones.');
       },
     });
   }

@@ -24,6 +24,7 @@ import {
   atOutline,
   personCircleOutline,
   addOutline,
+  
   createOutline
 } from 'ionicons/icons';
 import { App } from './app/app';

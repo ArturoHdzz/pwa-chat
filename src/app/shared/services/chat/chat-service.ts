@@ -1,7 +1,8 @@
 // src/app/chat/chat.service.ts
 import { Injectable, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { tap } from 'rxjs/operators';
+import { Observable } from 'rxjs'
 import { environment } from '../../../../environments/environment';
 export type ChatMessageDto = {
   id: string;
@@ -65,20 +66,29 @@ export class ChatService {
   }
 
 
-  loadMessages(conversationId: string) {
-    this.http
-       .get<{ data: ChatMessageDto[] }>(`${this.api}/conversations/${conversationId}/messages`)
-        .subscribe(res => {
-        this.messages.set(res.data ?? []);
-      });
+  loadMessages(conversationId: string): Observable<{ data: ChatMessageDto[] }> {
+    return this.http
+      .get<{ data: ChatMessageDto[] }>(
+        `${this.api}/conversations/${conversationId}/messages`
+      )
+      .pipe(
+        tap((res) => {
+          this.messages.set(res.data ?? []);
+        })
+      );
   }
 
-  sendMessage(conversationId: string, body: string) {
+  sendMessage(conversationId: string, body: string): Observable<ChatMessageDto> {
     return this.http
-      .post<ChatMessageDto>(`${this.api}/conversations/${conversationId}/messages`, { body })
-      .subscribe(msg => {
-        this.messages.update(arr => [...arr, msg]);
-      });
+      .post<ChatMessageDto>(
+        `${this.api}/conversations/${conversationId}/messages`,
+        { body }
+      )
+      .pipe(
+        tap((msg) => {
+          this.messages.update((arr) => [...arr, msg]);
+        })
+      );
   }
 
 }
