@@ -42,6 +42,10 @@ export const routes: Routes = [
                 loadComponent: () => import('./shared/components/task-grading/task-grading').then(m => m.TaskGrading)
             },
             {
+                path: 'tasks/individual',
+                loadComponent: () => import('./shared/components/individual-tasks/individual-tasks').then(m => m.IndividualTasks)
+            },
+            {
                 path: 'dashboard',
                 loadComponent: () => import('./shared/components/dashboard/dashboard').then(m => m.Dashboard)
             },
@@ -70,7 +74,7 @@ export const routes: Routes = [
             {
                 path:'tasks',
                   loadComponent: () => import('./shared/components/movil/tasks/tasks').then(m => m.Tasks)  
-            }            
+            }
         ]
     },
     { path: '**', redirectTo: 'login', pathMatch: 'full' }
