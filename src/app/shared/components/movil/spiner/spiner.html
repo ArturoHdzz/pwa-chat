@@ -1,0 +1,40 @@
+<!-- Solo se muestra cuando show = true -->
+<div
+  *ngIf="show"
+  class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 backdrop-blur-sm"
+>
+
+  <div class="bg-white rounded-3xl shadow-xl px-8 py-6 flex flex-col items-center gap-4">
+
+    <!-- Contenedor del logo + anillo -->
+    <div class="relative h-16 w-16">
+
+      <!-- Anillo de fondo -->
+      <div
+        class="absolute inset-0 rounded-full border-[3px] border-slate-100"
+      ></div>
+
+      <!-- Anillo animado -->
+      <div
+        class="absolute inset-0 rounded-full border-[3px] border-emerald-500 border-t-transparent spin-slow"
+      ></div>
+
+      <!-- Logo empresarial -->
+      <img
+        src="icons/maskable_icon.png" 
+        alt="Logo"
+        class="absolute inset-2 w-auto h-auto object-contain float-soft"
+      />
+    </div>
+
+    <!-- Mensaje principal -->
+    <p class="text-sm font-medium text-slate-800 text-center">
+      {{ message }}
+    </p>
+
+    <!-- Subtítulo / branding opcional -->
+    <p class="text-[11px] text-slate-400 tracking-wide uppercase">
+      Enterprise Flow
+    </p>
+  </div>
+</div>

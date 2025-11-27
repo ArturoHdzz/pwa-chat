@@ -4,7 +4,7 @@
   (organizationChange)="onOrgChange($event)"
 >
 </app-chat-header>
-
+<app-spiner [show]="isLoading()" message="Cargando conversaciones..."></app-spiner>
 
 <ion-content class="chatlist-content">
 

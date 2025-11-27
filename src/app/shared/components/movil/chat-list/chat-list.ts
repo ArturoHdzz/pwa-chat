@@ -6,6 +6,7 @@ import {
   inject,
   OnInit,
 } from '@angular/core';
+import { Spiner } from '../spiner/spiner';
 import { ChatHeader } from '../chat-header/chat-header';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
@@ -44,6 +45,7 @@ const ORG_STORAGE_KEY = 'selectedOrganizationId';
   imports: [
     CommonModule,
     IonContent,
+    Spiner,
     IonItem,
     IonIcon,
     IonAvatar,
@@ -59,6 +61,7 @@ const ORG_STORAGE_KEY = 'selectedOrganizationId';
 })
 export class ChatList implements OnInit {
   private router = inject(Router);
+  isLoading = signal(true);
   private chatService = inject(ChatService);
   private orgService = inject(Organizations);
   currentOrgId = this.orgService.selectedOrgId;
@@ -124,6 +127,7 @@ export class ChatList implements OnInit {
     const lastFromMe = dto.last_from_me;
     const lastDateLabel = dto.last_date;
     const initials = this.getInitials(name);
+     this.isLoading.set(false);
 
     return {
       id: dto.id,

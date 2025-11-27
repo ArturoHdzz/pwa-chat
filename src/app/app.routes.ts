@@ -74,6 +74,10 @@ export const routes: Routes = [
             {
                 path:'tasks',
                   loadComponent: () => import('./shared/components/movil/tasks/tasks').then(m => m.Tasks)  
+            },
+            {
+                path:'calendar',
+                    loadComponent: () => import('./shared/components/movil/calendar/calendar').then(m => m.Calendar)
             }
         ]
     },

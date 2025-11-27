@@ -1,6 +1,95 @@
 <app-chat-header
-  [title]="'Chat'"
+  [title]="'Tareas'"
   [timeLabel]="'11:15'"
   (organizationChange)="onOrgChange($event)"
 >
 </app-chat-header>
+
+<app-spiner [show]="isLoading()" message="Cargando tareas..."></app-spiner>
+
+
+<ion-content class="bg-gray-100">
+
+  <div class="px-4 pt-1 pb-20">
+
+    <h3 class="text-xl font-semibold text-gray-900 mb-1">
+      Mis tareas
+    </h3>
+    <p class="text-xs text-gray-500 mb-4">
+      Aquí puedes ver tus tareas asignadas, fechas de entrega y calificaciones.
+    </p>
+
+    <!-- Si no hay tareas -->
+    <div
+      *ngIf="tasks().length === 0"
+      class="mt-8 text-center text-sm text-gray-500"
+    >
+      No tienes tareas asignadas por el momento.
+    </div>
+
+    <!-- Lista de tareas -->
+    <div
+      *ngFor="let t of tasks()"
+      class="bg-white rounded-2xl shadow-sm p-4 mb-3 border border-gray-100"
+    >
+      <!-- Header de la tarjeta -->
+      <div class="flex items-start justify-between gap-2">
+        <div>
+          <h2 class="text-[15px] font-semibold text-gray-900 leading-snug">
+            {{ t.title }}
+          </h2>
+          <p class="text-xs text-gray-500 mt-1">
+            {{ t.group?.name || 'Tarea individual' }}
+          </p>
+        </div>
+
+        <!-- Estado de mi tarea -->
+        <span
+          class="inline-flex items-center rounded-full px-2.5 py-0.5 text-[11px] font-medium"
+          [ngClass]="getStatusColor(t.my_status || '')"
+        >
+          {{ t.my_status | titlecase }}
+        </span>
+      </div>
+
+      <!-- Descripción -->
+      <p
+        class="text-[13px] text-gray-600 mt-3 line-clamp-2"
+        *ngIf="t.description"
+      >
+        {{ t.description }}
+      </p>
+
+      <!-- Footer con fecha y calificación -->
+      <div class="mt-3 flex items-center justify-between text-[11px] text-gray-500">
+        <!-- Fecha de entrega -->
+        <div class="flex items-center gap-1.5">
+          <span class="inline-block h-2 w-2 rounded-full bg-amber-400"></span>
+          <span class="font-medium">
+            Entrega:
+          </span>
+          <span>
+            {{ t.due_at | date: 'short' }}
+          </span>
+        </div>
+
+        <!-- Calificación -->
+        <div *ngIf="t.my_grade !== null" class="flex items-center gap-1">
+          <span class="text-gray-400">Calificación:</span>
+          <span
+            class="px-2 py-0.5 rounded-full text-[11px] font-semibold"
+            [ngClass]="
+              (t.my_grade ?? 0) >= 70
+                ? 'bg-emerald-100 text-emerald-700'
+                : 'bg-rose-100 text-rose-700'
+            "
+          >
+            {{ t.my_grade }}/100
+          </span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+</ion-content>

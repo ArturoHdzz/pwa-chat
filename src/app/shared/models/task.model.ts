@@ -10,6 +10,13 @@ export interface Task {
   created_at: string;
   updated_at?: string;
   assignees_count?: number;
+  group?: {
+    id: string;
+    name: string;
+  };
+  my_status?: 'pending' | 'in_progress' | 'completed';
+  my_grade?: number;
+  
 }
 
 export interface CreateTaskRequest {

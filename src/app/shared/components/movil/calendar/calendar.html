@@ -1,0 +1,170 @@
+<app-chat-header
+  [title]="'Calendario'"
+  [timeLabel]="'11:15'"
+  (organizationChange)="onOrgChange($event)"  
+></app-chat-header>
+<app-spiner [show]="isLoading()" message="Cargando calendario..."></app-spiner>
+<ion-content class="bg-gray-100">
+
+  <div class="px-4 pt-4 pb-24">
+
+    <!-- Header del mes -->
+    <div class="flex items-center justify-between mb-4">
+      <button
+        type="button"
+        class="h-8 w-8 rounded-full flex items-center justify-center bg-white shadow-sm active:bg-gray-50"
+        (click)="prevMonth()"
+      >
+        <span class="text-gray-500 text-lg">‹</span>
+      </button>
+
+      <div class="text-center">
+        <p class="text-sm font-semibold text-gray-900">
+          {{ currentMonth() | date: 'MMMM yyyy' }}
+        </p>
+        <p class="text-[11px] text-gray-500">
+          Mis tareas
+        </p>
+      </div>
+
+      <button
+        type="button"
+        class="h-8 w-8 rounded-full flex items-center justify-center bg-white shadow-sm active:bg-gray-50"
+        (click)="nextMonth()"
+      >
+        <span class="text-gray-500 text-lg">›</span>
+      </button>
+    </div>
+
+    <!-- Encabezado días de la semana -->
+    <div class="grid grid-cols-7 text-center text-[11px] font-medium text-gray-400 mb-1">
+      <div *ngFor="let d of weekdayLabels">
+        {{ d }}
+      </div>
+    </div>
+
+    <!-- Calendario -->
+    <div class="bg-white rounded-2xl shadow-sm p-2">
+      <div class="grid grid-cols-7 gap-y-1 text-center">
+        <ng-container *ngFor="let week of weeks()">
+          <ng-container *ngFor="let day of week">
+            <button
+              type="button"
+              class="relative flex flex-col items-center justify-center py-1"
+              (click)="selectDay(day)"
+            >
+              <!-- círculo del día -->
+              <div
+            class="h-8 w-8 flex items-center justify-center rounded-full text-[13px]"
+            [ngClass]="{
+
+                'bg-emerald-600 text-white font-semibold':
+                (selectedDay()?.date?.toDateString?.() ?? '') === day.date.toDateString(),
+
+
+                'bg-emerald-800 text-white font-semibold':
+                (selectedDay()?.date?.toDateString?.() ?? '') !== day.date.toDateString()
+                && day.hasDueTask,
+
+
+                'border border-emerald-500 text-emerald-700 font-semibold':
+                !day.hasDueTask &&
+                (!selectedDay() ||
+                    (selectedDay()?.date?.toDateString() !== day.date.toDateString() && day.isToday)),
+
+
+                'text-gray-900': !day.isToday && day.isCurrentMonth && !day.hasDueTask,
+                'text-gray-300': !day.isCurrentMonth && !day.hasDueTask
+            }"
+                >
+                {{ day.date.getDate() }}
+                </div>
+
+
+              <!-- barra o indicador si hay tareas en el rango created_at -> due_at -->
+              <div class="mt-0.5 h-1 w-7 rounded-full"
+                [ngClass]="{
+                  'bg-emerald-300': day.tasks.length > 0,
+                  'bg-transparent': day.tasks.length === 0
+                }"
+              ></div>
+            </button>
+          </ng-container>
+        </ng-container>
+      </div>
+    </div>
+
+    <!-- Tareas del día seleccionado -->
+    <div class="mt-5">
+      <h2 class="text-sm font-semibold text-gray-800 mb-2">
+        Tareas para {{ selectedDay()?.date | date: 'EEEE d \'de\' MMMM' }}
+      </h2>
+
+      <div
+        *ngIf="selectedDayTasks.length === 0"
+        class="text-xs text-gray-500"
+      >
+        No tienes tareas para este día.
+      </div>
+
+      <div
+        *ngFor="let t of selectedDayTasks"
+        class="mt-2 bg-white rounded-2xl shadow-sm p-3 border border-gray-100"
+      >
+        <div class="flex items-start justify-between gap-2">
+          <div>
+            <p class="text-[14px] font-semibold text-gray-900 leading-snug">
+              {{ t.title }}
+            </p>
+            <p class="text-[11px] text-gray-500 mt-0.5">
+              {{ t.group?.name || 'Tarea individual' }}
+            </p>
+          </div>
+
+          <span
+            class="inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-medium"
+            [ngClass]="
+              t.my_status === 'completed'
+                ? 'bg-emerald-100 text-emerald-700'
+                : t.my_status === 'pending'
+                ? 'bg-amber-100 text-amber-700'
+                : 'bg-gray-100 text-gray-700'
+            "
+          >
+            {{ t.my_status | titlecase }}
+          </span>
+        </div>
+
+        <p
+          *ngIf="t.description"
+          class="mt-2 text-[12px] text-gray-600 line-clamp-2"
+        >
+          {{ t.description }}
+        </p>
+
+        <div class="mt-2 flex items-center justify-between text-[11px] text-gray-500">
+          <div class="flex items-center gap-1.5">
+            <span class="inline-block h-2 w-2 rounded-full bg-amber-400"></span>
+            <span>Entrega: {{ t.due_at | date: 'short' }}</span>
+          </div>
+
+          <div *ngIf="t.my_grade != null" class="flex items-center gap-1">
+            <span>Calificación:</span>
+            <span
+              class="px-2 py-0.5 rounded-full text-[10px] font-semibold"
+              [ngClass]="
+                t.my_grade >= 70
+                  ? 'bg-emerald-100 text-emerald-700'
+                  : 'bg-rose-100 text-rose-700'
+              "
+            >
+              {{ t.my_grade }}/100
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+</ion-content>
