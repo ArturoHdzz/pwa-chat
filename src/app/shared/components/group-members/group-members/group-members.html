@@ -1,60 +1,78 @@
 <div class="container mx-auto p-4">
-      <div class="mb-6">
-        <a [routerLink]="['/groups', groupId]" class="text-blue-600 hover:underline mb-4 inline-block">← Volver al Grupo</a>
-        <h2 class="text-2xl font-bold text-gray-800">Gestionar Miembros</h2>
-      </div>
+  <div class="mb-6">
+    <a [routerLink]="['/groups', groupId]" class="text-blue-600 hover:underline mb-4 inline-block">← Volver al Grupo</a>
+    <h2 class="text-2xl font-bold text-gray-800">Gestionar Miembros</h2>
+  </div>
 
-      <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        
-        <div class="bg-white rounded-lg shadow p-6">
-          <h3 class="text-lg font-semibold mb-4 text-blue-800">Miembros del Grupo ({{ members().length }})</h3>
-          
-          <div *ngIf="members().length === 0" class="text-gray-500 italic">No hay miembros aún.</div>
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+    
+    <div class="bg-white rounded-lg shadow p-6">
+      <h3 class="text-lg font-semibold mb-4 text-blue-800">Miembros del Grupo ({{ members().length }})</h3>
+      
+      <div *ngIf="members().length === 0" class="text-gray-500 italic">No hay miembros aún.</div>
 
-          <ul class="divide-y divide-gray-100">
-            <li *ngFor="let member of members()" class="py-3 flex justify-between items-center">
-              <div>
+      <ul class="divide-y divide-gray-100">
+        <li *ngFor="let member of members()" class="py-3 flex justify-between items-center">
+          <div class="flex items-center gap-3">
+            <div>
+              <div class="flex items-center gap-2">
                 <p class="font-medium text-gray-800">{{ member.display_name }}</p>
-                <p class="text-xs text-gray-500">{{ member.email }}</p>
+                <span *ngIf="member.group_role === 'leader'" 
+                      class="bg-yellow-100 text-yellow-800 text-xs px-2 py-0.5 rounded-full font-semibold">
+                  Líder
+                </span>
+                <span *ngIf="member.group_role === 'admin'" 
+                      class="bg-purple-100 text-purple-800 text-xs px-2 py-0.5 rounded-full font-semibold">
+                  Admin
+                </span>
               </div>
-              <button (click)="removeMember(member.profile_id)" class="text-red-500 hover:bg-red-50 p-2 rounded text-sm">
-                Eliminar
-              </button>
-            </li>
-          </ul>
-        </div>
-
-        <div class="bg-white rounded-lg shadow p-6">
-          <h3 class="text-lg font-semibold mb-4 text-green-800">Agregar Usuarios</h3>
-          
-          <div class="mb-4">
-            <input 
-              type="text" 
-              [(ngModel)]="searchTerm"
-              placeholder="Buscar por nombre o correo..." 
-              class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
+              <p class="text-xs text-gray-500">{{ member.email }}</p>
+            </div>
           </div>
-
-          <div *ngIf="searchTerm.trim() === ''" class="text-center py-8 text-gray-400">
-            <p>Empieza a escribir para buscar usuarios...</p>
-          </div>
-
-          <div *ngIf="searchTerm.trim() !== '' && filteredAvailable().length === 0" class="text-gray-500 italic text-center py-4">
-            No se encontraron usuarios con ese nombre o correo.
-          </div>
-
-          <ul class="divide-y divide-gray-100 max-h-[400px] overflow-y-auto">
-            <li *ngFor="let user of filteredAvailable()" class="py-3 flex justify-between items-center animate-fade-in">
-              <div>
-                <p class="font-medium text-gray-800">{{ user.display_name }}</p>
-                <p class="text-xs text-gray-500">{{ user.email }}</p>
-              </div>
-              <button (click)="addMember(user.profile_id)" class="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700 text-sm">
-                Agregar +
-              </button>
-            </li>
-          </ul>
-        </div>
-
-      </div>
+          <button 
+            *ngIf="member.group_role !== 'leader'"
+            (click)="removeMember(member.profile_id)" 
+            class="text-red-500 hover:bg-red-50 p-2 rounded text-sm">
+            Eliminar
+          </button>
+          <span *ngIf="member.group_role === 'leader'" class="text-gray-400 text-xs italic">
+            No se puede eliminar
+          </span>
+        </li>
+      </ul>
     </div>
+
+    <div class="bg-white rounded-lg shadow p-6">
+      <h3 class="text-lg font-semibold mb-4 text-green-800">Agregar Usuarios</h3>
+      
+      <div class="mb-4">
+        <input 
+          type="text" 
+          [(ngModel)]="searchTerm"
+          placeholder="Buscar por nombre o correo..." 
+          class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
+      </div>
+
+      <div *ngIf="searchTerm.trim() === ''" class="text-center py-8 text-gray-400">
+        <p>Empieza a escribir para buscar usuarios...</p>
+      </div>
+
+      <div *ngIf="searchTerm.trim() !== '' && filteredAvailable().length === 0" class="text-gray-500 italic text-center py-4">
+        No se encontraron usuarios con ese nombre o correo.
+      </div>
+
+      <ul class="divide-y divide-gray-100 max-h-[400px] overflow-y-auto">
+        <li *ngFor="let user of filteredAvailable()" class="py-3 flex justify-between items-center animate-fade-in">
+          <div>
+            <p class="font-medium text-gray-800">{{ user.display_name }}</p>
+            <p class="text-xs text-gray-500">{{ user.email }}</p>
+          </div>
+          <button (click)="addMember(user.profile_id)" class="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700 text-sm">
+            Agregar +
+          </button>
+        </li>
+      </ul>
+    </div>
+
+  </div>
+</div>
