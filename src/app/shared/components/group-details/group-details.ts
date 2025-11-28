@@ -3,11 +3,12 @@ import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { GroupsService } from '../../services/Groups/groups-service';
 import { Group } from '../../../shared/models/group.model';
+import { Spiner } from '../movil/spiner/spiner'; 
 
 @Component({
   selector: 'app-group-details',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, Spiner], 
   templateUrl: './group-details.html'
 })
 export class GroupDetails implements OnInit {

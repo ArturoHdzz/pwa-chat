@@ -4,11 +4,12 @@ import { FormBuilder, ReactiveFormsModule, FormsModule, Validators } from '@angu
 import { RouterModule } from '@angular/router';
 import { GroupsService } from '../../services/Groups/groups-service';
 import { Group } from '../../models/group.model';
+import { Spiner } from '../movil/spiner/spiner'; 
 
 @Component({
   selector: 'app-groups',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, FormsModule, RouterModule],
+  imports: [CommonModule, ReactiveFormsModule, FormsModule, RouterModule, Spiner],
   templateUrl: './groups.html'
 })
 export class Groups implements OnInit {

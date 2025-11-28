@@ -5,11 +5,12 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { TasksService } from '../../services/tasks/tasks-service';
 import { GroupsService } from '../../services/Groups/groups-service';
 import { Task } from '../../models/task.model';
+import { Spiner } from '../movil/spiner/spiner'; 
 
 @Component({
   selector: 'app-group-tasks',
   standalone: true,
-  imports: [CommonModule, RouterModule, ReactiveFormsModule],
+  imports: [CommonModule, RouterModule, ReactiveFormsModule, Spiner],
   templateUrl: './group-tasks.html'
 })
 export class GroupTasks implements OnInit {

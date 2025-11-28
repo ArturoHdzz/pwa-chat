@@ -3,11 +3,12 @@ import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { TasksService } from '../../services/tasks/tasks-service';
+import { Spiner } from '../movil/spiner/spiner';
 
 @Component({
   selector: 'app-task-grading',
   standalone: true,
-  imports: [CommonModule, RouterModule, FormsModule],
+  imports: [CommonModule, RouterModule, FormsModule, Spiner],
   templateUrl: './task-grading.html'
 })
 export class TaskGrading implements OnInit {

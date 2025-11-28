@@ -3,11 +3,12 @@ import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { GroupsService } from '../../../services/Groups/groups-service';
 import { FormsModule } from '@angular/forms';
+import { Spiner } from '../../movil/spiner/spiner'; 
 
 @Component({
   selector: 'app-group-members',
   standalone: true,
-  imports: [CommonModule, RouterModule, FormsModule],
+  imports: [CommonModule, RouterModule, FormsModule, Spiner], 
   templateUrl: './group-members.html'
 })
 export class GroupMembers implements OnInit {
@@ -18,6 +19,7 @@ export class GroupMembers implements OnInit {
   members = signal<any[]>([]);
   availableUsers = signal<any[]>([]);
   searchTerm: string = '';
+  isLoading = signal(false);
 
   ngOnInit() {
     this.groupId = this.route.snapshot.paramMap.get('id') || '';
@@ -27,8 +29,20 @@ export class GroupMembers implements OnInit {
   }
 
   loadData() {
-    this.groupsService.getGroupMembers(this.groupId).subscribe((data: any[]) => this.members.set(data));
-    this.groupsService.getAvailableUsers(this.groupId).subscribe((data: any[]) => this.availableUsers.set(data));
+    this.isLoading.set(true); 
+    this.groupsService.getGroupMembers(this.groupId).subscribe({
+      next: (data: any[]) => {
+        this.members.set(data);
+        this.groupsService.getAvailableUsers(this.groupId).subscribe({
+          next: (available: any[]) => {
+            this.availableUsers.set(available);
+            this.isLoading.set(false);
+          },
+          error: () => this.isLoading.set(false)
+        });
+      },
+      error: () => this.isLoading.set(false)
+    });
   }
 
   filteredAvailable() {

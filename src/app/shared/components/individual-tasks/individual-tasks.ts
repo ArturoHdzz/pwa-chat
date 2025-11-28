@@ -6,11 +6,12 @@ import { TasksService, CreateIndividualTaskRequest } from '../../services/tasks/
 import { Task } from '../../models/task.model';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../../environments/environment';
+import { Spiner } from '../movil/spiner/spiner';
 
 @Component({
   selector: 'app-individual-tasks',
   standalone: true,
-  imports: [CommonModule, RouterModule, ReactiveFormsModule],
+  imports: [CommonModule, RouterModule, ReactiveFormsModule, Spiner],
   templateUrl: './individual-tasks.html'
 })
 export class IndividualTasks implements OnInit {
