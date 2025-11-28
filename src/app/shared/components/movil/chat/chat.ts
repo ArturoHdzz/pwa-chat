@@ -6,6 +6,7 @@ import { ActivatedRoute } from '@angular/router';
 import { ChatHeader } from '../chat-header/chat-header';
 import { ChatService, ChatMessageDto } from '../../../services/chat/chat-service';
 import { Spiner } from '../spiner/spiner';
+import { Push } from '../../../services/chat/push';
 import {
   IonToolbar,
   IonButton,
@@ -63,8 +64,21 @@ isLoading = signal(true);
       avatar: m.is_me ? this.myAvatar : this.defaultAvatar
     }))
   );
-
+constructor(private pushService: Push) {}
  ngOnInit() {
+   if ('Notification' in window && 'serviceWorker' in navigator) {
+    this.pushService.requestPermissionAndSubscribe();
+  }
+   if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.addEventListener('message', (event: any) => {
+      if (event.data?.type === 'NEW_MESSAGE') {
+        const convId = event.data.conversation_id;
+        if (convId === this.conversationId) {
+          this.chatService.loadMessages(convId).subscribe();
+        }
+      }
+    });
+  }
   if (this.conversationId) {
     this.chatService.loadMessages(this.conversationId).subscribe({
       next: () => {
