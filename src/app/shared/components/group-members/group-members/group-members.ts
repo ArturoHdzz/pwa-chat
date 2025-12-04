@@ -24,9 +24,18 @@ export class GroupMembers implements OnInit {
   availableUsers = signal<any[]>([]);
   searchTerm: string = '';
   isLoading = signal(true);
+  
+  currentUserId: string = '';
 
   ngOnInit() {
     this.groupId = this.route.snapshot.paramMap.get('id') || '';
+    
+    const userStr = localStorage.getItem('user');
+    if (userStr) {
+      const user = JSON.parse(userStr);
+      this.currentUserId = user.profile?.id || user.profile_id || '';
+    }
+
     if (this.groupId) {
       this.loadData();
     }
@@ -89,6 +98,8 @@ export class GroupMembers implements OnInit {
   }
 
   messageMember(profileId: string) {
+    if (profileId === this.currentUserId) return;
+
     this.isLoading.set(true);
     this.chatService.startConversation([profileId]).subscribe({
       next: (conv) => {
