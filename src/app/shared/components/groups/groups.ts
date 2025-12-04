@@ -17,7 +17,11 @@ export class Groups implements OnInit {
   private readonly fb = inject(FormBuilder);
 
   groups = signal<Group[]>([]);
-  isLoading = signal(false);
+  
+  isLoading = signal(true);
+  
+  isSyncing = signal(false);
+  
   showForm = signal(false);
 
   groupForm = this.fb.group({
@@ -34,17 +38,40 @@ export class Groups implements OnInit {
   }
 
   loadGroups() {
-    this.isLoading.set(true);
+    const cachedData = localStorage.getItem('groups_cache');
+    
+    if (cachedData) {
+      try {
+        const parsed = JSON.parse(cachedData);
+        this.groups.set(parsed);
+        this.isLoading.set(false);
+        this.isSyncing.set(true);
+      } catch (e) {
+        console.error('Error leyendo caché de grupos', e);
+      }
+    } else {
+      this.isLoading.set(true);
+    }
+
     this.groupsService.getGroups().subscribe({
       next: (data) => {
         this.groups.set(data);
+        
         this.isLoading.set(false);
+        this.isSyncing.set(false);
+        
+        this.updateCache(data);
       },
       error: (err) => {
         console.error('Error cargando grupos', err);
         this.isLoading.set(false);
+        this.isSyncing.set(false);
       }
     });
+  }
+
+  private updateCache(data: Group[]) {
+    localStorage.setItem('groups_cache', JSON.stringify(data));
   }
 
   toggleForm(type: 'create' | 'join' | null) {
@@ -62,7 +89,10 @@ export class Groups implements OnInit {
       this.isLoading.set(true);
       this.groupsService.createGroup(this.groupForm.value as any).subscribe({
         next: (res) => {
-          this.groups.update(current => [res.group, ...current]);
+          const newGroups = [res.group, ...this.groups()];
+          this.groups.set(newGroups);
+          this.updateCache(newGroups);
+
           this.toggleForm(null); 
           this.isLoading.set(false);
         },
@@ -80,7 +110,10 @@ export class Groups implements OnInit {
     this.isLoading.set(true);
     this.groupsService.joinGroup(this.joinCode).subscribe({
       next: (res) => {
-        this.groups.update(current => [res.group, ...current]);
+        const newGroups = [res.group, ...this.groups()];
+        this.groups.set(newGroups);
+        this.updateCache(newGroups);
+
         this.toggleForm(null);
         this.isLoading.set(false);
         alert('¡Te has unido a la clase!');
@@ -102,7 +135,9 @@ export class Groups implements OnInit {
     if(confirm('¿Estás seguro de eliminar este grupo?')) {
       this.groupsService.deleteGroup(id).subscribe({
         next: () => {
-          this.groups.update(current => current.filter(g => g.id !== id));
+          const filteredGroups = this.groups().filter(g => g.id !== id);
+          this.groups.set(filteredGroups);
+          this.updateCache(filteredGroups);
         }
       });
     }

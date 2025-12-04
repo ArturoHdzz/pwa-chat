@@ -4,7 +4,7 @@ import { RouterModule } from '@angular/router';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { TasksService, CreateIndividualTaskRequest } from '../../services/tasks/tasks-service';
 import { Task } from '../../models/task.model';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient } from '@angular/common';
 import { environment } from '../../../../environments/environment';
 import { Spiner } from '../movil/spiner/spiner';
 
@@ -23,6 +23,7 @@ export class IndividualTasks implements OnInit {
   availableUsers = signal<any[]>([]);
   selectedUsers = signal<string[]>([]);
   isLoading = signal(false);
+  isSyncing = signal(false); 
   showForm = signal(false);
 
   taskForm = this.fb.group({
@@ -37,20 +38,39 @@ export class IndividualTasks implements OnInit {
   }
 
   loadTasks() {
-    this.isLoading.set(true);
+    const cacheKey = 'individual_tasks_cache';
+    
+    const cachedData = localStorage.getItem(cacheKey);
+    if (cachedData) {
+      try {
+        this.tasks.set(JSON.parse(cachedData));
+        this.isLoading.set(false);
+        this.isSyncing.set(true);
+      } catch (e) { console.error(e); }
+    } else {
+      this.isLoading.set(true);
+    }
+
     this.tasksService.getIndividualTasks().subscribe({
       next: (data) => {
         this.tasks.set(data);
         this.isLoading.set(false);
+        this.isSyncing.set(false);
+        localStorage.setItem(cacheKey, JSON.stringify(data));
       },
       error: (err) => {
         console.error('Error cargando tareas individuales:', err);
         this.isLoading.set(false);
+        this.isSyncing.set(false);
       }
     });
   }
 
   loadAvailableUsers() {
+    const cacheKey = 'org_users_cache';
+    const cached = localStorage.getItem(cacheKey);
+    if (cached) this.availableUsers.set(JSON.parse(cached));
+
     this.http.get<any[]>(`${environment.apiUrl}/organizations`).subscribe({
       next: (orgs) => {
         if (orgs.length > 0) {
@@ -58,6 +78,7 @@ export class IndividualTasks implements OnInit {
             next: (data) => {
               const users = data.users || [];
               this.availableUsers.set(users);
+              localStorage.setItem(cacheKey, JSON.stringify(users));
             },
             error: (err) => console.error('Error cargando usuarios:', err)
           });

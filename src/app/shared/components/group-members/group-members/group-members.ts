@@ -20,6 +20,7 @@ export class GroupMembers implements OnInit {
   availableUsers = signal<any[]>([]);
   searchTerm: string = '';
   isLoading = signal(false);
+  isSyncing = signal(false); 
 
   ngOnInit() {
     this.groupId = this.route.snapshot.paramMap.get('id') || '';
@@ -29,19 +30,47 @@ export class GroupMembers implements OnInit {
   }
 
   loadData() {
-    this.isLoading.set(true); 
+    const membersKey = `group_members_${this.groupId}`;
+    const availableKey = `group_available_${this.groupId}`;
+    
+    const cachedMembers = localStorage.getItem(membersKey);
+    const cachedAvailable = localStorage.getItem(availableKey);
+
+    if (cachedMembers) {
+      try {
+        this.members.set(JSON.parse(cachedMembers));
+        if (cachedAvailable) this.availableUsers.set(JSON.parse(cachedAvailable));
+        
+        this.isLoading.set(false);
+        this.isSyncing.set(true);
+      } catch (e) { console.error(e); }
+    } else {
+      this.isLoading.set(true);
+    }
+
     this.groupsService.getGroupMembers(this.groupId).subscribe({
       next: (data: any[]) => {
         this.members.set(data);
+        localStorage.setItem(membersKey, JSON.stringify(data));
+
         this.groupsService.getAvailableUsers(this.groupId).subscribe({
           next: (available: any[]) => {
             this.availableUsers.set(available);
+            localStorage.setItem(availableKey, JSON.stringify(available));
+            
             this.isLoading.set(false);
+            this.isSyncing.set(false);
           },
-          error: () => this.isLoading.set(false)
+          error: () => {
+            this.isLoading.set(false);
+            this.isSyncing.set(false);
+          }
         });
       },
-      error: () => this.isLoading.set(false)
+      error: () => {
+        this.isLoading.set(false);
+        this.isSyncing.set(false);
+      }
     });
   }
 

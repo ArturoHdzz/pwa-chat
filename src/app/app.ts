@@ -33,9 +33,7 @@ import { CommonModule } from '@angular/common';
 })
 export class App implements OnInit {
   protected readonly title = signal('pwa');
-  
   protected updateAvailable = signal(false);
-
   private swUpdate = inject(SwUpdate);
 
   ngOnInit() {

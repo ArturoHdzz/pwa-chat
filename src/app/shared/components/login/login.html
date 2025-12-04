@@ -1,226 +1,216 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>{{ showRegister() ? 'Registro' : 'Login' }}</title>
-  </head>
-  <body>
-    <div class="min-h-screen flex items-center justify-center px-6 py-12 bg-gradient-to-b from-black via-gray-800 to-gray-100">
-      <div class="w-full max-w-6xl grid grid-cols-1 md:grid-cols-2 bg-white shadow-xl rounded-3xl overflow-hidden border border-gray-300">
-        
-        <div class="bg-gradient-to-br from-gray-700 to-gray-900 bg-cover bg-center hidden md:block relative">
-          <div class="absolute inset-0 bg-black bg-opacity-30 flex flex-col justify-center items-center p-8">
-            <div class="mb-8">
-              <div class="h-16 w-16 rounded-full bg-white shadow-lg flex items-center justify-center">
-                <img src="icons/icon-72x72.svg" alt="Enterprise Flow Logo" class="h-10 w-10" />
-              </div>
-            </div>
-            <h3 class="text-white text-2xl font-bold text-center drop-shadow-lg">
-              {{ showRegister() ? 'Crea tu cuenta' : 'Ingresa a tu cuenta' }}
-            </h3>
-            <p class="text-gray-200 mt-2 text-center max-w-xs">
-              {{ showRegister() ? 'Regístrate y crea tu organización' : '¡Bienvenido de nuevo! Inicia sesión para continuar.' }}
-            </p>
+<div class="min-h-screen flex items-center justify-center px-6 py-12 bg-gradient-to-b from-black via-gray-800 to-gray-100">
+  <div class="w-full max-w-6xl grid grid-cols-1 md:grid-cols-2 bg-white shadow-xl rounded-3xl overflow-hidden border border-gray-300">
+    
+    <div class="bg-gradient-to-br from-gray-700 to-gray-900 bg-cover bg-center hidden md:block relative">
+      <div class="absolute inset-0 bg-black bg-opacity-30 flex flex-col justify-center items-center p-8">
+        <div class="mb-8">
+          <div class="h-16 w-16 rounded-full bg-white shadow-lg flex items-center justify-center">
+            <img src="icons/icon-72x72.svg" alt="Enterprise Flow Logo" class="h-10 w-10" />
           </div>
         </div>
-
-        <div *ngIf="!showRegister()" class="p-10 sm:p-16 flex flex-col justify-center bg-white">
-          <div class="flex flex-col items-center mb-8">
-            <div class="h-12 w-12 rounded-full bg-black mb-2 flex items-center justify-center shadow-md">
-              <svg class="h-8 w-8 text-white" fill="currentColor" viewBox="0 0 20 20">
-                <path d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"/>
-              </svg>
-            </div>
-            <h2 class="text-3xl font-extrabold text-black">Inicia sesión</h2>
-          </div>
-
-          <form [formGroup]="loginForm" (ngSubmit)="onLogin()" class="space-y-6">
-            <div *ngIf="error" class="bg-gray-100 border border-gray-300 text-black px-4 py-2 rounded mb-2 text-sm shadow-sm">
-              {{ error }}
-            </div>
-            
-            <div>
-              <input
-                type="email"
-                formControlName="email"
-                class="w-full border-b-2 border-gray-300 focus:outline-none focus:border-black text-black bg-white py-3 px-1"
-                placeholder="Correo electrónico"
-              />
-              <div *ngIf="loginForm.get('email')?.invalid && loginForm.get('email')?.touched" class="text-gray-600 text-xs mt-1">
-                {{ getFieldError('email', loginForm) }}
-              </div>
-            </div>
-            
-            <div>
-              <input
-                type="password"
-                formControlName="password"
-                class="w-full border-b-2 border-gray-300 focus:outline-none focus:border-black text-black bg-white py-3 px-1"
-                placeholder="Contraseña"
-              />
-              <div *ngIf="loginForm.get('password')?.invalid && loginForm.get('password')?.touched" class="text-gray-600 text-xs mt-1">
-                {{ getFieldError('password', loginForm) }}
-              </div>
-            </div>
-            
-            <button
-              type="submit"
-              [disabled]="loginForm.invalid || isLoading"
-              class="w-full bg-black hover:bg-gray-800 disabled:bg-gray-400 text-white py-3 rounded-xl font-semibold transition duration-300 shadow-lg flex items-center justify-center gap-2">
-              <svg *ngIf="isLoading" class="animate-spin h-5 w-5" fill="none" viewBox="0 0 24 24">
-                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-              </svg>
-              {{ isLoading ? 'Ingresando...' : 'Ingresar' }}
-            </button>
-
-            <div class="text-center mt-4">
-              <button type="button" (click)="toggleForm()" class="text-black hover:text-gray-700 text-sm underline">
-                ¿No tienes cuenta? Regístrate aquí
-              </button>
-            </div>
-          </form>
-        </div>
-
-        <div *ngIf="showRegister()" class="p-6 sm:p-10 flex flex-col justify-center bg-white overflow-y-auto max-h-screen">
-          <div class="flex flex-col items-center mb-6">
-            <div class="h-12 w-12 rounded-full bg-black mb-2 flex items-center justify-center shadow-md">
-              <svg class="h-8 w-8 text-white" fill="currentColor" viewBox="0 0 20 20">
-                <path d="M8 9a3 3 0 100-6 3 3 0 000 6zM8 11a6 6 0 016 6H2a6 6 0 016-6zM16 7a1 1 0 10-2 0v1h-1a1 1 0 100 2h1v1a1 1 0 102 0v-1h1a1 1 0 100-2h-1V7z"/>
-              </svg>
-            </div>
-            <h2 class="text-2xl font-extrabold text-black">Crear Cuenta</h2>
-          </div>
-
-          <form [formGroup]="registerForm" (ngSubmit)="onRegister()" class="space-y-4">
-            <div *ngIf="error" class="bg-gray-100 border border-gray-300 text-black px-4 py-2 rounded text-sm shadow-sm">
-              {{ error }}
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <input type="text" formControlName="name" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-black text-black" placeholder="Nombre *">
-                <div *ngIf="registerForm.get('name')?.invalid && registerForm.get('name')?.touched" class="text-gray-600 text-xs mt-1">
-                  {{ getFieldError('name', registerForm) }}
-                </div>
-              </div>
-
-              <div>
-                <input type="text" formControlName="apellido_paterno" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-black text-black" placeholder="Apellido Paterno *">
-                <div *ngIf="registerForm.get('apellido_paterno')?.invalid && registerForm.get('apellido_paterno')?.touched" class="text-gray-600 text-xs mt-1">
-                  {{ getFieldError('apellido_paterno', registerForm) }}
-                </div>
-              </div>
-
-              <div>
-                <input type="text" formControlName="apellido_materno" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-black text-black" placeholder="Apellido Materno *">
-                <div *ngIf="registerForm.get('apellido_materno')?.invalid && registerForm.get('apellido_materno')?.touched" class="text-gray-600 text-xs mt-1">
-                  {{ getFieldError('apellido_materno', registerForm) }}
-                </div>
-              </div>
-
-              <div>
-                <input type="tel" formControlName="telefono" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-black text-black" placeholder="Teléfono (10 dígitos) *">
-                <div *ngIf="registerForm.get('telefono')?.invalid && registerForm.get('telefono')?.touched" class="text-gray-600 text-xs mt-1">
-                  {{ getFieldError('telefono', registerForm) }}
-                </div>
-              </div>
-            </div>
-
-            <div>
-              <input type="email" formControlName="email" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-black text-black" placeholder="Email *">
-              <div *ngIf="registerForm.get('email')?.invalid && registerForm.get('email')?.touched" class="text-gray-600 text-xs mt-1">
-                {{ getFieldError('email', registerForm) }}
-              </div>
-            </div>
-
-            <div class="border-t border-gray-200 pt-4">
-              <h3 class="text-lg font-semibold text-black mb-3">Información de la Organización</h3>
-              
-              <div class="flex p-1 bg-gray-100 rounded-lg mb-4">
-                <button type="button" 
-                  (click)="toggleOrgMode(false)"
-                  [class.bg-white]="!isJoiningOrg()"
-                  [class.shadow-sm]="!isJoiningOrg()"
-                  [class.text-black]="!isJoiningOrg()"
-                  [class.text-gray-500]="isJoiningOrg()"
-                  class="flex-1 py-2 text-sm font-medium rounded-md transition-all duration-200">
-                  Crear Nueva
-                </button>
-                <button type="button" 
-                  (click)="toggleOrgMode(true)"
-                  [class.bg-white]="isJoiningOrg()"
-                  [class.shadow-sm]="isJoiningOrg()"
-                  [class.text-black]="isJoiningOrg()"
-                  [class.text-gray-500]="!isJoiningOrg()"
-                  class="flex-1 py-2 text-sm font-medium rounded-md transition-all duration-200">
-                  Unirme con Código
-                </button>
-              </div>
-
-              <div class="space-y-4">
-                <div *ngIf="!isJoiningOrg()" class="animate-fade-in">
-                  <input type="text" formControlName="organization_name" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-black text-black" placeholder="Nombre de tu Organización *">
-                  <div *ngIf="registerForm.get('organization_name')?.invalid && registerForm.get('organization_name')?.touched" class="text-gray-600 text-xs mt-1">
-                    {{ getFieldError('organization_name', registerForm) }}
-                  </div>
-                  <p class="text-xs text-gray-500 mt-1">Se te asignará el rol de Administrador/Jefe.</p>
-                </div>
-
-                <div *ngIf="isJoiningOrg()" class="animate-fade-in">
-                  <input type="text" formControlName="organization_code" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-black text-black uppercase tracking-widest" placeholder="CÓDIGO DE INVITACIÓN *">
-                  <div *ngIf="registerForm.get('organization_code')?.invalid && registerForm.get('organization_code')?.touched" class="text-gray-600 text-xs mt-1">
-                    {{ getFieldError('organization_code', registerForm) }}
-                  </div>
-                  <p class="text-xs text-gray-500 mt-1">Pide el código al administrador de tu escuela.</p>
-                </div>
-              </div>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <input type="password" formControlName="password" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-black text-black" placeholder="Contraseña *">
-                <div *ngIf="registerForm.get('password')?.invalid && registerForm.get('password')?.touched" class="text-gray-600 text-xs mt-1">
-                  {{ getFieldError('password', registerForm) }}
-                </div>
-              </div>
-
-              <div>
-                <input type="password" formControlName="confirmPassword" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-black text-black" placeholder="Confirmar Contraseña *">
-                <div *ngIf="registerForm.get('confirmPassword')?.invalid && registerForm.get('confirmPassword')?.touched" class="text-gray-600 text-xs mt-1">
-                  {{ getFieldError('confirmPassword', registerForm) }}
-                </div>
-              </div>
-            </div>
-
-            <div *ngIf="!isJoiningOrg()">
-               <select formControlName="role" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-black text-black bg-white">
-                <option value="jefe">Director / Jefe</option>
-                <option value="profesor">Profesor</option>
-              </select>
-            </div>
-
-            <button
-              type="submit"
-              [disabled]="registerForm.invalid || isLoading"
-              class="w-full bg-black hover:bg-gray-800 disabled:bg-gray-400 text-white py-3 rounded-xl font-semibold transition duration-300 shadow-lg flex items-center justify-center gap-2">
-              <svg *ngIf="isLoading" class="animate-spin h-5 w-5" fill="none" viewBox="0 0 24 24">
-                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-              </svg>
-              {{ isLoading ? 'Registrando...' : 'Registrarse' }}
-            </button>
-
-            <div class="text-center mt-4">
-              <button type="button" (click)="toggleForm()" class="text-black hover:text-gray-700 text-sm underline">
-                ¿Ya tienes cuenta? Inicia sesión
-              </button>
-            </div>
-          </form>
-        </div>
-
+        <h3 class="text-white text-2xl font-bold text-center drop-shadow-lg">
+          {{ showRegister() ? 'Crea tu cuenta' : 'Ingresa a tu cuenta' }}
+        </h3>
+        <p class="text-gray-200 mt-2 text-center max-w-xs">
+          {{ showRegister() ? 'Regístrate y crea tu organización' : '¡Bienvenido de nuevo! Inicia sesión para continuar.' }}
+        </p>
       </div>
     </div>
-  </body>
-</html>
+
+    <div *ngIf="!showRegister()" class="p-10 sm:p-16 flex flex-col justify-center bg-white">
+      <div class="flex flex-col items-center mb-8">
+        <div class="h-12 w-12 rounded-full bg-black mb-2 flex items-center justify-center shadow-md">
+          <svg class="h-8 w-8 text-white" fill="currentColor" viewBox="0 0 20 20">
+            <path d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"/>
+          </svg>
+        </div>
+        <h2 class="text-3xl font-extrabold text-black">Inicia sesión</h2>
+      </div>
+
+      <form [formGroup]="loginForm" (ngSubmit)="onLogin()" class="space-y-6">
+        <div *ngIf="error" class="bg-gray-100 border border-gray-300 text-black px-4 py-2 rounded mb-2 text-sm shadow-sm">
+          {{ error }}
+        </div>
+        
+        <div>
+          <input
+            type="email"
+            formControlName="email"
+            class="w-full border-b-2 border-gray-300 focus:outline-none focus:border-black text-black bg-white py-3 px-1"
+            placeholder="Correo electrónico"
+          />
+          <div *ngIf="loginForm.get('email')?.invalid && loginForm.get('email')?.touched" class="text-gray-600 text-xs mt-1">
+            {{ getFieldError('email', loginForm) }}
+          </div>
+        </div>
+        
+        <div>
+          <input
+            type="password"
+            formControlName="password"
+            class="w-full border-b-2 border-gray-300 focus:outline-none focus:border-black text-black bg-white py-3 px-1"
+            placeholder="Contraseña"
+          />
+          <div *ngIf="loginForm.get('password')?.invalid && loginForm.get('password')?.touched" class="text-gray-600 text-xs mt-1">
+            {{ getFieldError('password', loginForm) }}
+          </div>
+        </div>
+        
+        <button
+          type="submit"
+          [disabled]="loginForm.invalid || isLoading"
+          class="w-full bg-black hover:bg-gray-800 disabled:bg-gray-400 text-white py-3 rounded-xl font-semibold transition duration-300 shadow-lg flex items-center justify-center gap-2">
+          <svg *ngIf="isLoading" class="animate-spin h-5 w-5" fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+          </svg>
+          {{ isLoading ? 'Ingresando...' : 'Ingresar' }}
+        </button>
+
+        <div class="text-center mt-4">
+          <button type="button" (click)="toggleForm()" class="text-black hover:text-gray-700 text-sm underline">
+            ¿No tienes cuenta? Regístrate aquí
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <div *ngIf="showRegister()" class="p-6 sm:p-10 flex flex-col justify-center bg-white overflow-y-auto max-h-screen">
+      <div class="flex flex-col items-center mb-6">
+        <div class="h-12 w-12 rounded-full bg-black mb-2 flex items-center justify-center shadow-md">
+          <svg class="h-8 w-8 text-white" fill="currentColor" viewBox="0 0 20 20">
+            <path d="M8 9a3 3 0 100-6 3 3 0 000 6zM8 11a6 6 0 016 6H2a6 6 0 016-6zM16 7a1 1 0 10-2 0v1h-1a1 1 0 100 2h1v1a1 1 0 102 0v-1h1a1 1 0 100-2h-1V7z"/>
+          </svg>
+        </div>
+        <h2 class="text-2xl font-extrabold text-black">Crear Cuenta</h2>
+      </div>
+
+      <form [formGroup]="registerForm" (ngSubmit)="onRegister()" class="space-y-4">
+        <div *ngIf="error" class="bg-gray-100 border border-gray-300 text-black px-4 py-2 rounded text-sm shadow-sm">
+          {{ error }}
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <input type="text" formControlName="name" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-black text-black" placeholder="Nombre *">
+            <div *ngIf="registerForm.get('name')?.invalid && registerForm.get('name')?.touched" class="text-gray-600 text-xs mt-1">
+              {{ getFieldError('name', registerForm) }}
+            </div>
+          </div>
+
+          <div>
+            <input type="text" formControlName="apellido_paterno" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-black text-black" placeholder="Apellido Paterno *">
+            <div *ngIf="registerForm.get('apellido_paterno')?.invalid && registerForm.get('apellido_paterno')?.touched" class="text-gray-600 text-xs mt-1">
+              {{ getFieldError('apellido_paterno', registerForm) }}
+            </div>
+          </div>
+
+          <div>
+            <input type="text" formControlName="apellido_materno" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-black text-black" placeholder="Apellido Materno *">
+            <div *ngIf="registerForm.get('apellido_materno')?.invalid && registerForm.get('apellido_materno')?.touched" class="text-gray-600 text-xs mt-1">
+              {{ getFieldError('apellido_materno', registerForm) }}
+            </div>
+          </div>
+
+          <div>
+            <input type="tel" formControlName="telefono" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-black text-black" placeholder="Teléfono (10 dígitos) *">
+            <div *ngIf="registerForm.get('telefono')?.invalid && registerForm.get('telefono')?.touched" class="text-gray-600 text-xs mt-1">
+              {{ getFieldError('telefono', registerForm) }}
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <input type="email" formControlName="email" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-black text-black" placeholder="Email *">
+          <div *ngIf="registerForm.get('email')?.invalid && registerForm.get('email')?.touched" class="text-gray-600 text-xs mt-1">
+            {{ getFieldError('email', registerForm) }}
+          </div>
+        </div>
+
+        <div class="border-t border-gray-200 pt-4">
+          <h3 class="text-lg font-semibold text-black mb-3">Información de la Organización</h3>
+          
+          <div class="flex p-1 bg-gray-100 rounded-lg mb-4">
+            <button type="button" 
+              (click)="toggleOrgMode(false)"
+              [class.bg-white]="!isJoiningOrg()"
+              [class.shadow-sm]="!isJoiningOrg()"
+              [class.text-black]="!isJoiningOrg()"
+              [class.text-gray-500]="isJoiningOrg()"
+              class="flex-1 py-2 text-sm font-medium rounded-md transition-all duration-200">
+              Crear Nueva
+            </button>
+            <button type="button" 
+              (click)="toggleOrgMode(true)"
+              [class.bg-white]="isJoiningOrg()"
+              [class.shadow-sm]="isJoiningOrg()"
+              [class.text-black]="isJoiningOrg()"
+              [class.text-gray-500]="!isJoiningOrg()"
+              class="flex-1 py-2 text-sm font-medium rounded-md transition-all duration-200">
+              Unirme con Código
+            </button>
+          </div>
+
+          <div class="space-y-4">
+            <div *ngIf="!isJoiningOrg()" class="animate-fade-in">
+              <input type="text" formControlName="organization_name" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-black text-black" placeholder="Nombre de tu Organización *">
+              <div *ngIf="registerForm.get('organization_name')?.invalid && registerForm.get('organization_name')?.touched" class="text-gray-600 text-xs mt-1">
+                {{ getFieldError('organization_name', registerForm) }}
+              </div>
+              <p class="text-xs text-gray-500 mt-1">Se te asignará el rol de Administrador/Jefe.</p>
+            </div>
+
+            <div *ngIf="isJoiningOrg()" class="animate-fade-in">
+              <input type="text" formControlName="organization_code" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-black text-black uppercase tracking-widest" placeholder="CÓDIGO DE INVITACIÓN *">
+              <div *ngIf="registerForm.get('organization_code')?.invalid && registerForm.get('organization_code')?.touched" class="text-gray-600 text-xs mt-1">
+                {{ getFieldError('organization_code', registerForm) }}
+              </div>
+              <p class="text-xs text-gray-500 mt-1">Pide el código al administrador de tu escuela.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <input type="password" formControlName="password" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-black text-black" placeholder="Contraseña *">
+            <div *ngIf="registerForm.get('password')?.invalid && registerForm.get('password')?.touched" class="text-gray-600 text-xs mt-1">
+              {{ getFieldError('password', registerForm) }}
+            </div>
+          </div>
+
+          <div>
+            <input type="password" formControlName="confirmPassword" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-black text-black" placeholder="Confirmar Contraseña *">
+            <div *ngIf="registerForm.get('confirmPassword')?.invalid && registerForm.get('confirmPassword')?.touched" class="text-gray-600 text-xs mt-1">
+              {{ getFieldError('confirmPassword', registerForm) }}
+            </div>
+          </div>
+        </div>
+
+        <div *ngIf="!isJoiningOrg()">
+           <select formControlName="role" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-black text-black bg-white">
+            <option value="jefe">Director / Jefe</option>
+            <option value="profesor">Profesor</option>
+          </select>
+        </div>
+
+        <button
+          type="submit"
+          [disabled]="registerForm.invalid || isLoading"
+          class="w-full bg-black hover:bg-gray-800 disabled:bg-gray-400 text-white py-3 rounded-xl font-semibold transition duration-300 shadow-lg flex items-center justify-center gap-2">
+          <svg *ngIf="isLoading" class="animate-spin h-5 w-5" fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+          </svg>
+          {{ isLoading ? 'Registrando...' : 'Registrarse' }}
+        </button>
+
+        <div class="text-center mt-4">
+          <button type="button" (click)="toggleForm()" class="text-black hover:text-gray-700 text-sm underline">
+            ¿Ya tienes cuenta? Inicia sesión
+          </button>
+        </div>
+      </form>
+    </div>
+
+  </div>
+</div>

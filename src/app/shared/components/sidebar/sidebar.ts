@@ -37,20 +37,7 @@ export class Sidebar {
     const currentUser = this.user();
     const role = currentUser?.profile?.role;
 
-    const items: NavigationItem[] = [
-      {
-        id: 'home',
-        label: 'Inicio',
-        icon: 'home',
-        route: '/home'
-      },
-      {
-        id: 'groups',
-        label: 'Grupos / Clases',
-        icon: 'groups', 
-        route: '/groups'
-      }
-    ];
+    const items: NavigationItem[] = [];
 
     if (role && role !== 'Alumno' && role !== 'User') {
       items.push({
@@ -60,6 +47,13 @@ export class Sidebar {
         route: '/dashboard'
       });
     }
+
+    items.push({
+      id: 'groups',
+      label: 'Grupos / Clases',
+      icon: 'groups', 
+      route: '/groups'
+    });
 
     return items;
   });

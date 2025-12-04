@@ -25,6 +25,7 @@ export class GroupTasks implements OnInit {
   selectedMembers = signal<string[]>([]);
   isLoading = signal(false);
   showForm = signal(false);
+  isSyncing = signal(false);
   
   assignmentType = signal<'all' | 'individual'>('all');
 
@@ -43,19 +44,43 @@ export class GroupTasks implements OnInit {
   }
 
   loadTasks() {
-    this.isLoading.set(true);
+    const cacheKey = `group_tasks_${this.groupId}`;
+    const cachedData = localStorage.getItem(cacheKey);
+
+    if (cachedData) {
+      try {
+        this.tasks.set(JSON.parse(cachedData));
+        this.isLoading.set(false);
+        this.isSyncing.set(true);
+      } catch (e) { console.error(e); }
+    } else {
+      this.isLoading.set(true);
+    }
+
     this.tasksService.getTasks(this.groupId).subscribe({
       next: (data) => {
         this.tasks.set(data);
         this.isLoading.set(false);
+        this.isSyncing.set(false);
+        localStorage.setItem(cacheKey, JSON.stringify(data));
       },
-      error: () => this.isLoading.set(false)
+      error: () => {
+        this.isLoading.set(false);
+        this.isSyncing.set(false);
+      }
     });
   }
 
   loadGroupMembers() {
+    const cacheKey = `group_members_${this.groupId}`;
+    const cached = localStorage.getItem(cacheKey);
+    if (cached) this.groupMembers.set(JSON.parse(cached));
+
     this.groupsService.getGroupMembers(this.groupId).subscribe({
-      next: (data) => this.groupMembers.set(data),
+      next: (data) => {
+        this.groupMembers.set(data);
+        localStorage.setItem(cacheKey, JSON.stringify(data));
+      },
       error: (err) => console.error('Error cargando miembros:', err)
     });
   }
