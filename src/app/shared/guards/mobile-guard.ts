@@ -1,7 +1,7 @@
-import { CanActivateFn, Router } from '@angular/router';
+import { CanActivateFn,CanMatchFn, Router } from '@angular/router';
 import { inject } from '@angular/core';
 import { DeviceService } from '../services/chat/device-service';
-export const mobileGuard: CanActivateFn = (route, state) => {
+export const mobileGuard: CanMatchFn = (route, segments) => {
 const device = inject(DeviceService);
   const router = inject(Router);
 
