@@ -62,8 +62,19 @@ export class ChatHeader implements OnInit {
 constructor(public pwa: PwaInstall) {}
 
 install() {
-  this.pwa.installApp();
+  if (this.isIOS()) {
+    // aquí NO podemos llamar a prompt(),
+    // mejor mostrar un modal con instrucciones
+    alert(
+      'Para instalar la app:\n\n' +
+      '1. Toca el botón "Compartir" (icono de cuadrado con flecha hacia arriba).\n' +
+      '2. Elige "Añadir a pantalla de inicio".'
+    );
+  } else {
+    this.pwa.installApp();
+  }
 }
+
 isIOS(): boolean {
   return /iphone|ipad|ipod/i.test(navigator.userAgent);
 }
