@@ -6,20 +6,18 @@ import { ChatService, ChatMessageDto } from '../../services/chat/chat-service';
 import { Spiner } from '../movil/spiner/spiner';
 
 @Component({
-  selector: 'app-group-chat',
+  selector: 'app-desktop-conversation',
   standalone: true,
   imports: [CommonModule, FormsModule, RouterModule, Spiner],
-  templateUrl: './group-chat.html'
+  templateUrl: './desktop-conversation.html'
 })
-export class GroupChat implements OnInit, AfterViewChecked {
+export class DesktopConversation implements OnInit, AfterViewChecked {
   private route = inject(ActivatedRoute);
   private chatService = inject(ChatService);
 
   @ViewChild('scrollContainer') private scrollContainer!: ElementRef;
 
-  groupId: string = '';
-  conversationId: string | null = null;
-  
+  conversationId: string = '';
   isLoading = signal(true);
   messageText = '';
   
@@ -35,9 +33,9 @@ export class GroupChat implements OnInit, AfterViewChecked {
   );
 
   ngOnInit() {
-    this.groupId = this.route.snapshot.paramMap.get('id') || '';
-    if (this.groupId) {
-      this.findConversationAndLoad();
+    this.conversationId = this.route.snapshot.paramMap.get('id') || '';
+    if (this.conversationId) {
+      this.loadMessages();
     }
   }
 
@@ -51,43 +49,7 @@ export class GroupChat implements OnInit, AfterViewChecked {
     } catch(err) { }
   }
 
-  findConversationAndLoad() {
-    const orgId = localStorage.getItem('selectedOrganizationId') || '';
-    
-    this.chatService.getConversationsByOrganization(orgId).subscribe({
-      next: (convs) => {
-        const groupConv = convs.find(c => c.type === 'group' && c.group?.id === this.groupId);
-        
-        if (groupConv) {
-          this.conversationId = groupConv.id;
-          this.loadMessages();
-        } else {
-          this.createGroupConversation();
-        }
-      },
-      error: (err) => {
-        console.error(err);
-        this.isLoading.set(false);
-      }
-    });
-  }
-
-  createGroupConversation() {
-    this.chatService.startGroupConversation(this.groupId).subscribe({
-      next: (conv) => {
-        this.conversationId = conv.id;
-        this.loadMessages();
-      },
-      error: (err) => {
-        console.error('Error creando conversación de grupo', err);
-        this.isLoading.set(false);
-      }
-    });
-  }
-
   loadMessages() {
-    if (!this.conversationId) return;
-
     this.chatService.loadMessages(this.conversationId).subscribe({
       next: () => {
         this.isLoading.set(false);
@@ -98,7 +60,7 @@ export class GroupChat implements OnInit, AfterViewChecked {
   }
 
   sendMessage() {
-    if (!this.messageText.trim() || !this.conversationId) return;
+    if (!this.messageText.trim()) return;
 
     this.chatService.sendMessage(this.conversationId, this.messageText).subscribe({
       next: () => {

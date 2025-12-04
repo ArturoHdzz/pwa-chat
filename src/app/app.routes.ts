@@ -55,6 +55,11 @@ export const routes: Routes = [
                 path: 'dashboard',
                 loadComponent: () => import('./shared/components/dashboard/dashboard').then(m => m.Dashboard)
             },
+            // NUEVA RUTA PARA CHAT INDIVIDUAL DESKTOP
+            {
+                path: 'chat/conversation/:id',
+                loadComponent: () => import('./shared/components/desktop-conversation/desktop-conversation').then(m => m.DesktopConversation)
+            },
             { path: '', redirectTo: 'home', pathMatch: 'full' }
         ]
     },
