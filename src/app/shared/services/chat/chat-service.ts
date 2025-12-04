@@ -6,11 +6,18 @@ import { Observable } from 'rxjs'
 import { environment } from '../../../../environments/environment';
 export type ChatMessageDto = {
   id: string;
+  conversation_id: string;
   body: string;
-  image_url?: string | null;
-  created_at: string;
-  sender_id: string;
   is_me: boolean;
+  created_at: string;
+  image_url?: string;
+
+  sender?: {
+    id: string;
+    display_name: string;
+    email?: string;
+    avatar_url?: string;
+  };
 };
 
 
@@ -112,6 +119,4 @@ sendMessage(
     })
   );
 }
-
-
 }

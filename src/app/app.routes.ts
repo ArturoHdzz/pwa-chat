@@ -40,6 +40,10 @@ export const routes: Routes = [
                 loadComponent: () => import('./shared/components/group-tasks/group-tasks').then(m => m.GroupTasks)
             },
             {
+                path: 'groups/:id/chat',
+                loadComponent: () => import('./shared/components/group-chat/group-chat').then(m => m.GroupChat)
+            },
+            {
                 path: 'groups/:id/tasks/:taskId/grading',
                 loadComponent: () => import('./shared/components/task-grading/task-grading').then(m => m.TaskGrading)
             },
