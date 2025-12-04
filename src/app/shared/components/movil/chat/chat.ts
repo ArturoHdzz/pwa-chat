@@ -66,11 +66,10 @@ isLoading = signal(true);
     }))
   );
 constructor(private pushService: Push) {}
- ngOnInit() {
-   if ('Notification' in window && 'serviceWorker' in navigator) {
-    this.pushService.requestPermissionAndSubscribe();
-  }
-   if ('serviceWorker' in navigator) {
+ngOnInit() {
+  this.pushService.requestPermissionAndSubscribe();
+
+  if ('serviceWorker' in navigator) {
     navigator.serviceWorker.addEventListener('message', (event: any) => {
       if (event.data?.type === 'NEW_MESSAGE') {
         const convId = event.data.conversation_id;
@@ -80,18 +79,23 @@ constructor(private pushService: Push) {}
       }
     });
   }
+
   if (this.conversationId) {
     this.chatService.loadMessages(this.conversationId).subscribe({
       next: () => {
         this.isLoading.set(false);
       },
       error: (err) => {
-        console.error('Error al cargar mensajes', err.error.error);
-        this.showError( err.error.error ? err.error.error : 'No se pudieron cargar los mensajes. Intenta de nuevo más tarde.');
-      }
+        console.error('Error al cargar mensajes', err.error?.error);
+        this.showError(
+          err.error?.error ||
+            'No se pudieron cargar los mensajes. Intenta de nuevo más tarde.'
+        );
+      },
     });
   }
 }
+
 
 
   trackById = (_: number, m: ChatMsg) => m.id;

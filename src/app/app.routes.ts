@@ -1,5 +1,7 @@
 import { Routes } from '@angular/router';
 import { authGuard } from './shared/guards/auth-guard';
+import { desktopServiceGuard } from './shared/guards/desktop-service-guard';
+import { mobileGuard } from './shared/guards/mobile-guard';
 import { Chat } from './shared/components/movil/chat/chat';
 
 export const routes: Routes = [
@@ -7,10 +9,10 @@ export const routes: Routes = [
         path: 'login', 
         loadComponent: () => import('./shared/components/login/login').then(m => m.Login)
     },
-     { path: 'chat', component: Chat },     
+   
     {
         path: '',
-        canActivate: [authGuard],
+        canActivate: [authGuard, desktopServiceGuard],
         loadComponent: () => import('./shared/components/layout/layout').then(m => m.Layout),
         children: [
             {
@@ -55,7 +57,7 @@ export const routes: Routes = [
     },
     {
         path: 'm',
-        canActivate: [authGuard],
+        canActivate: [authGuard, mobileGuard],
         loadComponent: () => import('./shared/components/movil/mobile-shell/mobile-shell').then(m => m.MobileShell),
         children: [
             
