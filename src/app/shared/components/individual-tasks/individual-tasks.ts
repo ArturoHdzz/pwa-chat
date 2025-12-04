@@ -4,7 +4,7 @@ import { RouterModule } from '@angular/router';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { TasksService, CreateIndividualTaskRequest } from '../../services/tasks/tasks-service';
 import { Task } from '../../models/task.model';
-import { HttpClient } from '@angular/common';
+import { HttpClient } from '@angular/common/http'; 
 import { environment } from '../../../../environments/environment';
 import { Spiner } from '../movil/spiner/spiner';
 
@@ -72,19 +72,19 @@ export class IndividualTasks implements OnInit {
     if (cached) this.availableUsers.set(JSON.parse(cached));
 
     this.http.get<any[]>(`${environment.apiUrl}/organizations`).subscribe({
-      next: (orgs) => {
+      next: (orgs: any[]) => {
         if (orgs.length > 0) {
           this.http.get<any>(`${environment.apiUrl}/organizations/${orgs[0].id}`).subscribe({
-            next: (data) => {
+            next: (data: any) => {
               const users = data.users || [];
               this.availableUsers.set(users);
               localStorage.setItem(cacheKey, JSON.stringify(users));
             },
-            error: (err) => console.error('Error cargando usuarios:', err)
+            error: (err: any) => console.error('Error cargando usuarios:', err)
           });
         }
       },
-      error: (err) => console.error('Error cargando organizaciones:', err)
+      error: (err: any) => console.error('Error cargando organizaciones:', err)
     });
   }
 
