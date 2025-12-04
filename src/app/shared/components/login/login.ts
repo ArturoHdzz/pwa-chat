@@ -1,8 +1,9 @@
-import { Component, signal } from '@angular/core';
+import { Component, signal, inject } from '@angular/core'; 
 import { AuthService, RegisterRequest } from '../../services/auth/auth-service';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
+import { DeviceService } from '../../services/chat/device-service';
 
 @Component({
   selector: 'app-login',
@@ -23,7 +24,8 @@ export class Login {
   constructor(
     private auth: AuthService, 
     private router: Router, 
-    private fb: FormBuilder
+    private fb: FormBuilder,
+    private deviceService: DeviceService 
   ) {
     this.loginForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
@@ -96,7 +98,20 @@ export class Login {
     const { email, password } = this.loginForm.value;
 
     this.auth.login(email!, password!).subscribe({
-      next: (res) => {
+      next: (res: any) => {
+        const user = res.user || JSON.parse(localStorage.getItem('user') || '{}');
+        const role = user.profile?.role || user.role;
+        const isMobile = this.deviceService.isMobile();
+
+        if (!isMobile && (role === 'Alumno' || role === 'User' || role === 'student')) {
+          this.isLoading = false;
+          this.error = 'Acceso restringido: Los alumnos solo pueden ingresar desde la aplicación móvil.';
+          
+          localStorage.removeItem('token');
+          localStorage.removeItem('user');
+          return;
+        }
+
         this.isLoading = false;
         this.router.navigate(['/home']);
       },
