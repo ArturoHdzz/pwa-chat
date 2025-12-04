@@ -10,6 +10,18 @@ export interface CreateIndividualTaskRequest {
   due_date: string;
   assignee_ids: string[];
 }
+interface TaskAssigneeResponse {
+  message: string;
+  task_assignee: {
+    task_id: string;
+    user_id: string;
+    status: string;
+    submission_content: string | null;
+    grade: number | null;
+    feedback: string | null;
+    submitted_at: string | null;
+  };
+}
 
 @Injectable({ providedIn: 'root' })
 export class TasksService {
@@ -66,5 +78,33 @@ export class TasksService {
 
   getMyTasks(): Observable<Task[]> {
     return this.http.get<Task[]>(`${this.apiUrl}/my-tasks`);
+  }
+
+  setInProgress(taskId: string): Observable<TaskAssigneeResponse> {
+    return this.http.patch<TaskAssigneeResponse>(
+      `${this.apiUrl}/tasks/${taskId}/status`,
+      { status: 'in_progress' }
+    );
+  }
+
+  /** Entregar tarea (texto y/o archivo) */
+  submitTask(
+    taskId: string,
+    payload: { submission_text?: string; file?: File | null }
+  ): Observable<TaskAssigneeResponse> {
+    const formData = new FormData();
+
+    if (payload.submission_text) {
+      formData.append('submission_text', payload.submission_text);
+    }
+
+    if (payload.file) {
+      formData.append('file', payload.file);
+    }
+
+    return this.http.post<TaskAssigneeResponse>(
+      `${this.apiUrl}/tasks/${taskId}/submit`,
+      formData
+    );
   }
 }

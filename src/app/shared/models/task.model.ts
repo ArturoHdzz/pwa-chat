@@ -14,7 +14,7 @@ export interface Task {
     id: string;
     name: string;
   };
-  my_status?: 'pending' | 'in_progress' | 'completed';
+  my_status?: 'pending' | 'in_progress' | 'submitted'|'approved'|'rejected'| 'completed';
   my_grade?: number;
   
 }
