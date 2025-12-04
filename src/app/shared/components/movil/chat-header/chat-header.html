@@ -15,14 +15,23 @@
         </div>
       </div>
 
-      <!-- <div class="chatlist-actions">
-        <ion-button fill="clear">
+      
+      <div class="chatlist-actions">
+        <button
+  *ngIf="pwa.canInstall()"
+  class="px-3 py-1 bg-emerald-600 text-white rounded-full text-xs"
+  (click)="install()"
+>
+  Instalar App
+</button>
+
+        <!-- <ion-button fill="clear">
           <ion-icon name="search-outline"></ion-icon>
         </ion-button>
         <ion-button fill="clear">
           <ion-icon name="ellipsis-horizontal"></ion-icon>
-        </ion-button>
-      </div> -->
+        </ion-button> -->
+      </div>
     </div>
   </ion-toolbar>
 </ion-header>

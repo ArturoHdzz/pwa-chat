@@ -1,5 +1,7 @@
 import { Component, Input, Output, EventEmitter, signal, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { PwaInstall } from '../../../services/chat/pwa-install';
+
 import {
   IonHeader,
   IonToolbar,
@@ -57,6 +59,14 @@ export class ChatHeader implements OnInit {
   userEmail = this.user.email;
 
   isModalOpen = signal(false);
+constructor(public pwa: PwaInstall) {}
+
+install() {
+  this.pwa.installApp();
+}
+isIOS(): boolean {
+  return /iphone|ipad|ipod/i.test(navigator.userAgent);
+}
 
   ngOnInit() {
     this.loadOrganizations();
