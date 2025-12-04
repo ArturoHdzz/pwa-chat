@@ -9,6 +9,7 @@ export const desktopServiceGuard: CanActivateFn = (route, state) => {
   if (device.isMobile()) {
     return router.parseUrl('/m/chat');
   }
+  console.log('es movile',device.isMobile())
 
   return true;
 };

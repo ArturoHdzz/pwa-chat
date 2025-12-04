@@ -51,13 +51,13 @@ export const routes: Routes = [
                 path: 'dashboard',
                 loadComponent: () => import('./shared/components/dashboard/dashboard').then(m => m.Dashboard)
             },
-            { path: 'chat', component: Chat },
             { path: '', redirectTo: 'home', pathMatch: 'full' }
         ]
     },
     {
         path: 'm',
-        canActivate: [authGuard, mobileGuard],
+        canMatch: [mobileGuard],                     // 👈 aquí
+        canActivate: [authGuard],
         loadComponent: () => import('./shared/components/movil/mobile-shell/mobile-shell').then(m => m.MobileShell),
         children: [
             

@@ -5,9 +5,11 @@ export const mobileGuard: CanActivateFn = (route, state) => {
 const device = inject(DeviceService);
   const router = inject(Router);
 
-  // Si NO es móvil, lo mandamos al layout normal
-  if (!device.isMobile()) {
-    return router.parseUrl('/home'); // o lo que quieras como pantalla principal de desktop
+ const isMobile = device.isMobile();
+  console.log('[mobileGuard canMatch] isMobile:', isMobile);
+
+  if (!isMobile) {
+    return router.parseUrl('/home');
   }
 
   return true;
