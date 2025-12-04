@@ -16,9 +16,10 @@ export class Dashboard implements OnInit {
   private router = inject(Router); 
 
   data = signal<any>(null);
+  
   isLoading = signal(true);
   
-  isOfflineData = signal(false);
+  isSyncing = signal(false);
 
   ngOnInit() {
     this.loadData();
@@ -26,15 +27,18 @@ export class Dashboard implements OnInit {
 
   loadData() {
     const cachedData = localStorage.getItem('dashboard_cache');
+    
     if (cachedData) {
       try {
         const parsed = JSON.parse(cachedData);
         this.data.set(parsed);
         this.isLoading.set(false); 
-        this.isOfflineData.set(true);
+        this.isSyncing.set(true); 
       } catch (e) {
-        console.error('Error al leer caché', e);
+        console.error('Error caché', e);
       }
+    } else {
+      this.isLoading.set(true);
     }
 
     this.dashboardService.getDashboardData().subscribe({
@@ -45,14 +49,16 @@ export class Dashboard implements OnInit {
         }
         
         this.data.set(res);
+        
         this.isLoading.set(false);
-        this.isOfflineData.set(false);
+        this.isSyncing.set(false);
         
         localStorage.setItem('dashboard_cache', JSON.stringify(res));
       },
       error: (err) => {
-        console.error('Error de red o servidor:', err);
+        console.error('Error de red:', err);
         this.isLoading.set(false);
+        this.isSyncing.set(false); 
       }
     });
   }
