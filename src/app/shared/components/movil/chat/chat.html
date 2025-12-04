@@ -57,9 +57,21 @@
           <ion-icon name="happy-outline"></ion-icon>
         </ion-button>
 
-        <ion-button slot="start" fill="clear" aria-label="Adjuntar">
-          <ion-icon name="attach-outline"></ion-icon>
-        </ion-button>
+        <ion-button
+  slot="start"
+  fill="clear"
+  aria-label="Adjuntar"
+  (click)="fileInput.click()"
+>
+  <ion-icon name="attach-outline"></ion-icon>
+</ion-button>
+<input
+  #fileInput
+  type="file"
+  accept="image/*"
+  hidden
+  (change)="onFileSelected($event)"
+/>
 
         <ion-input
           [(ngModel)]="draft"

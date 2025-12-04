@@ -61,7 +61,8 @@ isLoading = signal(true);
       text: m.body,
       me: m.is_me,
       time: this.formatTime(m.created_at),
-      avatar: m.is_me ? this.myAvatar : this.defaultAvatar
+      avatar: m.is_me ? this.myAvatar : this.defaultAvatar,
+      image: m.image_url || undefined,
     }))
   );
 constructor(private pushService: Push) {}
@@ -137,29 +138,44 @@ constructor(private pushService: Push) {}
   }
 
   async takePhoto() {
+  if (!this.conversationId) {
+    this.showError('No se encontró la conversación.');
+    return;
+  }
+
+  try {
     const image = await Camera.getPhoto({
       quality: 80,
       allowEditing: false,
       resultType: CameraResultType.DataUrl,
-      source: CameraSource.Camera
+      source: CameraSource.Camera,
     });
 
-    const photo = image.dataUrl;
-    const now = new Date();
-    const hh = String(now.getHours()).padStart(2, '0');
-    const mm = String(now.getMinutes()).padStart(2, '0');
+    if (!image.dataUrl) {
+      return;
+    }
 
-   (this as any).messages.update((arr: ChatMsg[]) => [
-      ...arr,
-      {
-        id: crypto.randomUUID(),
-        text: '',
-        me: true,
-        time: `${hh}:${mm}`,
-        image: photo
-      }
-    ]);
+    const blob = this.dataUrlToBlob(image.dataUrl);
+
+    this.chatService
+      .sendMessage(this.conversationId, '', blob)
+      .subscribe({
+        next: () => {
+          // No hace falta tocar this.messages, ya se actualiza en el servicio.
+        },
+        error: (err) => {
+          console.error('Error al enviar la foto', err);
+          this.showError(
+            err?.error?.error || 'No se pudo enviar la foto. Intenta de nuevo.'
+          );
+        },
+      });
+  } catch (err) {
+    console.error('No se pudo tomar la foto', err);
+    this.showError('No se pudo acceder a la cámara.');
   }
+}
+
  onOrgChange(orgId: string) {
 
   }
@@ -168,4 +184,48 @@ constructor(private pushService: Push) {}
     this.errorOpen.set(false);
     this.errorMessage.set(null);
   }
+
+  private dataUrlToBlob(dataUrl: string): Blob {
+  const arr = dataUrl.split(',');
+  const mimeMatch = arr[0].match(/:(.*?);/);
+  const mime = mimeMatch ? mimeMatch[1] : 'image/jpeg';
+  const bstr = atob(arr[1]);
+  let n = bstr.length;
+  const u8arr = new Uint8Array(n);
+
+  while (n--) {
+    u8arr[n] = bstr.charCodeAt(n);
+  }
+
+  return new Blob([u8arr], { type: mime });
+}
+
+
+onFileSelected(event: Event) {
+  if (!this.conversationId) {
+    this.showError('No se encontró la conversación.');
+    return;
+  }
+
+  const input = event.target as HTMLInputElement;
+  if (!input.files || input.files.length === 0) return;
+
+  const file = input.files[0];
+
+  this.chatService.sendMessage(this.conversationId, this.draft || '', file)
+    .subscribe({
+      next: () => {
+        this.draft = '';
+        input.value = '';
+      },
+      error: (err) => {
+        console.error('Error al enviar la imagen', err);
+        this.showError(
+          err?.error?.error || 'No se pudo enviar la imagen. Intenta de nuevo.'
+        );
+      },
+    });
+}
+
+
 }

@@ -7,6 +7,7 @@ import { environment } from '../../../../environments/environment';
 export type ChatMessageDto = {
   id: string;
   body: string;
+  image_url?: string | null;
   created_at: string;
   sender_id: string;
   is_me: boolean;
@@ -78,17 +79,39 @@ export class ChatService {
       );
   }
 
-  sendMessage(conversationId: string, body: string): Observable<ChatMessageDto> {
-    return this.http
-      .post<ChatMessageDto>(
-        `${this.api}/conversations/${conversationId}/messages`,
-        { body }
-      )
-      .pipe(
-        tap((msg) => {
-          this.messages.update((arr) => [...arr, msg]);
-        })
-      );
+  // chat-service.ts
+sendMessage(
+  conversationId: string,
+  body: string,
+  imageFile?: File | Blob | null
+): Observable<ChatMessageDto> {
+  const url = `${this.api}/conversations/${conversationId}/messages`;
+
+  // Si viene imagen → usamos FormData
+  if (imageFile) {
+    const formData = new FormData();
+    if (body) {
+      formData.append('body', body);
+    }
+    // nombre por defecto si es Blob
+    const fileName =
+      imageFile instanceof File ? imageFile.name : 'photo-' + Date.now() + '.jpg';
+    formData.append('image', imageFile, fileName);
+
+    return this.http.post<ChatMessageDto>(url, formData).pipe(
+      tap((msg) => {
+        this.messages.update((arr) => [...arr, msg]);
+      })
+    );
   }
+
+  // Solo texto → JSON normal
+  return this.http.post<ChatMessageDto>(url, { body }).pipe(
+    tap((msg) => {
+      this.messages.update((arr) => [...arr, msg]);
+    })
+  );
+}
+
 
 }
