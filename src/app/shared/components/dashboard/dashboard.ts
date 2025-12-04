@@ -17,23 +17,41 @@ export class Dashboard implements OnInit {
 
   data = signal<any>(null);
   isLoading = signal(true);
+  
+  isOfflineData = signal(false);
 
   ngOnInit() {
     this.loadData();
   }
 
   loadData() {
+    const cachedData = localStorage.getItem('dashboard_cache');
+    if (cachedData) {
+      try {
+        const parsed = JSON.parse(cachedData);
+        this.data.set(parsed);
+        this.isLoading.set(false); 
+        this.isOfflineData.set(true);
+      } catch (e) {
+        console.error('Error al leer caché', e);
+      }
+    }
+
     this.dashboardService.getDashboardData().subscribe({
       next: (res) => {
         if (res.is_student) {
             this.router.navigate(['/groups']);
             return;
         }
+        
         this.data.set(res);
         this.isLoading.set(false);
+        this.isOfflineData.set(false);
+        
+        localStorage.setItem('dashboard_cache', JSON.stringify(res));
       },
       error: (err) => {
-        console.error(err);
+        console.error('Error de red o servidor:', err);
         this.isLoading.set(false);
       }
     });
