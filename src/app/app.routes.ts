@@ -40,6 +40,10 @@ export const routes: Routes = [
                 loadComponent: () => import('./shared/components/group-tasks/group-tasks').then(m => m.GroupTasks)
             },
             {
+                path: 'groups/:id/chat',
+                loadComponent: () => import('./shared/components/group-chat/group-chat').then(m => m.GroupChat)
+            },
+            {
                 path: 'groups/:id/tasks/:taskId/grading',
                 loadComponent: () => import('./shared/components/task-grading/task-grading').then(m => m.TaskGrading)
             },
@@ -50,6 +54,11 @@ export const routes: Routes = [
             {
                 path: 'dashboard',
                 loadComponent: () => import('./shared/components/dashboard/dashboard').then(m => m.Dashboard)
+            },
+            // NUEVA RUTA PARA CHAT INDIVIDUAL DESKTOP
+            {
+                path: 'chat/conversation/:id',
+                loadComponent: () => import('./shared/components/desktop-conversation/desktop-conversation').then(m => m.DesktopConversation)
             },
             { path: '', redirectTo: 'home', pathMatch: 'full' }
         ]
