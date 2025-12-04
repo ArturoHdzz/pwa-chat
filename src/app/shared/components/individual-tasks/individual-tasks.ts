@@ -22,8 +22,7 @@ export class IndividualTasks implements OnInit {
   tasks = signal<Task[]>([]);
   availableUsers = signal<any[]>([]);
   selectedUsers = signal<string[]>([]);
-  isLoading = signal(false);
-  isSyncing = signal(false); 
+  isLoading = signal(true);
   showForm = signal(false);
 
   taskForm = this.fb.group({
@@ -38,39 +37,20 @@ export class IndividualTasks implements OnInit {
   }
 
   loadTasks() {
-    const cacheKey = 'individual_tasks_cache';
-    
-    const cachedData = localStorage.getItem(cacheKey);
-    if (cachedData) {
-      try {
-        this.tasks.set(JSON.parse(cachedData));
-        this.isLoading.set(false);
-        this.isSyncing.set(true);
-      } catch (e) { console.error(e); }
-    } else {
-      this.isLoading.set(true);
-    }
-
+    this.isLoading.set(true);
     this.tasksService.getIndividualTasks().subscribe({
       next: (data) => {
         this.tasks.set(data);
         this.isLoading.set(false);
-        this.isSyncing.set(false);
-        localStorage.setItem(cacheKey, JSON.stringify(data));
       },
       error: (err) => {
         console.error('Error cargando tareas individuales:', err);
         this.isLoading.set(false);
-        this.isSyncing.set(false);
       }
     });
   }
 
   loadAvailableUsers() {
-    const cacheKey = 'org_users_cache';
-    const cached = localStorage.getItem(cacheKey);
-    if (cached) this.availableUsers.set(JSON.parse(cached));
-
     this.http.get<any[]>(`${environment.apiUrl}/organizations`).subscribe({
       next: (orgs: any[]) => {
         if (orgs.length > 0) {
@@ -78,7 +58,6 @@ export class IndividualTasks implements OnInit {
             next: (data: any) => {
               const users = data.users || [];
               this.availableUsers.set(users);
-              localStorage.setItem(cacheKey, JSON.stringify(users));
             },
             error: (err: any) => console.error('Error cargando usuarios:', err)
           });
