@@ -1,6 +1,6 @@
-<div class="min-h-screen flex flex-col md:flex-row md:items-center justify-center px-4 py-6 md:px-6 md:py-12 bg-gradient-to-b from-black via-gray-800 to-gray-100">
+<div class="min-h-screen h-full w-full flex flex-col md:flex-row md:items-center justify-center bg-gradient-to-b from-black via-gray-800 to-gray-100 overflow-y-auto">
   
-  <div class="w-full max-w-6xl grid grid-cols-1 md:grid-cols-2 bg-white shadow-xl rounded-2xl md:rounded-3xl overflow-hidden border border-gray-300 my-auto">
+  <div class="w-full max-w-6xl grid grid-cols-1 md:grid-cols-2 bg-white shadow-xl md:rounded-3xl overflow-hidden border-gray-300 my-0 md:my-auto min-h-screen md:min-h-0">
     
     <div class="bg-gradient-to-br from-gray-700 to-gray-900 bg-cover bg-center hidden md:block relative min-h-[600px]">
       <div class="absolute inset-0 bg-black bg-opacity-30 flex flex-col justify-center items-center p-8">
@@ -18,8 +18,8 @@
       </div>
     </div>
 
-    <div *ngIf="!showRegister()" class="p-6 sm:p-10 md:p-16 flex flex-col justify-center bg-white min-h-[50vh]">
-      <div class="flex flex-col items-center mb-6 md:mb-8">
+    <div *ngIf="!showRegister()" class="p-6 sm:p-10 md:p-16 flex flex-col justify-center bg-white min-h-screen md:min-h-[50vh]">
+      <div class="flex flex-col items-center mb-6 md:mb-8 mt-10 md:mt-0">
         <div class="h-12 w-12 rounded-full bg-black mb-2 flex items-center justify-center shadow-md">
           <svg class="h-8 w-8 text-white" fill="currentColor" viewBox="0 0 20 20">
             <path d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"/>
@@ -28,7 +28,7 @@
         <h2 class="text-2xl md:text-3xl font-extrabold text-black">Inicia sesión</h2>
       </div>
 
-      <form [formGroup]="loginForm" (ngSubmit)="onLogin()" class="space-y-5 md:space-y-6">
+      <form [formGroup]="loginForm" (ngSubmit)="onLogin()" class="space-y-5 md:space-y-6 pb-10">
         <div *ngIf="error" class="bg-gray-100 border border-gray-300 text-black px-4 py-2 rounded mb-2 text-sm shadow-sm">
           {{ error }}
         </div>
@@ -68,7 +68,7 @@
           {{ isLoading ? 'Ingresando...' : 'Ingresar' }}
         </button>
 
-        <div class="text-center mt-4">
+        <div class="text-center mt-4 pb-8">
           <button type="button" (click)="toggleForm()" class="text-black hover:text-gray-700 text-sm underline p-2">
             ¿No tienes cuenta? Regístrate aquí
           </button>
@@ -76,8 +76,8 @@
       </form>
     </div>
 
-    <div *ngIf="showRegister()" class="p-5 sm:p-10 flex flex-col justify-center bg-white">
-      <div class="flex flex-col items-center mb-6">
+    <div *ngIf="showRegister()" class="p-5 sm:p-10 flex flex-col justify-center bg-white min-h-screen md:min-h-0">
+      <div class="flex flex-col items-center mb-6 mt-8 md:mt-0">
         <div class="h-10 w-10 md:h-12 md:w-12 rounded-full bg-black mb-2 flex items-center justify-center shadow-md">
           <svg class="h-6 w-6 md:h-8 md:w-8 text-white" fill="currentColor" viewBox="0 0 20 20">
             <path d="M8 9a3 3 0 100-6 3 3 0 000 6zM8 11a6 6 0 016 6H2a6 6 0 016-6zM16 7a1 1 0 10-2 0v1h-1a1 1 0 100 2h1v1a1 1 0 102 0v-1h1a1 1 0 100-2h-1V7z"/>
@@ -86,7 +86,7 @@
         <h2 class="text-xl md:text-2xl font-extrabold text-black">Crear Cuenta</h2>
       </div>
 
-      <form [formGroup]="registerForm" (ngSubmit)="onRegister()" class="space-y-4">
+      <form [formGroup]="registerForm" (ngSubmit)="onRegister()" class="space-y-4 pb-10">
         <div *ngIf="error" class="bg-gray-100 border border-gray-300 text-black px-4 py-2 rounded text-sm shadow-sm">
           {{ error }}
         </div>
@@ -205,8 +205,8 @@
           {{ isLoading ? 'Registrando...' : 'Registrarse' }}
         </button>
 
-        <div class="text-center pb-4">
-          <button type="button" (click)="toggleForm()" class="text-black hover:text-gray-700 text-sm underline">
+        <div class="text-center pb-8">
+          <button type="button" (click)="toggleForm()" class="text-black hover:text-gray-700 text-sm underline p-2">
             ¿Ya tienes cuenta? Inicia sesión
           </button>
         </div>
