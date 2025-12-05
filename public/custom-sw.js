@@ -57,6 +57,9 @@ self.addEventListener('notificationclick', (event) => {
             return client.focus();
           }
         }
+
+        console.log('evento',event)
+
         if (clients.openWindow) {
           return clients.openWindow(url);
         }
