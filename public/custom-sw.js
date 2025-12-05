@@ -1,4 +1,5 @@
 // public/custom-sw.js
+importScripts('./ngsw-worker.js');
 
 self.addEventListener('push', (event) => {
   console.log('[SW] push event recibido:', event);
