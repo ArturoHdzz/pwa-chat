@@ -14,7 +14,7 @@ export const appConfig: ApplicationConfig = {
     provideZoneChangeDetection({ eventCoalescing: true }),
     provideRouter(routes), 
     provideServiceWorker('custom-sw.js', {
-      enabled: !isDevMode(),
+      enabled: true,
       registrationStrategy: 'registerWhenStable:30000'
     }),
 

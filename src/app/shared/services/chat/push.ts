@@ -5,84 +5,69 @@ import { environment } from '../../../../environments/environment';
 import { Capacitor } from '@capacitor/core';
 import { PushNotifications, Token } from '@capacitor/push-notifications';
 
+import { initializeApp } from 'firebase/app';
+import { getMessaging, getToken, onMessage, isSupported } from 'firebase/messaging';
+
 @Injectable({ providedIn: 'root' })
 export class Push {
   private http = inject(HttpClient);
   private api = environment.apiUrl;
 
+  private firebaseApp = initializeApp(environment.firebase);
+  private messagingPromise = isSupported().then((supported) =>
+    supported ? getMessaging(this.firebaseApp) : null
+  );
+
   async requestPermissionAndSubscribe() {
-    console.log('entro')
-    // 1) Si algún día empaquetas como app nativa:
+    // Nativo (Capacitor app)
     if (Capacitor.isNativePlatform()) {
       await this.setupNativePush();
       return;
     }
 
-    // 2) PWA / Web → Web Push
-    console.log('[Push] Web push: usando Service Worker + PushManager');
+    // Web / PWA
+    console.log('[Push] Web: usando Firebase Cloud Messaging');
 
-    if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
-      console.warn('[Push] Este navegador no soporta Web Push');
+    const messaging = await this.messagingPromise;
+    if (!messaging) {
+      console.warn('[Push] FCM no soportado en este navegador');
       return;
     }
 
-    // Permiso de notificaciones
     const permission = await Notification.requestPermission();
     console.log('[Push] Notification permission:', permission);
 
     if (permission !== 'granted') {
-      console.warn('[Push] Permiso de notificaciones denegado o ignorado');
+      console.warn('[Push] Permiso de notificaciones denegado');
       return;
     }
 
-    // Esperar a que el service worker esté listo
-    const registration = await navigator.serviceWorker.ready;
-    console.log('[Push] Service worker listo:', registration);
+    try {
+      // 👉 MUY IMPORTANTE: usar el service worker YA REGISTRADO (custom-sw.js)
+      const registration = await navigator.serviceWorker.ready;
 
-    // Ver si ya hay suscripción
-    const existingSub = await registration.pushManager.getSubscription();
-    if (existingSub) {
-      console.log('[Push] Ya existe suscripción de Web Push');
-      return;
-    }
-
-    // Crear nueva suscripción
-    const sub = await registration.pushManager.subscribe({
-      userVisibleOnly: true,
-      applicationServerKey: this.urlBase64ToUint8Array(
-        environment.vapidPublicKey
-      ) as Uint8Array<ArrayBuffer>,
-    });
-
-    console.log('[Push] Nueva suscripción creada:', sub);
-
-    // Extraer claves
-    const rawKey = sub.getKey('p256dh');
-    const rawAuth = sub.getKey('auth');
-
-    const publicKey = rawKey
-      ? btoa(String.fromCharCode(...new Uint8Array(rawKey)))
-      : '';
-    const authToken = rawAuth
-      ? btoa(String.fromCharCode(...new Uint8Array(rawAuth)))
-      : '';
-
-    // Mandar al backend (PushSubscriptionController@store)
-    this.http
-      .post(`${this.api}/push-subscriptions`, {
-        endpoint: sub.endpoint,
-        public_key: publicKey,
-        auth_token: authToken,
-        content_encoding: 'aesgcm', // o 'aes128gcm' según uses
-      })
-      .subscribe({
-        next: () => console.log('[Push] Suscripción web push registrada en backend'),
-        error: (err) =>
-          console.error('[Push] Error registrando suscripción web push', err),
+      const token = await getToken(messaging, {
+        vapidKey: environment.firebaseVapidKey,
+        serviceWorkerRegistration: registration, // 👈 aquí la magia
       });
+
+      if (!token) {
+        console.warn('[Push] No se pudo obtener token FCM web');
+        return;
+      }
+
+      console.log('[Push] FCM Web token:', token);
+
+      this.sendTokenToBackend(token, 'web');
+
+      onMessage(messaging, (payload) => {
+        console.log('[Push] Mensaje FCM en foreground', payload);
+      });
+    } catch (err) {
+      console.error('[Push] Error obteniendo token FCM web', err);
+    }
   }
 
-  // RAMA NATIVA (la puedes dejar para futuro)
   private async setupNativePush() {
     let permStatus = await PushNotifications.checkPermissions();
 
@@ -91,7 +76,7 @@ export class Push {
     }
 
     if (permStatus.receive !== 'granted') {
-      console.log('Permiso de notificaciones (nativas) denegado');
+      console.log('Permiso de notificaciones denegado (nativo)');
       return;
     }
 
@@ -99,7 +84,7 @@ export class Push {
 
     PushNotifications.addListener('registration', (token: Token) => {
       console.log('Push registration success, token: ', token.value);
-      this.sendTokenToBackend(token.value);
+      this.sendTokenToBackend(token.value, Capacitor.getPlatform());
     });
 
     PushNotifications.addListener('registrationError', (error) => {
@@ -107,37 +92,25 @@ export class Push {
     });
 
     PushNotifications.addListener('pushNotificationReceived', (notification) => {
-      console.log('Notificación nativa en foreground', notification);
+      console.log('Notificación recibida en foreground', notification);
     });
 
     PushNotifications.addListener('pushNotificationActionPerformed', (notification) => {
-      console.log('Click en notificación nativa', notification);
+      console.log('Acción de notificación', notification);
+      const data = notification.notification.data;
+      // navegar con data.conversation_id si quieres
     });
   }
 
-  private sendTokenToBackend(token: string) {
+  private sendTokenToBackend(token: string, platform: string) {
     this.http
       .post(`${this.api}/push/mobile-token`, {
         token,
-        platform: Capacitor.getPlatform(), // 'android' | 'ios'
+        platform, // 'web' | 'android' | 'ios'
       })
       .subscribe({
-        next: () => console.log('Token móvil registrado correctamente'),
-        error: (err) => console.error('Error registrando token móvil', err),
+        next: () => console.log('Token push registrado correctamente', platform),
+        error: (err) => console.error('Error registrando token push', err),
       });
   }
-
- private urlBase64ToUint8Array(base64String: string): Uint8Array {
-  const padding = '='.repeat((4 - (base64String.length % 4)) % 4);
-  const base64 = (base64String + padding).replace(/-/g, '+').replace(/_/g, '/');
-
-  const rawData = window.atob(base64);
-  const outputArray = new Uint8Array(rawData.length);
-
-  for (let i = 0; i < rawData.length; ++i) {
-    outputArray[i] = rawData.charCodeAt(i);
-  }
-  return outputArray;
-}
-
 }
