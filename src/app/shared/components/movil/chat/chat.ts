@@ -48,6 +48,14 @@ export class Chat implements OnInit {
   private route = inject(ActivatedRoute);
   errorOpen = signal(false);
     errorMessage = signal<string | null>(null);
+
+
+    newMsgOpen = signal(false);
+  newMsgText = signal<string>('Tienes un nuevo mensaje');
+
+private swMessageHandler?: (event: MessageEvent) => void;
+  private nativePushHandler?: (event: any) => void;
+
   conversationId = this.route.snapshot.paramMap.get('id');
 isLoading = signal(true);
   draft = '';
@@ -70,31 +78,73 @@ ngOnInit() {
   this.pushService.requestPermissionAndSubscribe();
 
   if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.addEventListener('message', (event: any) => {
-      if (event.data?.type === 'NEW_MESSAGE') {
-        const convId = event.data.conversation_id;
-        if (convId === this.conversationId) {
-          this.chatService.loadMessages(convId).subscribe();
+      this.swMessageHandler = (event: any) => {
+        const data = event.data;
+        if (!data) return;
+
+        if (data.type === 'NEW_MESSAGE') {
+          const convId = data.conversation_id;
+
+          // Si el mensaje es de este chat, recargo mensajes
+          if (convId === this.conversationId) {
+            this.chatService.loadMessages(convId).subscribe();
+          }
+
+          // Muestro modal con el texto
+          this.newMsgText.set(data.body || 'Tienes un nuevo mensaje');
+          this.newMsgOpen.set(true);
         }
+      };
+
+      navigator.serviceWorker.addEventListener('message', this.swMessageHandler);
+    }
+
+    // 🔔 Native app (Capacitor): evento global app-push-message
+    this.nativePushHandler = (evt: any) => {
+      const detail = evt.detail || {};
+      const convId = detail.data?.conversation_id || null;
+
+      if (convId === this.conversationId) {
+        this.chatService.loadMessages(convId).subscribe();
       }
-    });
+
+      this.newMsgText.set(detail.body || 'Tienes un nuevo mensaje');
+      this.newMsgOpen.set(true);
+    };
+
+    window.addEventListener('app-push-message', this.nativePushHandler as any);
+
+    // Cargar mensajes iniciales
+    if (this.conversationId) {
+      this.chatService.loadMessages(this.conversationId).subscribe({
+        next: () => {
+          this.isLoading.set(false);
+        },
+        error: (err) => {
+          console.error('Error al cargar mensajes', err.error?.error);
+          this.showError(
+            err.error?.error ||
+              'No se pudieron cargar los mensajes. Intenta de nuevo más tarde.'
+          );
+        },
+      });
+    }
   }
 
-  if (this.conversationId) {
-    this.chatService.loadMessages(this.conversationId).subscribe({
-      next: () => {
-        this.isLoading.set(false);
-      },
-      error: (err) => {
-        console.error('Error al cargar mensajes', err.error?.error);
-        this.showError(
-          err.error?.error ||
-            'No se pudieron cargar los mensajes. Intenta de nuevo más tarde.'
-        );
-      },
-    });
+
+   ngOnDestroy() {
+    if (this.swMessageHandler && 'serviceWorker' in navigator) {
+      navigator.serviceWorker.removeEventListener('message', this.swMessageHandler);
+    }
+    if (this.nativePushHandler) {
+      window.removeEventListener('app-push-message', this.nativePushHandler as any);
+    }
   }
-}
+
+  closeNewMsgAlert() {
+    this.newMsgOpen.set(false);
+  }
+
 
 
 

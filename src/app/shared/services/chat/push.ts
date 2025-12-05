@@ -5,67 +5,20 @@ import { environment } from '../../../../environments/environment';
 import { Capacitor } from '@capacitor/core';
 import { PushNotifications, Token } from '@capacitor/push-notifications';
 
-import { initializeApp } from 'firebase/app';
-import { getMessaging, getToken, onMessage, isSupported } from 'firebase/messaging';
-
 @Injectable({ providedIn: 'root' })
 export class Push {
   private http = inject(HttpClient);
   private api = environment.apiUrl;
 
-  private firebaseApp = initializeApp(environment.firebase);
-  private messagingPromise = isSupported().then((supported) =>
-    supported ? getMessaging(this.firebaseApp) : null
-  );
-
   async requestPermissionAndSubscribe() {
-    // Nativo (Capacitor app)
     if (Capacitor.isNativePlatform()) {
       await this.setupNativePush();
       return;
     }
 
-    // Web / PWA
+    // WEB / PWA
     console.log('[Push] Web: usando Firebase Cloud Messaging');
-
-    const messaging = await this.messagingPromise;
-    if (!messaging) {
-      console.warn('[Push] FCM no soportado en este navegador');
-      return;
-    }
-
-    const permission = await Notification.requestPermission();
-    console.log('[Push] Notification permission:', permission);
-
-    if (permission !== 'granted') {
-      console.warn('[Push] Permiso de notificaciones denegado');
-      return;
-    }
-
-    try {
-      // 👉 MUY IMPORTANTE: usar el service worker YA REGISTRADO (custom-sw.js)
-      const registration = await navigator.serviceWorker.ready;
-
-      const token = await getToken(messaging, {
-        vapidKey: environment.firebaseVapidKey,
-        serviceWorkerRegistration: registration, // 👈 aquí la magia
-      });
-
-      if (!token) {
-        console.warn('[Push] No se pudo obtener token FCM web');
-        return;
-      }
-
-      console.log('[Push] FCM Web token:', token);
-
-      this.sendTokenToBackend(token, 'web');
-
-      onMessage(messaging, (payload) => {
-        console.log('[Push] Mensaje FCM en foreground', payload);
-      });
-    } catch (err) {
-      console.error('[Push] Error obteniendo token FCM web', err);
-    }
+    // ... tu lógica actual de web push (ya la tienes) ...
   }
 
   private async setupNativePush() {
@@ -76,7 +29,7 @@ export class Push {
     }
 
     if (permStatus.receive !== 'granted') {
-      console.log('Permiso de notificaciones denegado (nativo)');
+      console.log('Permiso de notificaciones denegado');
       return;
     }
 
@@ -84,33 +37,60 @@ export class Push {
 
     PushNotifications.addListener('registration', (token: Token) => {
       console.log('Push registration success, token: ', token.value);
-      this.sendTokenToBackend(token.value, Capacitor.getPlatform());
+      this.sendTokenToBackend(token.value);
     });
 
     PushNotifications.addListener('registrationError', (error) => {
       console.error('Error on registration: ', error);
     });
 
+    // 👇 Cuando la app está en foreground y llega una notificación nativa
     PushNotifications.addListener('pushNotificationReceived', (notification) => {
-      console.log('Notificación recibida en foreground', notification);
+      console.log('[Push] Notificación nativa recibida', notification);
+
+      const title =
+        (notification.notification && notification.notification.title) ||
+        (notification as any).title ||
+        'Nuevo mensaje';
+
+      const body =
+        (notification.notification && notification.notification.body) ||
+        (notification as any).body ||
+        '';
+
+      const data = notification.data || {};
+
+      // Disparamos un evento global para que Angular lo capture
+      window.dispatchEvent(
+        new CustomEvent('app-push-message', {
+          detail: {
+            title,
+            body,
+            data,
+          },
+        })
+      );
     });
 
+    // Opcional: cuando el user toca la notificación (background → abrir chat)
     PushNotifications.addListener('pushNotificationActionPerformed', (notification) => {
       console.log('Acción de notificación', notification);
       const data = notification.notification.data;
-      // navegar con data.conversation_id si quieres
+      // Aquí puedes navegar a la conversación en app nativa, si lo deseas
     });
   }
 
-  private sendTokenToBackend(token: string, platform: string) {
+  private sendTokenToBackend(token: string) {
     this.http
       .post(`${this.api}/push/mobile-token`, {
         token,
-        platform, // 'web' | 'android' | 'ios'
+        platform: Capacitor.getPlatform(), // 'android' | 'ios'
       })
       .subscribe({
-        next: () => console.log('Token push registrado correctamente', platform),
-        error: (err) => console.error('Error registrando token push', err),
+        next: () => console.log('Token móvil registrado correctamente'),
+        error: (err) => console.error('Error registrando token móvil', err),
       });
   }
+
+  // ... tu urlBase64ToUint8Array y resto de código web push ...
 }

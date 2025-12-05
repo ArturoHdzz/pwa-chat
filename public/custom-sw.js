@@ -1,6 +1,5 @@
 // public/custom-sw.js
 
-// 1) Manejar los PUSH que manda FCM
 self.addEventListener('push', (event) => {
   let data = {};
   if (event.data) {
@@ -12,16 +11,39 @@ self.addEventListener('push', (event) => {
   }
 
   const title = data.title || 'Nuevo mensaje';
+  const body  = data.body || '';
+
   const options = {
-    body: data.body || '',
+    body,
     icon: '/icons/icon-192x192.svg',
-    data: data, // debe traer conversation_id, etc.
+    data, // debe traer conversation_id, etc.
   };
 
-  event.waitUntil(self.registration.showNotification(title, options));
+  event.waitUntil(
+    (async () => {
+      // 1) Avisar a todas las pestañas / PWA que están abiertas
+      const allClients = await clients.matchAll({
+        type: 'window',
+        includeUncontrolled: true,
+      });
+
+      allClients.forEach((client) => {
+        client.postMessage({
+          type: 'NEW_MESSAGE',               // 👈 tipo que escuchará Angular
+          title,
+          body,
+          conversation_id: data.conversation_id || null,
+          raw: data,
+        });
+      });
+
+      // 2) Mostrar notificación normal (para cuando la app está en background)
+      await self.registration.showNotification(title, options);
+    })()
+  );
 });
 
-// 2) Click en la notificación → abrir chat
+// Click en notificación → abrir chat
 self.addEventListener('notificationclick', (event) => {
   event.notification.close();
   const url = '/m/chat/' + (event.notification.data?.conversation_id || '');
@@ -42,3 +64,4 @@ self.addEventListener('notificationclick', (event) => {
     )
   );
 });
+
