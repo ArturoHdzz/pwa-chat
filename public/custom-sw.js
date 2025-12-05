@@ -2,71 +2,52 @@
 importScripts('./ngsw-worker.js');
 
 self.addEventListener('push', (event) => {
-  console.log('[SW] push event recibido:', event);
-
   let data = {};
   if (event.data) {
     try {
       data = event.data.json();
     } catch (e) {
-      // Para tests desde DevTools (texto plano)
-      console.warn('[SW] No es JSON, usando texto directo', e);
       data = { title: 'Nuevo mensaje', body: event.data.text() };
     }
   }
 
-  // Estructura típica de FCM: { notification: { title, body }, data: {...} }
-  const title =
-    (data.notification && data.notification.title) ||
-    data.title ||
-    'Nuevo mensaje';
+  const title = data.title || 'Nuevo mensaje';
+  const body  = data.body || '';
 
-  const body =
-    (data.notification && data.notification.body) ||
-    data.body ||
-    '';
-
-  const payload = {
-    title,
-    body,
-    conversation_id:
-      (data.data && data.data.conversation_id) || data.conversation_id || '',
-    sender_id:
-      (data.data && data.data.sender_id) || data.sender_id || '',
-    type: (data.data && data.data.type) || data.type || 'chat_message',
-  };
-
-  console.log('[SW] payload normalizado:', payload);
-
-  // 1) Notificación del sistema (SIEMPRE)
-  const showNotificationPromise = self.registration.showNotification(title, {
+  const options = {
     body,
     icon: '/icons/icon-192x192.svg',
-    data: payload,
-  });
-
-  // 2) Avisar a todas las ventanas abiertas (para mostrar modal)
-  const notifyClientsPromise = self.clients
-    .matchAll({ type: 'window', includeUncontrolled: true })
-    .then((clientList) => {
-      clientList.forEach((client) => {
-        client.postMessage({
-          type: 'PUSH_CHAT_MESSAGE',
-          payload,
-        });
-      });
-    });
+    data, // debe traer conversation_id, etc.
+  };
 
   event.waitUntil(
-    Promise.all([showNotificationPromise, notifyClientsPromise])
+    (async () => {
+      // 1) Avisar a todas las pestañas / PWA que están abiertas
+      const allClients = await clients.matchAll({
+        type: 'window',
+        includeUncontrolled: true,
+      });
+
+      allClients.forEach((client) => {
+        client.postMessage({
+          type: 'NEW_MESSAGE',               // 👈 tipo que escuchará Angular
+          title,
+          body,
+          conversation_id: data.conversation_id || null,
+          raw: data,
+        });
+      });
+
+      // 2) Mostrar notificación normal (para cuando la app está en background)
+      await self.registration.showNotification(title, options);
+    })()
   );
 });
 
-// Click: abrir el chat
+// Click en notificación → abrir chat
 self.addEventListener('notificationclick', (event) => {
   event.notification.close();
-  const convId = event.notification.data?.conversation_id || '';
-  const url = convId ? `/m/chat/${convId}` : '/m/chat';
+  const url = '/m/chat/' + (event.notification.data?.conversation_id || '');
 
   event.waitUntil(
     clients.matchAll({ type: 'window', includeUncontrolled: true }).then(
@@ -84,3 +65,4 @@ self.addEventListener('notificationclick', (event) => {
     )
   );
 });
+
