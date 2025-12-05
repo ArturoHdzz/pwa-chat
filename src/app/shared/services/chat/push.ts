@@ -10,17 +10,81 @@ export class Push {
   private http = inject(HttpClient);
   private api = environment.apiUrl;
 
+
+  
   async requestPermissionAndSubscribe() {
+    console.log('entro')
+    // 1) Si algún día empaquetas como app nativa:
     if (Capacitor.isNativePlatform()) {
       await this.setupNativePush();
       return;
     }
 
-    // WEB / PWA
-    console.log('[Push] Web: usando Firebase Cloud Messaging');
-    // ... tu lógica actual de web push (ya la tienes) ...
+    // 2) PWA / Web → Web Push
+    console.log('[Push] Web push: usando Service Worker + PushManager');
+
+    if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
+      console.warn('[Push] Este navegador no soporta Web Push');
+      return;
+    }
+
+    // Permiso de notificaciones
+    const permission = await Notification.requestPermission();
+    console.log('[Push] Notification permission:', permission);
+
+    if (permission !== 'granted') {
+      console.warn('[Push] Permiso de notificaciones denegado o ignorado');
+      return;
+    }
+
+    // Esperar a que el service worker esté listo
+    const registration = await navigator.serviceWorker.ready;
+    console.log('[Push] Service worker listo:', registration);
+
+    // Ver si ya hay suscripción
+    const existingSub = await registration.pushManager.getSubscription();
+    if (existingSub) {
+      console.log('[Push] Ya existe suscripción de Web Push');
+      return;
+    }
+
+    // Crear nueva suscripción
+    const sub = await registration.pushManager.subscribe({
+      userVisibleOnly: true,
+      applicationServerKey: this.urlBase64ToUint8Array(
+        environment.vapidPublicKey
+      ) as Uint8Array<ArrayBuffer>,
+    });
+
+    console.log('[Push] Nueva suscripción creada:', sub);
+
+    // Extraer claves
+    const rawKey = sub.getKey('p256dh');
+    const rawAuth = sub.getKey('auth');
+
+    const publicKey = rawKey
+      ? btoa(String.fromCharCode(...new Uint8Array(rawKey)))
+      : '';
+    const authToken = rawAuth
+      ? btoa(String.fromCharCode(...new Uint8Array(rawAuth)))
+      : '';
+
+    // Mandar al backend (PushSubscriptionController@store)
+    this.http
+      .post(`${this.api}/push-subscriptions`, {
+        endpoint: sub.endpoint,
+        public_key: publicKey,
+        auth_token: authToken,
+        content_encoding: 'aesgcm', // o 'aes128gcm' según uses
+      })
+      .subscribe({
+        next: () => console.log('[Push] Suscripción web push registrada en backend'),
+        error: (err) =>
+          console.error('[Push] Error registrando suscripción web push', err),
+      });
   }
 
+  // RAMA NATIVA (la puedes dejar para futuro)
   private async setupNativePush() {
     let permStatus = await PushNotifications.checkPermissions();
 
@@ -29,7 +93,7 @@ export class Push {
     }
 
     if (permStatus.receive !== 'granted') {
-      console.log('Permiso de notificaciones denegado');
+      console.log('Permiso de notificaciones (nativas) denegado');
       return;
     }
 
@@ -44,39 +108,12 @@ export class Push {
       console.error('Error on registration: ', error);
     });
 
-    // 👇 Cuando la app está en foreground y llega una notificación nativa
     PushNotifications.addListener('pushNotificationReceived', (notification) => {
-      console.log('[Push] Notificación nativa recibida', notification);
-
-      const title =
-        (notification.notification && notification.notification.title) ||
-        (notification as any).title ||
-        'Nuevo mensaje';
-
-      const body =
-        (notification.notification && notification.notification.body) ||
-        (notification as any).body ||
-        '';
-
-      const data = notification.data || {};
-
-      // Disparamos un evento global para que Angular lo capture
-      window.dispatchEvent(
-        new CustomEvent('app-push-message', {
-          detail: {
-            title,
-            body,
-            data,
-          },
-        })
-      );
+      console.log('Notificación nativa en foreground', notification);
     });
 
-    // Opcional: cuando el user toca la notificación (background → abrir chat)
     PushNotifications.addListener('pushNotificationActionPerformed', (notification) => {
-      console.log('Acción de notificación', notification);
-      const data = notification.notification.data;
-      // Aquí puedes navegar a la conversación en app nativa, si lo deseas
+      console.log('Click en notificación nativa', notification);
     });
   }
 
@@ -92,5 +129,17 @@ export class Push {
       });
   }
 
-  // ... tu urlBase64ToUint8Array y resto de código web push ...
+ private urlBase64ToUint8Array(base64String: string): Uint8Array {
+  const padding = '='.repeat((4 - (base64String.length % 4)) % 4);
+  const base64 = (base64String + padding).replace(/-/g, '+').replace(/_/g, '/');
+
+  const rawData = window.atob(base64);
+  const outputArray = new Uint8Array(rawData.length);
+
+  for (let i = 0; i < rawData.length; ++i) {
+    outputArray[i] = rawData.charCodeAt(i);
+  }
+  return outputArray;
+}
+
 }
