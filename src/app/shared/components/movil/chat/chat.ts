@@ -114,7 +114,9 @@ constructor(private pushService: Push) {}
   }
 
   this.chatService.sendMessage(this.conversationId, text).subscribe({
-    next: () => {  this.draft = '';
+    next: () => {  
+      console.log('messages',this.messages)
+      this.draft = '';
     },
     error: (err) => {
       console.error('Error al enviar el mensaje', err);
