@@ -2,6 +2,7 @@ import { bootstrapApplication } from '@angular/platform-browser';
 import { appConfig } from './app/app.config';
 import { provideIonicAngular } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
+import { defineCustomElements } from '@ionic/pwa-elements/loader';
 import {
   briefcaseOutline,
   chatbubblesOutline,
@@ -52,7 +53,7 @@ addIcons({
   'person-circle-outline': personCircleOutline,
   'add-outline': addOutline,
 });
-
+defineCustomElements(window);
 
 bootstrapApplication(App, {
   ...appConfig,
