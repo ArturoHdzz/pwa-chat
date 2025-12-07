@@ -76,7 +76,7 @@ isLoading = signal(true);
     })
   );
 
-  
+
 constructor(private pushService: Push) {}
  ngOnInit() {
   this.pushService.requestPermissionAndSubscribe();
@@ -164,7 +164,7 @@ constructor(private pushService: Push) {}
 
   try {
     const image = await Camera.getPhoto({
-      quality: 80,
+      quality: 60,
       allowEditing: false,
       resultType: CameraResultType.DataUrl,
       source: CameraSource.Camera,
