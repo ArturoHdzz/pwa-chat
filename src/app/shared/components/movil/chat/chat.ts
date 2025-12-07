@@ -6,6 +6,7 @@ import { ActivatedRoute } from '@angular/router';
 import { ChatHeader } from '../chat-header/chat-header';
 import { ChatService, ChatMessageDto } from '../../../services/chat/chat-service';
 import { Spiner } from '../spiner/spiner';
+import {UserProfile} from '../../../models/profile.model'
 import { Push } from '../../../services/chat/push';
 import {
   IonToolbar,
@@ -51,6 +52,7 @@ export class Chat implements OnInit {
   conversationId = this.route.snapshot.paramMap.get('id');
 isLoading = signal(true);
   draft = '';
+  user?: UserProfile;
 
   defaultAvatar = 'https://i.pravatar.cc/80?img=13';
   myAvatar = 'https://i.pravatar.cc/80?img=5';
@@ -157,7 +159,8 @@ constructor(private pushService: Push) {}
   }
 
   async takePhoto() {
-      console.log('enviando foto');
+  console.log('enviando foto');
+
   if (!this.conversationId) {
     this.showError('No se encontró la conversación.');
     return;
@@ -170,21 +173,33 @@ constructor(private pushService: Push) {}
       resultType: CameraResultType.Uri,
       source: CameraSource.Camera,
     });
+
     if (!image.webPath) {
       this.showError('No se pudo obtener la imagen de la cámara.');
       return;
     }
 
-    // Convertir la URI en Blob
     const response = await fetch(image.webPath);
     const blob = await response.blob();
 
     console.log('Tamaño blob MB:', (blob.size / (1024 * 1024)).toFixed(2));
 
+    const userJson = localStorage.getItem('user');
+    this.user = userJson ? JSON.parse(userJson) : undefined;
+
+    const imageUrl = await this.chatService.uploadChatImage(
+      this.conversationId,
+      this.user?.profile?.id || '',
+      blob
+    );
+
+    console.log('Imagen subida a Supabase:', imageUrl);
+
     this.chatService
-      .sendMessage(this.conversationId, '', blob)
+      .sendMessage(this.conversationId, '', imageUrl)
       .subscribe({
         next: () => {
+          // ya se agrega al store en el tap del servicio
         },
         error: (err) => {
           console.error('Error al enviar la foto', err);
@@ -198,6 +213,7 @@ constructor(private pushService: Push) {}
     this.showError('No se pudo acceder a la cámara.');
   }
 }
+
 
  onOrgChange(orgId: string) {
 
@@ -224,7 +240,7 @@ constructor(private pushService: Push) {}
 }
 
 
-onFileSelected(event: Event) {
+onFileSelected = async (event: Event) => {
   if (!this.conversationId) {
     this.showError('No se encontró la conversación.');
     return;
@@ -235,20 +251,39 @@ onFileSelected(event: Event) {
 
   const file = input.files[0];
 
-  this.chatService.sendMessage(this.conversationId, this.draft || '', file)
-    .subscribe({
-      next: () => {
-        this.draft = '';
-        input.value = '';
-      },
-      error: (err) => {
-        console.error('Error al enviar la imagen', err);
-        this.showError(
-          err?.error?.error || 'No se pudo enviar la imagen. Intenta de nuevo.'
-        );
-      },
-    });
-}
+  try {
+    const userJson = localStorage.getItem('user');
+    this.user = userJson ? JSON.parse(userJson) : undefined;
+
+    const imageUrl = await this.chatService.uploadChatImage(
+      this.conversationId,
+      this.user?.profile?.id || '',
+      file   // File también es un Blob, no hay problema
+    );
+
+    console.log('Imagen subida a Supabase desde file input:', imageUrl);
+
+    // 2) Enviar mensaje con la URL
+    this.chatService
+      .sendMessage(this.conversationId, this.draft || '', imageUrl)
+      .subscribe({
+        next: () => {
+          this.draft = '';
+          input.value = '';
+        },
+        error: (err) => {
+          console.error('Error al enviar la imagen', err);
+          this.showError(
+            err?.error?.error || 'No se pudo enviar la imagen. Intenta de nuevo.'
+          );
+        },
+      });
+  } catch (err) {
+    console.error('Error subiendo la imagen a Supabase', err);
+    this.showError('No se pudo subir la imagen. Intenta de nuevo.');
+  }
+};
+
 
 
 }

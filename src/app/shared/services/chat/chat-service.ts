@@ -2,7 +2,8 @@
 import { Injectable, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { tap } from 'rxjs/operators';
-import { Observable } from 'rxjs'
+import { Observable } from 'rxjs';
+import { supabase } from '../../../supabase.client';
 import { environment } from '../../../../environments/environment';
 export type ChatMessageDto = {
   id: string;
@@ -89,20 +90,16 @@ export class ChatService {
 sendMessage(
   conversationId: string,
   body: string,
-  imageFile?: File | Blob | null
+  imageUrl?: string,
 ): Observable<ChatMessageDto> {
   const url = `${this.api}/conversations/${conversationId}/messages`;
 
-  if (imageFile) {
-    const formData = new FormData();
-    if (body) {
-      formData.append('body', body);
-    }
-    const fileName =
-      imageFile instanceof File ? imageFile.name : 'photo-' + Date.now() + '.jpg';
-    formData.append('image', imageFile, fileName);
+  if (imageUrl) {
+    const form = new FormData();
+    form.append('body', body);
+    form.append('image_url', imageUrl);
 
-    return this.http.post<ChatMessageDto>(url, formData).pipe(
+    return this.http.post<ChatMessageDto>(url, form).pipe(
       tap((msg) => {
         this.messages.update((arr) => [...arr, msg]);
       })
@@ -115,4 +112,39 @@ sendMessage(
     })
   );
 }
+
+
+
+
+
+
+async uploadChatImage(
+  conversationId: string,
+  profileId: string,      // si lo tienes
+  blob: Blob
+): Promise<string> {
+  const fileExt = 'jpg';
+  const fileName = `${Date.now()}.${fileExt}`;
+  const filePath = `chat/${conversationId}/${profileId}/${fileName}`;
+
+  const { error } = await supabase.storage
+    .from('chat-images')
+    .upload(filePath, blob, {
+      cacheControl: '3600',
+      upsert: false,
+      contentType: 'image/jpeg',
+    });
+
+  if (error) {
+    console.error('Error subiendo a Supabase', error);
+    throw error;
+  }
+
+  const { data } = supabase.storage
+    .from('chat-images')
+    .getPublicUrl(filePath);
+
+  return data.publicUrl; // 👈 URL pública lista para usar
+}
+
 }
