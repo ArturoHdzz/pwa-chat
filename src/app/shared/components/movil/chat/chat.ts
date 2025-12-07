@@ -166,21 +166,24 @@ constructor(private pushService: Push) {}
     const image = await Camera.getPhoto({
       quality: 60,
       allowEditing: false,
-      resultType: CameraResultType.DataUrl,
+      resultType: CameraResultType.Uri,
       source: CameraSource.Camera,
     });
+    async function fetchBlobFromUri(uri: string): Promise<Blob> {
+  const response = await fetch(uri);
+  return await response.blob();
+}
+
+const blob = await fetchBlobFromUri(image.webPath!);
 
     if (!image.dataUrl) {
       return;
     }
 
-    const blob = this.dataUrlToBlob(image.dataUrl);
-
     this.chatService
       .sendMessage(this.conversationId, '', blob)
       .subscribe({
         next: () => {
-          // No hace falta tocar this.messages, ya se actualiza en el servicio.
         },
         error: (err) => {
           console.error('Error al enviar la foto', err);

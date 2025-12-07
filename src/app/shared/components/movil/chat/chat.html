@@ -59,20 +59,21 @@
         </ion-button>
 
         <ion-button
-  slot="start"
-  fill="clear"
-  aria-label="Adjuntar"
-  (click)="fileInput.click()"
->
-  <ion-icon name="attach-outline"></ion-icon>
-</ion-button>
-<input
-  #fileInput
-  type="file"
-  accept="image/*"
-  hidden
-  (change)="onFileSelected($event)"
-/>
+          slot="start"
+          fill="clear"
+          aria-label="Adjuntar"
+          (click)="fileInput.click()"
+        >
+          <ion-icon name="attach-outline"></ion-icon>
+          
+        </ion-button>
+        <input
+          #fileInput
+          type="file"
+          accept="image/*"
+          hidden
+          (change)="onFileSelected($event)"
+        />
 
         <ion-input
           [(ngModel)]="draft"
@@ -95,15 +96,6 @@
         >
           <ion-icon name="image-outline"></ion-icon>
         </ion-button>
-
-        <!-- <ion-button
-          slot="start"
-          fill="clear"
-          (click)="openCameraWeb()"
-          aria-label="Camara web"
-        >
-          <ion-icon name="camera-outline"></ion-icon>
-        </ion-button> -->
 
         <ion-button
           slot="end"
