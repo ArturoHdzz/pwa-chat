@@ -117,6 +117,9 @@ export class AuthService {
     if (typeof window !== 'undefined' && localStorage) {
       localStorage.removeItem('token');
       localStorage.removeItem('user');
+      localStorage.removeItem('organizations');
+ localStorage.removeItem('selectedOrganizationId');
+
     }
     this.userSubject.next(null); 
   }

@@ -1,7 +1,10 @@
 import { Component, Input, Output, EventEmitter, signal, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { PwaInstall } from '../../../services/chat/pwa-install';
-
+import { Push } from '../../../services/chat/push';
+import { AuthService } from '../../../services/auth/auth-service';
+import { Router } from '@angular/router';
+import { Spiner } from '../spiner/spiner';
 import {
   IonHeader,
   IonToolbar,
@@ -14,6 +17,7 @@ import {
   IonItem,
   IonLabel,
   IonSelect,
+
   IonSelectOption,
 } from '@ionic/angular/standalone';
 import { User } from '../../../models/user.model';
@@ -33,6 +37,7 @@ const ORG_STORAGE_KEY = 'selectedOrganizationId';
     IonTitle,
     IonModal,
     IonContent,
+    Spiner,
     IonItem,
     IonLabel,
     IonSelect,
@@ -45,7 +50,7 @@ export class ChatHeader implements OnInit {
 
   @Input() title = 'Chat';
   @Input() timeLabel = '11:15';
-
+isLoading = signal(true);
   @Output() organizationChange = new EventEmitter<string>();
 
   private orgService = inject(Organizations);
@@ -58,28 +63,17 @@ export class ChatHeader implements OnInit {
   userName = this.user.name + ' ' + this.user.apellido_paterno + ' ' + this.user.apellido_materno;
   userEmail = this.user.email;
 
+constructor(private pushService: Push,
+   private router: Router,
+    private authService: AuthService,
+  public pwa: PwaInstall
+) {}
   isModalOpen = signal(false);
-constructor(public pwa: PwaInstall) {}
 
-install() {
-  if (this.isIOS()) {
-    // aquí NO podemos llamar a prompt(),
-    // mejor mostrar un modal con instrucciones
-    alert(
-      'Para instalar la app:\n\n' +
-      '1. Toca el botón "Compartir" (icono de cuadrado con flecha hacia arriba).\n' +
-      '2. Elige "Añadir a pantalla de inicio".'
-    );
-  } else {
-    this.pwa.installApp();
-  }
-}
-
-isIOS(): boolean {
-  return /iphone|ipad|ipod/i.test(navigator.userAgent);
-}
 
   ngOnInit() {
+    this.pushService.requestPermissionAndSubscribe();
+
     this.loadOrganizations();
   }
 
@@ -146,5 +140,24 @@ isIOS(): boolean {
     const lastInitial = user.apellido_paterno?.charAt(0)?.toUpperCase() || '';
 
     return `${firstInitial}${lastInitial}` || 'U';
+  }
+
+
+  onLogout(): void {
+   
+    this.authService.logout().subscribe({
+      next: () => {
+        this.router.navigate(['/login']);
+      },
+      error: () => {
+        if (typeof window !== 'undefined' && localStorage) {
+          localStorage.removeItem('token');
+          localStorage.removeItem('user');
+ localStorage.removeItem('organizations');
+ localStorage.removeItem('selectedOrganizationId');
+        }
+        this.router.navigate(['/login']);
+      }
+    });
   }
 }

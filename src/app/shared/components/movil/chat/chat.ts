@@ -81,8 +81,6 @@ isLoading = signal(true);
 
 constructor(private pushService: Push) {}
  ngOnInit() {
-  this.pushService.requestPermissionAndSubscribe();
-
   if ('serviceWorker' in navigator) {
     navigator.serviceWorker.addEventListener('message', (event: any) => {
       if (event.data?.type === 'NEW_MESSAGE') {

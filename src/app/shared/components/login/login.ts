@@ -4,7 +4,7 @@ import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { DeviceService } from '../../services/chat/device-service';
-
+import { PwaInstall } from '../../services/chat/pwa-install';
 @Component({
   selector: 'app-login',
   imports: [CommonModule, ReactiveFormsModule],
@@ -25,6 +25,7 @@ export class Login {
     private auth: AuthService, 
     private router: Router, 
     private fb: FormBuilder,
+    public pwa:PwaInstall,
     private deviceService: DeviceService 
   ) {
     this.loginForm = this.fb.group({
@@ -45,6 +46,23 @@ export class Login {
       organization_code: [''] 
     }, { validators: this.passwordMatchValidator });
   }
+
+  install() {
+
+  if (this.isIOS()) {
+    alert(
+      'Para instalar la app:\n\n' +
+      '1. Toca el botón "Compartir" (icono de cuadrado con flecha hacia arriba).\n' +
+      '2. Elige "Añadir a pantalla de inicio".'
+    );
+  } else {
+    this.pwa.installApp();
+  }
+}
+
+isIOS(): boolean {
+  return /iphone|ipad|ipod/i.test(navigator.userAgent);
+}
 
   private passwordMatchValidator(form: any) {
     const password = form.get('password');

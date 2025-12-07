@@ -1,3 +1,5 @@
+<app-spiner [show]="isLoading()" message="Cargando chat..."></app-spiner>
+
 <ion-header>
   <ion-toolbar class="chatlist-toolbar">
     <div class="chatlist-header">
@@ -17,13 +19,7 @@
 
       
       <div class="chatlist-actions">
-        <button
-  *ngIf="pwa.canInstall() || isIOS()"
-  class="px-3 py-1 bg-emerald-600 text-black rounded-full text-xs"
-  (click)="install()"
->
-  Instalar App
-</button>
+        
 
         <!-- <ion-button fill="clear">
           <ion-icon name="search-outline"></ion-icon>
@@ -124,6 +120,18 @@
   </ion-select>
 </ion-item>
 
+<button 
+            type="button"
+            (click)="onLogout()"
+            class="w-full flex items-center justify-center px-4 py-2 bg-black hover:bg-gray-800 text-white text-sm font-medium rounded-md transition-colors">
+            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
+            </svg>
+            Cerrar sesión
+          </button>
+
     </ion-content>
   </ng-template>
 </ion-modal>
+
+
