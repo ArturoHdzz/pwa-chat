@@ -75,6 +75,7 @@ constructor(private pushService: Push,
     this.pushService.requestPermissionAndSubscribe();
 
     this.loadOrganizations();
+    this.isLoading.set(false);
   }
 
   private loadOrganizations() {
