@@ -157,6 +157,7 @@ constructor(private pushService: Push) {}
   }
 
   async takePhoto() {
+      console.log('enviando foto');
   if (!this.conversationId) {
     this.showError('No se encontró la conversación.');
     return;
@@ -169,16 +170,16 @@ constructor(private pushService: Push) {}
       resultType: CameraResultType.Uri,
       source: CameraSource.Camera,
     });
-    async function fetchBlobFromUri(uri: string): Promise<Blob> {
-  const response = await fetch(uri);
-  return await response.blob();
-}
-
-const blob = await fetchBlobFromUri(image.webPath!);
-
-    if (!image.dataUrl) {
+    if (!image.webPath) {
+      this.showError('No se pudo obtener la imagen de la cámara.');
       return;
     }
+
+    // Convertir la URI en Blob
+    const response = await fetch(image.webPath);
+    const blob = await response.blob();
+
+    console.log('Tamaño blob MB:', (blob.size / (1024 * 1024)).toFixed(2));
 
     this.chatService
       .sendMessage(this.conversationId, '', blob)
