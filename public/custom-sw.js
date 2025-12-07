@@ -1,5 +1,5 @@
 // public/custom-sw.js
-//importScripts('./ngsw-worker.js');
+importScripts('./ngsw-worker.js');
 
 self.addEventListener('push', (event) => {
   let data = {};
