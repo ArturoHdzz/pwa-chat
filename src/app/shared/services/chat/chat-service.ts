@@ -86,7 +86,6 @@ export class ChatService {
       );
   }
 
-  // chat-service.ts
 sendMessage(
   conversationId: string,
   body: string,
@@ -94,13 +93,11 @@ sendMessage(
 ): Observable<ChatMessageDto> {
   const url = `${this.api}/conversations/${conversationId}/messages`;
 
-  // Si viene imagen → usamos FormData
   if (imageFile) {
     const formData = new FormData();
     if (body) {
       formData.append('body', body);
     }
-    // nombre por defecto si es Blob
     const fileName =
       imageFile instanceof File ? imageFile.name : 'photo-' + Date.now() + '.jpg';
     formData.append('image', imageFile, fileName);
@@ -112,7 +109,6 @@ sendMessage(
     );
   }
 
-  // Solo texto → JSON normal
   return this.http.post<ChatMessageDto>(url, { body }).pipe(
     tap((msg) => {
       this.messages.update((arr) => [...arr, msg]);

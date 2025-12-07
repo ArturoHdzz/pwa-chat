@@ -56,15 +56,27 @@ isLoading = signal(true);
   myAvatar = 'https://i.pravatar.cc/80?img=5';
 
   messages = computed<ChatMsg[]>(() =>
-    this.chatService.messages().map((m: ChatMessageDto) => ({
-      id: m.id,
-      text: m.body,
-      me: m.is_me,
-      time: this.formatTime(m.created_at),
-      avatar: m.is_me ? this.myAvatar : this.defaultAvatar,
-      image: m.image_url || undefined,
-    }))
+    this.chatService.messages().map((m: ChatMessageDto) => {
+      const mapped: ChatMsg = {
+        id: m.id,
+        text: m.body,
+        me: m.is_me,
+        time: this.formatTime(m.created_at),
+        avatar: m.is_me ? this.myAvatar : this.defaultAvatar,
+        image: m.image_url || undefined,
+      };
+
+      // 👈 LOG por cada mensaje mapeado
+      console.log('[Chat] mapped message', {
+        api: m,
+        mapped,
+      });
+
+      return mapped;
+    })
   );
+
+  
 constructor(private pushService: Push) {}
  ngOnInit() {
   this.pushService.requestPermissionAndSubscribe();
@@ -88,6 +100,7 @@ constructor(private pushService: Push) {}
     this.chatService.loadMessages(this.conversationId).subscribe({
       next: () => {
         this.isLoading.set(false);
+        console.log('messages', this.messages)
       },
       error: (err) => {
         console.error('Error al cargar mensajes', err.error.error);
@@ -115,7 +128,7 @@ constructor(private pushService: Push) {}
 
   this.chatService.sendMessage(this.conversationId, text).subscribe({
     next: () => {  
-      console.log('messages',this.messages)
+
       this.draft = '';
     },
     error: (err) => {
