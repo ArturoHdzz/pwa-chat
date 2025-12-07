@@ -83,15 +83,28 @@ constructor(private pushService: Push) {}
  ngOnInit() {
   if ('serviceWorker' in navigator) {
     navigator.serviceWorker.addEventListener('message', (event: any) => {
-      if (event.data?.type === 'NEW_MESSAGE') {
-        const convId = event.data.conversation_id;
+      const data = event.data;
+
+      // 1) Mensajes nuevos recibidos vía push
+      if (data?.type === 'NEW_MESSAGE') {
+        const convId = data.conversation_id;
+
+        // Si la notificación es de ESTE chat → recargo la lista
         if (convId === this.conversationId) {
+          console.log('[Chat] NEW_MESSAGE para esta conversación, recargando...');
           this.chatService.loadMessages(convId).subscribe();
+        } else {
+          // Aquí podrías abrir un modal tipo "Nuevo mensaje en otra conversación"
+          console.log('[Chat] NEW_MESSAGE de otra conversación', convId);
         }
       }
 
-      if (event.data?.type === 'PUSH_MESSAGE') {
-        // aquí tu lógica de modal, como ya teníamos
+      // 2) Por compatibilidad, si algún día mandas PUSH_MESSAGE
+      if (data?.type === 'PUSH_MESSAGE') {
+        const convId = data.conversation_id;
+        if (convId === this.conversationId) {
+          this.chatService.loadMessages(convId).subscribe();
+        }
       }
     });
   }

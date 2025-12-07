@@ -28,7 +28,7 @@ self.addEventListener('push', (event) => {
       .then((clientList) => {
         clientList.forEach((client) => {
           client.postMessage({
-            type: 'PUSH_MESSAGE',
+            type: 'NEW_MESSAGE',
             title,
             body: options.body,
             conversation_id: data.conversation_id || null,
