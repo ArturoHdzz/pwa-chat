@@ -199,3 +199,26 @@ ion-content {
   width: 100%;
   height: 100%;
 }
+
+/* Nombre del remitente en burbuja */
+.sender-name {
+  font-weight: 700;           /* Negrita */
+  font-size: 13px;
+  color: #4a4a4a;             /* Gris elegante */
+  margin-bottom: 4px;
+  margin-left: 4px;
+  letter-spacing: -0.2px;
+}
+
+/* Si quieres un color distinto por usuario "no-me" */
+.row:not(.me) .sender-name {
+  color: #1d963a;             /* Azul Messenger */
+}
+
+/* Si quieres fondo detrás del nombre (opcional) */
+.sender-name.badge {
+  background: #e9f0ff;
+  padding: 2px 6px;
+  border-radius: 6px;
+  display: inline-block;
+}

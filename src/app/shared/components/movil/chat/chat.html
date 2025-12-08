@@ -31,9 +31,9 @@
           </ion-avatar>
 
           <div class="bubble" [class.me]="m.me">
-            <div  class="sender-name">
-    {{ m.senderName }}
-  </div>
+             <div *ngIf="!m.me" class="sender-name">
+                {{ m.senderName }}
+              </div>
             <p class="text">{{ m.text }}</p>
 
             <img
