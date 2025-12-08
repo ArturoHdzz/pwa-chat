@@ -29,6 +29,7 @@ import {
   createOutline
 } from 'ionicons/icons';
 import { App } from './app/app';
+import 'emoji-picker-element';
 addIcons({
   'briefcase-outline': briefcaseOutline,
   'chatbubbles-outline': chatbubblesOutline,

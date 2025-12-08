@@ -54,10 +54,24 @@
 
   <ion-footer class="composer">
     <ion-toolbar>
-      <ion-item lines="none" class="composer-item">
-        <ion-button slot="start" fill="clear" size="small" aria-label="Emoji">
+
+        <div *ngIf="showEmojiPicker" class="emoji-container">
+  <emoji-picker (emoji-click)="addEmoji($event)"></emoji-picker>
+</div>
+
+ <ion-item lines="none" class="composer-item">
+
+        <!-- Botón EMOJI -->
+        <ion-button
+          slot="start"
+          fill="clear"
+          size="small"
+          aria-label="Emoji"
+          (click)="toggleEmojiPicker()"
+        >
           <ion-icon name="happy-outline"></ion-icon>
         </ion-button>
+
 
         <ion-button
           slot="start"
@@ -84,9 +98,9 @@
         >
         </ion-input>
 
-        <ion-button slot="end" fill="clear" size="small" aria-label="Grabar audio">
+        <!-- <ion-button slot="end" fill="clear" size="small" aria-label="Grabar audio">
           <ion-icon name="mic-outline"></ion-icon>
-        </ion-button>
+        </ion-button> -->
 
         <ion-button
           slot="start"

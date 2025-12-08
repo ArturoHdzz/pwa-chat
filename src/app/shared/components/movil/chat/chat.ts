@@ -8,6 +8,10 @@ import { ChatService, ChatMessageDto } from '../../../services/chat/chat-service
 import { Spiner } from '../spiner/spiner';
 import {UserProfile} from '../../../models/profile.model'
 import { Push } from '../../../services/chat/push';
+import {  ViewChild } from '@angular/core';
+
+import {  CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+
 import {
   IonToolbar,
   IonButton,
@@ -41,65 +45,90 @@ type ChatMsg = {
     IonAlert,
     ChatHeader,
   ],
+  schemas: [CUSTOM_ELEMENTS_SCHEMA],
   templateUrl: './chat.html',
   styleUrl: './chat.css'
 })
 export class Chat implements OnInit {
    private chatService = inject(ChatService);
   private route = inject(ActivatedRoute);
+  @ViewChild(IonContent, { static: false }) content?: IonContent;
   errorOpen = signal(false);
     errorMessage = signal<string | null>(null);
   conversationId = this.route.snapshot.paramMap.get('id');
 isLoading = signal(true);
   draft = '';
   user?: UserProfile;
+  showEmojiPicker = false;
+
+addEmoji(event: any) {
+  const emoji = event.detail.unicode;
+  this.draft += emoji;
+}
+toggleEmojiPicker() {
+    this.showEmojiPicker = !this.showEmojiPicker;
+  }
+
 
   defaultAvatar = 'https://i.pravatar.cc/80?img=13';
   myAvatar = 'https://i.pravatar.cc/80?img=5';
 
-  messages = computed<ChatMsg[]>(() =>
-    this.chatService.messages().map((m: ChatMessageDto) => {
-      const mapped: ChatMsg = {
-        id: m.id,
-        text: m.body,
-        me: m.is_me,
-        time: this.formatTime(m.created_at),
-        avatar: m.is_me ? this.myAvatar : this.defaultAvatar,
-        image: m.image_url || undefined,
-      };
+  messages = computed<ChatMsg[]>(() => {
+  const raw = this.chatService.messages();
 
-      // 👈 LOG por cada mensaje mapeado
-      console.log('[Chat] mapped message', {
-        api: m,
-        mapped,
-      });
+  const ordered = [...raw].sort((a, b) => {
+    const da = new Date(a.created_at).getTime();
+    const db = new Date(b.created_at).getTime();
+    return da - db;
+  });
 
-      return mapped;
-    })
-  );
+  return ordered.map((m: ChatMessageDto) => {
+    const mapped: ChatMsg = {
+      id: m.id,
+      text: m.body,
+      me: m.is_me,
+      time: this.formatTime(m.created_at),
+      avatar: m.is_me ? this.myAvatar : this.defaultAvatar,
+      image: m.image_url || undefined,
+    };
+
+    console.log('[Chat] mapped message', { api: m, mapped });
+
+    return mapped;
+  });
+});
 
 
 constructor(private pushService: Push) {}
- ngOnInit() {
-  if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.addEventListener('message', (event: any) => {
-      const data = event.data;
 
-      // 1) Mensajes nuevos recibidos vía push
-      if (data?.type === 'NEW_MESSAGE') {
+ngOnInit() {
+
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.addEventListener('message', async (event: any) => {
+    const data = event.data;
+
+    if (data?.type === 'NEW_MESSAGE') {
+      
+       const audio = new Audio('/assets/sounds/notification.mp3');
+  audio.volume = 1.0;
+  try {
+    await audio.play();
+    console.log('lo hizo',audio );
+  } catch(e) {
+    console.warn('No se pudo reproducir el sonido automáticamente', e);
+  }
+
+    
         const convId = data.conversation_id;
 
-        // Si la notificación es de ESTE chat → recargo la lista
         if (convId === this.conversationId) {
           console.log('[Chat] NEW_MESSAGE para esta conversación, recargando...');
           this.chatService.loadMessages(convId).subscribe();
         } else {
-          // Aquí podrías abrir un modal tipo "Nuevo mensaje en otra conversación"
           console.log('[Chat] NEW_MESSAGE de otra conversación', convId);
         }
       }
 
-      // 2) Por compatibilidad, si algún día mandas PUSH_MESSAGE
       if (data?.type === 'PUSH_MESSAGE') {
         const convId = data.conversation_id;
         if (convId === this.conversationId) {
@@ -113,7 +142,8 @@ constructor(private pushService: Push) {}
     this.chatService.loadMessages(this.conversationId).subscribe({
       next: () => {
         this.isLoading.set(false);
-        console.log('messages', this.messages)
+        console.log('messages', this.messages);
+        this.scrollToBottom();
       },
       error: (err) => {
         console.error('Error al cargar mensajes', err.error.error);
@@ -130,6 +160,13 @@ constructor(private pushService: Push) {}
     this.errorMessage.set(msg);
     this.errorOpen.set(true);
   }
+
+  private scrollToBottom(delay = 100) {
+    setTimeout(() => {
+      this.content?.scrollToBottom(10);
+    }, delay);
+  }
+
   send() {
   const text = this.draft?.trim();
   if (!text) return;
@@ -235,21 +272,7 @@ constructor(private pushService: Push) {}
     this.errorMessage.set(null);
   }
 
-  private dataUrlToBlob(dataUrl: string): Blob {
-  const arr = dataUrl.split(',');
-  const mimeMatch = arr[0].match(/:(.*?);/);
-  const mime = mimeMatch ? mimeMatch[1] : 'image/jpeg';
-  const bstr = atob(arr[1]);
-  let n = bstr.length;
-  const u8arr = new Uint8Array(n);
-
-  while (n--) {
-    u8arr[n] = bstr.charCodeAt(n);
-  }
-
-  return new Blob([u8arr], { type: mime });
-}
-
+  
 
 onFileSelected = async (event: Event) => {
   if (!this.conversationId) {

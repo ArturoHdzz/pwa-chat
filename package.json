@@ -34,6 +34,7 @@
     "@ionic/angular": "^8.7.3",
     "@ionic/pwa-elements": "^3.3.0",
     "@supabase/supabase-js": "^2.86.2",
+    "emoji-picker-element": "^1.28.0",
     "firebase": "^12.6.0",
     "ionicons": "^8.0.13",
     "rxjs": "~7.8.0",
