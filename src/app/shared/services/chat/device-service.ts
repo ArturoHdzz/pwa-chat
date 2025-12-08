@@ -15,11 +15,11 @@ export class DeviceService {
       /iPad|iPhone|iPod/.test(ua) ||
       /Windows Phone/i.test(ua);
 
-      console.log('[DeviceService] UA:', ua);
-    console.log('[DeviceService] isMobile:', isMobileUA);
+    //console.log('[DeviceService] UA:', ua);
+    //console.log('[DeviceService] isMobile:', isMobileUA);
 
 
-    //return width <= 900 || isMobileUA;
-   return isMobileUA;
+    return width <= 900 || isMobileUA;
+   //return isMobileUA;
   }
 }

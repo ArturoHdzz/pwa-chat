@@ -6,9 +6,27 @@ import { FormsModule } from '@angular/forms';
 import {
   IonContent,
 } from '@ionic/angular/standalone';
+import {
+  IonIcon,
+  IonCard,
+  IonCardContent,
+  IonItem,
+  IonLabel,
+  IonChip,
+  IonBadge,
+  IonTextarea,
+  IonGrid,
+  IonRow,
+  IonCol,
+  IonList,
+  IonButtons,
+  IonText,
+} from '@ionic/angular/standalone';
+
 import { Task } from '../../../models/task.model';
 import { TasksService } from '../../../services/tasks/tasks-service';
 import { Spiner } from '../spiner/spiner';
+import { IonButton } from '@ionic/angular/standalone';
 @Component({
   selector: 'app-tasks',
   imports: [ChatHeader,
@@ -17,7 +35,25 @@ import { Spiner } from '../spiner/spiner';
     IonContent,
     Spiner,
     DatePipe,
+    IonButton,
+    IonIcon,
     FormsModule,
+    IonContent,
+    IonButton,
+    IonIcon,
+    IonCard,
+    IonCardContent,
+    IonItem,
+    IonLabel,
+    IonChip,
+    IonBadge,
+    IonTextarea,
+    IonGrid,
+    IonRow,
+    IonCol,
+    IonList,
+    IonButtons,
+    IonText,
   ],
   templateUrl: './tasks.html',
   styleUrl: './tasks.css'
@@ -25,6 +61,7 @@ import { Spiner } from '../spiner/spiner';
 export class Tasks {
 private tasksService = inject(TasksService);
   isLoading = signal(true);
+  selectedFileName = signal<string | null>(null);
   loadmessage = signal('Cargando tareas...');
   tasks = signal<Task[]>([]);
 
@@ -105,14 +142,22 @@ private tasksService = inject(TasksService);
   /** Maneja el cambio de archivo */
   onFileChange(event: Event) {
     const input = event.target as HTMLInputElement;
-    if (input.files && input.files.length > 0) {
-      this.selectedFile.set(input.files[0]);
+    const file = input.files?.[0] || null;
+
+    if (file) {
+      this.selectedFileName.set(file.name); 
+      this.selectedFile.set(file);
     } else {
       this.selectedFile.set(null);
+      this.selectedFileName.set(null);
     }
   }
+  clearFile() {
+  this.selectedFileName.set(null);
+  this.selectedFile.set(null);
+}
 
-  /** Enviar la tarea (texto/archivo) */
+
   submitCurrentTask() {
     this.isLoading.set(true);
     this.loadmessage.set('Enviando tarea')
