@@ -6,6 +6,7 @@ import { TasksService } from '../../services/tasks/tasks-service';
 import { GroupsService } from '../../services/Groups/groups-service';
 import { Task } from '../../models/task.model';
 import { Spiner } from '../movil/spiner/spiner'; 
+import { AuthService } from '../../services/auth/auth-service';
 
 @Component({
   selector: 'app-group-tasks',
@@ -18,7 +19,7 @@ export class GroupTasks implements OnInit {
   private tasksService = inject(TasksService);
   private groupsService = inject(GroupsService);
   private fb = inject(FormBuilder);
-
+  private authService = inject(AuthService);
   groupId: string = '';
   tasks = signal<Task[]>([]);
   groupMembers = signal<any[]>([]);
@@ -58,7 +59,12 @@ export class GroupTasks implements OnInit {
   loadGroupMembers() {
     this.groupsService.getGroupMembers(this.groupId).subscribe({
       next: (data) => {
-        this.groupMembers.set(data);
+        const currentUser = this.authService.getCurrentUser();
+        if (currentUser && currentUser.profile) {
+          this.groupMembers.set(data.filter((m: any) => m.profile_id !== currentUser.profile.id));
+        } else {
+          this.groupMembers.set(data);
+        }
       },
       error: (err) => console.error('Error cargando miembros:', err)
     });
