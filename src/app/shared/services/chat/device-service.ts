@@ -19,7 +19,7 @@ export class DeviceService {
     console.log('[DeviceService] isMobile:', isMobileUA);
 
 
-   //  return width <= 900 || isMobileUA;
-   return isMobileUA;
+    return width <= 900 || isMobileUA;
+   //return isMobileUA;
   }
 }
