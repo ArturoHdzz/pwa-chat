@@ -30,6 +30,9 @@
           </ion-avatar>
 
           <div class="bubble" [class.me]="m.me">
+            <div *ngIf="!m.me && m.senderName" class="sender-name">
+    {{ m.senderName }}
+  </div>
             <p class="text">{{ m.text }}</p>
 
             <img
@@ -93,7 +96,7 @@
         <ion-input
           [(ngModel)]="draft"
           placeholder="Escribe un mensaje"
-          (keyup.enter)="send()"
+          (keyup.enter)="!isSending() && send()"
           class="input"
         >
         </ion-input>
@@ -118,6 +121,7 @@
           class="send-btn"
           (click)="send()"
           aria-label="Enviar mensaje"
+          [disabled]="isSending() || !draft?.trim()"  
         >
           <ion-icon name="send"></ion-icon>
         </ion-button>

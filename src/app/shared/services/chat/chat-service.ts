@@ -12,6 +12,7 @@ export type ChatMessageDto = {
   is_me: boolean;
   created_at: string;
   image_url?: string;
+  sender_name?: string | null;
 
   sender?: {
     id: string;

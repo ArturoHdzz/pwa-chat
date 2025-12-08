@@ -9,6 +9,7 @@ import { Spiner } from '../spiner/spiner';
 import {UserProfile} from '../../../models/profile.model'
 import { Push } from '../../../services/chat/push';
 import {  ViewChild } from '@angular/core';
+import { finalize } from 'rxjs';
 
 import {  CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 
@@ -32,6 +33,7 @@ type ChatMsg = {
   time: string;
   avatar?: string;
   image?: string;
+  senderName?: string;
 };
 
 @Component({
@@ -51,6 +53,7 @@ type ChatMsg = {
 })
 export class Chat implements OnInit {
    private chatService = inject(ChatService);
+   isSending = signal(false);
   private route = inject(ActivatedRoute);
   @ViewChild(IonContent, { static: false }) content?: IonContent;
   errorOpen = signal(false);
@@ -175,17 +178,32 @@ if ('serviceWorker' in navigator) {
     this.showError('No se encontró la conversación.');
     return;
   }
+  this.isSending.set(true);
+    const bodyToSend = text;
+    this.draft = '';
 
-  this.chatService.sendMessage(this.conversationId, text).subscribe({
-    next: () => {  
-
-      this.draft = '';
-    },
-    error: (err) => {
-      console.error('Error al enviar el mensaje', err);
-      this.showError( err.error.error ? err.error.error : 'Error al enviar el mensaje.');
-    }
-  });
+  this.chatService
+      .sendMessage(this.conversationId, bodyToSend)
+      .pipe(
+        finalize(() => {
+          // se ejecuta tanto en success como en error
+          this.isSending.set(false);
+        })
+      )
+      .subscribe({
+        next: () => {
+          // ya no necesitas tocar draft aquí
+        },
+        error: (err) => {
+          console.error('Error al enviar el mensaje', err);
+          this.showError(
+            err.error?.error
+              ? err.error.error
+              : 'Error al enviar el mensaje.'
+          );
+        },
+      });
+  
 }
 
 
