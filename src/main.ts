@@ -27,6 +27,8 @@ import {
   addOutline,
   person,
   createOutline,
+    documentOutline,
+  closeCircle,
   personOutline
 } from 'ionicons/icons';
 import { App } from './app/app';
@@ -56,6 +58,8 @@ addIcons({
   'add-outline': addOutline,
   'person-outline': personOutline,
   'person':person,
+  'document-outline': documentOutline,
+  'close-circle': closeCircle,
 });
 defineCustomElements(window);
 
