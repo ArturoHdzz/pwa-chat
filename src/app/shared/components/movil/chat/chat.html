@@ -1,3 +1,4 @@
+<ion-header>
 <app-chat-header
   [title]="'Chat'"
   [timeLabel]="'11:15'"
@@ -5,6 +6,7 @@
 >
 </app-chat-header>
 <app-spiner [show]="isLoading()" message="Cargando chat..."></app-spiner>
+</ion-header>
 
 <ion-alert
   [isOpen]="errorOpen()"
@@ -15,8 +17,7 @@
 ></ion-alert>
 
 
-<div class="chat-wrapper">
-  <ion-content class="chat-content">
+  <ion-content class="chat-content" fullscreen>
     <div class="day-divider">
       <ion-icon name="chatbubbles-outline"></ion-icon>
       <span>Hoy</span>
@@ -30,7 +31,7 @@
           </ion-avatar>
 
           <div class="bubble" [class.me]="m.me">
-            <div *ngIf="!m.me && m.senderName" class="sender-name">
+            <div  class="sender-name">
     {{ m.senderName }}
   </div>
             <p class="text">{{ m.text }}</p>
@@ -128,4 +129,4 @@
       </ion-item>
     </ion-toolbar>
   </ion-footer>
-</div>
+

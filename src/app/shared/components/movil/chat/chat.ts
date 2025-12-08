@@ -93,6 +93,7 @@ toggleEmojiPicker() {
       time: this.formatTime(m.created_at),
       avatar: m.is_me ? this.myAvatar : this.defaultAvatar,
       image: m.image_url || undefined,
+      senderName: m.sender_name || undefined,
     };
 
     console.log('[Chat] mapped message', { api: m, mapped });
