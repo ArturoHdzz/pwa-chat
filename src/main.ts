@@ -25,8 +25,9 @@ import {
   atOutline,
   personCircleOutline,
   addOutline,
-  
-  createOutline
+  person,
+  createOutline,
+  personOutline
 } from 'ionicons/icons';
 import { App } from './app/app';
 import 'emoji-picker-element';
@@ -53,6 +54,8 @@ addIcons({
   'create-outline': createOutline,
   'person-circle-outline': personCircleOutline,
   'add-outline': addOutline,
+  'person-outline': personOutline,
+  'person':person,
 });
 defineCustomElements(window);
 

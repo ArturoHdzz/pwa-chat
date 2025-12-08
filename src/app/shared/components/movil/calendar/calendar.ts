@@ -39,6 +39,7 @@ onOrgChange(orgId: string) {}
     this.tasksService.getMyTasks().subscribe({
       next: (res) => {
         this.tasks.set(res);
+        console.log('tareas',res);
         this.buildCalendar();
       },
       error: (err) => console.error('Error cargando tareas', err),
@@ -164,6 +165,7 @@ onOrgChange(orgId: string) {}
 
   // tareas del día seleccionado
   get selectedDayTasks() {
+
     return this.selectedDay()?.tasks ?? [];
   }
 }

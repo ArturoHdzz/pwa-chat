@@ -26,9 +26,10 @@
     <div class="messages">
       <ng-container *ngFor="let m of messages(); trackBy: trackById">
         <div class="row" [class.me]="m.me">
+
           <ion-avatar *ngIf="!m.me" class="avatar">
-            <img [src]="m.avatar || defaultAvatar" alt="avatar" />
-          </ion-avatar>
+        <ion-icon name="person-circle-outline"></ion-icon>
+      </ion-avatar>
 
           <div class="bubble" [class.me]="m.me">
              <div *ngIf="!m.me" class="sender-name">
@@ -48,9 +49,10 @@
             </span>
           </div>
 
-          <ion-avatar *ngIf="m.me" class="avatar me">
-            <img [src]="myAvatar" alt="yo" />
-          </ion-avatar>
+           <ion-avatar *ngIf="m.me" class="avatar me">
+        <ion-icon name="person-circle-outline"></ion-icon>
+      </ion-avatar>
+
         </div>
       </ng-container>
     </div>

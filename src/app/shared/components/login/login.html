@@ -76,6 +76,13 @@
 
         <!-- Toggle to register -->
         <div class="text-center pt-4">
+           <button
+  *ngIf="pwa.canInstall() || isIOS()"
+  class="px-3 py-1 bg-emerald-600 text-black rounded-full text-xs"
+  (click)="install()"
+>
+  Instalar App
+</button>
           <button type="button" (click)="toggleForm()" class="text-black hover:text-gray-700 text-sm underline py-2">
             ¿No tienes cuenta? Regístrate aquí
           </button>
@@ -219,15 +226,16 @@
           </svg>
           {{ isLoading ? 'Registrando...' : 'Registrarse' }}
         </button>
-        <button
+        
+        <!-- Toggle to login -->
+        <div class="text-center pt-2 pb-4">
+          <button
   *ngIf="pwa.canInstall() || isIOS()"
   class="px-3 py-1 bg-emerald-600 text-black rounded-full text-xs"
   (click)="install()"
 >
   Instalar App
 </button>
-        <!-- Toggle to login -->
-        <div class="text-center pt-2 pb-4">
           <button type="button" (click)="toggleForm()" class="text-black hover:text-gray-700 text-sm underline py-2">
             ¿Ya tienes cuenta? Inicia sesión
           </button>
