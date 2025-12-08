@@ -7,6 +7,7 @@ import { Task } from '../../models/task.model';
 import { HttpClient } from '@angular/common/http'; 
 import { environment } from '../../../../environments/environment';
 import { Spiner } from '../movil/spiner/spiner';
+import { AuthService } from '../../services/auth/auth-service';
 
 @Component({
   selector: 'app-individual-tasks',
@@ -18,6 +19,7 @@ export class IndividualTasks implements OnInit {
   private tasksService = inject(TasksService);
   private fb = inject(FormBuilder);
   private http = inject(HttpClient);
+  private authService = inject(AuthService); 
 
   tasks = signal<Task[]>([]);
   availableUsers = signal<any[]>([]);
@@ -56,7 +58,13 @@ export class IndividualTasks implements OnInit {
         if (orgs.length > 0) {
           this.http.get<any>(`${environment.apiUrl}/organizations/${orgs[0].id}`).subscribe({
             next: (data: any) => {
-              const users = data.users || [];
+              let users = data.users || [];
+              
+              const currentUser = this.authService.getCurrentUser();
+              if (currentUser && currentUser.profile) {
+                users = users.filter((u: any) => u.profile_id !== currentUser.profile.id);
+              }
+
               this.availableUsers.set(users);
             },
             error: (err: any) => console.error('Error cargando usuarios:', err)
