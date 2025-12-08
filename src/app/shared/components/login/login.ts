@@ -168,7 +168,22 @@ isIOS(): boolean {
     };
 
     this.auth.register(userData).subscribe({
-      next: (res) => {
+      next: (res: any) => {
+        const user = res.user || JSON.parse(localStorage.getItem('user') || '{}');
+        const role = user.profile?.role || user.role;
+        const isMobile = this.deviceService.isMobile();
+
+        if (!isMobile && (role === 'Alumno' || role === 'User' || role === 'student')) {
+          this.isLoading = false;
+          this.error = 'Registro exitoso, pero el acceso está restringido: Los alumnos solo pueden ingresar desde la aplicación móvil.';
+          
+          localStorage.removeItem('token');
+          localStorage.removeItem('user');
+          
+          this.toggleForm(); 
+          return;
+        }
+
         this.isLoading = false;
         this.router.navigate(['/home']);
       },

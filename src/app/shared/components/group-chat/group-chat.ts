@@ -4,6 +4,7 @@ import { ActivatedRoute, RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { ChatService, ChatMessageDto } from '../../services/chat/chat-service';
 import { Spiner } from '../movil/spiner/spiner';
+import { UserProfile } from '../../models/profile.model';
 
 @Component({
   selector: 'app-group-chat',
@@ -21,21 +22,31 @@ export class GroupChat implements OnInit, AfterViewChecked {
   conversationId: string | null = null;
   
   isLoading = signal(true);
+  isUploading = signal(false); 
   messageText = '';
+  user?: UserProfile; 
   
   messages = computed(() => 
-    this.chatService.messages().map((m: ChatMessageDto) => ({
-      id: m.id,
-      text: m.body,
-      isMe: m.is_me,
-      time: new Date(m.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-      sender: m.sender?.display_name || 'Usuario',
-      image: m.image_url
-    }))
+    this.chatService.messages()
+      .slice()
+      .sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime())
+      .map((m: ChatMessageDto) => ({
+        id: m.id,
+        text: m.body,
+        isMe: m.is_me,
+        time: new Date(m.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        sender: m.sender?.display_name || 'Usuario',
+        image: m.image_url
+      }))
   );
 
   ngOnInit() {
     this.groupId = this.route.snapshot.paramMap.get('id') || '';
+    const userJson = localStorage.getItem('user');
+    if (userJson) {
+      this.user = JSON.parse(userJson);
+    }
+
     if (this.groupId) {
       this.findConversationAndLoad();
     }
@@ -113,6 +124,40 @@ export class GroupChat implements OnInit, AfterViewChecked {
     if (event.key === 'Enter' && !event.shiftKey) {
       event.preventDefault();
       this.sendMessage();
+    }
+  }
+
+  async onFileSelected(event: Event) {
+    if (!this.conversationId) return;
+
+    const input = event.target as HTMLInputElement;
+    if (!input.files || input.files.length === 0) return;
+
+    const file = input.files[0];
+    this.isUploading.set(true); 
+
+    try {
+      const imageUrl = await this.chatService.uploadChatImage(
+        this.conversationId,
+        this.user?.profile?.id || '',
+        file
+      );
+
+      this.chatService.sendMessage(this.conversationId, '', imageUrl).subscribe({
+        next: () => {
+          this.isUploading.set(false);
+          input.value = ''; 
+          this.scrollToBottom();
+        },
+        error: (err) => {
+          console.error('Error enviando imagen', err);
+          this.isUploading.set(false);
+        }
+      });
+
+    } catch (err) {
+      console.error('Error subiendo imagen', err);
+      this.isUploading.set(false);
     }
   }
 }
