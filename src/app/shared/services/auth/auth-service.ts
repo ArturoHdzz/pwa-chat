@@ -64,10 +64,17 @@ export class AuthService {
     }
   }
 
-  login(email: string, password: string): Observable<LoginResponse> {
-    return this.http.post<LoginResponse>(
+  login(email: string, password: string): Observable<any> {
+    return this.http.post<any>(
       `${environment.apiUrl}/login`,
       { email, password }
+    );
+  }
+
+  verify2fa(userId: number, code: string): Observable<LoginResponse> {
+    return this.http.post<LoginResponse>(
+      `${environment.apiUrl}/login/verify`,
+      { user_id: userId, code }
     ).pipe(
       tap(response => {
         this.guardarToken(response.token, response.user);

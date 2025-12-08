@@ -5,9 +5,11 @@ import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { DeviceService } from '../../services/chat/device-service';
 import { PwaInstall } from '../../services/chat/pwa-install';
+import { FormsModule } from '@angular/forms';
+
 @Component({
   selector: 'app-login',
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, FormsModule],
   templateUrl: './login.html',
   styleUrl: './login.css'
 })
@@ -17,7 +19,10 @@ export class Login {
   showRegister = signal(false);
   
   isJoiningOrg = signal(false); 
-  
+  show2FA = signal(false);
+  tempUserId: number | null = null; 
+  twoFactorCode = ''; 
+
   loginForm;
   registerForm;
 
@@ -117,27 +122,53 @@ isIOS(): boolean {
 
     this.auth.login(email!, password!).subscribe({
       next: (res: any) => {
-        const user = res.user || JSON.parse(localStorage.getItem('user') || '{}');
-        const role = user.profile?.role || user.role;
-        const isMobile = this.deviceService.isMobile();
-
-        if (!isMobile && (role === 'Alumno' || role === 'User' || role === 'student')) {
-          this.isLoading = false;
-          this.error = 'Acceso restringido: Los alumnos solo pueden ingresar desde la aplicación móvil.';
-          
-          localStorage.removeItem('token');
-          localStorage.removeItem('user');
+        this.isLoading = false;
+        
+        if (res.require_2fa) {
+          this.tempUserId = res.user_id;
+          this.show2FA.set(true); 
           return;
         }
-
-        this.isLoading = false;
-        this.router.navigate(['/home']);
+        
+        this.handleLoginSuccess(res);
       },
       error: (err) => {
         this.isLoading = false;
         this.error = err.error?.message || 'Error al iniciar sesión';
       }
     });
+  }
+
+  onVerifyCode() {
+    if (!this.twoFactorCode || !this.tempUserId) return;
+    
+    this.isLoading = true;
+    this.error = '';
+
+    this.auth.verify2fa(this.tempUserId, this.twoFactorCode).subscribe({
+      next: (res) => {
+        this.isLoading = false;
+        this.handleLoginSuccess(res);
+      },
+      error: (err) => {
+        this.isLoading = false;
+        this.error = err.error?.message || 'Código inválido';
+      }
+    });
+  }
+
+  handleLoginSuccess(res: any) {
+    const user = res.user || JSON.parse(localStorage.getItem('user') || '{}');
+    const role = user.profile?.role || user.role;
+    const isMobile = this.deviceService.isMobile();
+
+    if (!isMobile && (role === 'Alumno' || role === 'User' || role === 'student')) {
+      this.error = 'Acceso restringido: Los alumnos solo pueden ingresar desde la aplicación móvil.';
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+      return;
+    }
+    this.router.navigate(['/home']);
   }
 
   onRegister() {
