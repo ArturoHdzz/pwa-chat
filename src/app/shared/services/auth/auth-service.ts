@@ -37,7 +37,6 @@ export interface RegisterRequest {
   role: 'jefe' | 'profesor';
   organization_name?: string;
   organization_code?: string;
-  turnstile_token: string;
 }
 
 @Injectable({
@@ -65,12 +64,10 @@ export class AuthService {
     }
   }
 
-  login(email: string, password: string, turnstileToken: string): Observable<any> {
+  login(email: string, password: string): Observable<any> {
     return this.http.post<any>(
       `${environment.apiUrl}/login`,
-      { email, password,
-        turnstile_token: turnstileToken,
-       }
+      { email, password }
     );
   }
 
