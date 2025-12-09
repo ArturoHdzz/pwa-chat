@@ -102,7 +102,13 @@ export class Login implements AfterViewInit {
       apellido_materno: ['', [Validators.required, Validators.minLength(2)]],
       email: ['', [Validators.required, Validators.email]],
       telefono: ['', [Validators.required, Validators.pattern(/^[0-9]{10}$/)]],
-      password: ['', [Validators.required, Validators.minLength(8)]],
+      
+      password: ['', [
+        Validators.required, 
+        Validators.minLength(8),
+        Validators.pattern(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[$@$!%*?&_#-])/)
+      ]],
+
       confirmPassword: ['', [Validators.required]],
       role: ['jefe', [Validators.required]],
       organization_name: ['', [Validators.required, Validators.minLength(3)]],
@@ -303,7 +309,12 @@ if (!this.turnstileLoginToken) {
     if (field.errors['required']) return 'Este campo es requerido';
     if (field.errors['email']) return 'Email inválido';
     if (field.errors['minlength']) return `Mínimo ${field.errors['minlength'].requiredLength} caracteres`;
-    if (field.errors['pattern']) return 'Formato inválido (10 dígitos)';
+    if (field.errors['pattern']) {
+        if (fieldName === 'password') {
+            return 'Requiere Mayúscula, minúscula, número y símbolo';
+        }
+        return 'Formato inválido (10 dígitos)';
+    }
     if (field.errors['passwordMismatch']) return 'Las contraseñas no coinciden';
     
     return 'Campo inválido';
