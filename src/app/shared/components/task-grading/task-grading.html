@@ -35,10 +35,15 @@
             <td class="p-4">
               <span [ngClass]="{
                 'bg-yellow-100 text-yellow-800': student.pivot.status === 'pending',
+                'bg-indigo-100 text-indigo-800': student.pivot.status === 'in_progress',
                 'bg-blue-100 text-blue-800': student.pivot.status === 'submitted',
                 'bg-green-100 text-green-800': student.pivot.status === 'graded'
               }" class="px-2 py-1 rounded-full text-xs font-semibold">
-                {{ student.pivot.status === 'pending' ? 'Pendiente' : (student.pivot.status === 'submitted' ? 'Entregado' : 'Calificado') }}
+                {{ 
+                  student.pivot.status === 'pending' ? 'Pendiente' : 
+                  (student.pivot.status === 'in_progress' ? 'En Progreso' : 
+                  (student.pivot.status === 'submitted' ? 'Entregado' : 'Calificado')) 
+                }}
               </span>
             </td>
             <td class="p-4 text-sm text-gray-600">
