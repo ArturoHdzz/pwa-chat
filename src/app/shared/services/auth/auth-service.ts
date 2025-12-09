@@ -86,10 +86,17 @@ export class AuthService {
     );
   }
 
-  register(userData: RegisterRequest): Observable<LoginResponse> {
-    return this.http.post<LoginResponse>(
+  register(userData: RegisterRequest): Observable<any> { 
+    return this.http.post<any>(
       `${environment.apiUrl}/register`,
       userData
+    );
+  }
+
+  verifyEmail(email: string, code: string): Observable<LoginResponse> {
+    return this.http.post<LoginResponse>(
+      `${environment.apiUrl}/register/verify`,
+      { email, code }
     ).pipe(
       tap(response => {
         this.guardarToken(response.token, response.user);
