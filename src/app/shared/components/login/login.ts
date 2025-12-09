@@ -6,7 +6,7 @@ import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { DeviceService } from '../../services/chat/device-service';
 import { PwaInstall } from '../../services/chat/pwa-install';
 import { FormsModule } from '@angular/forms';
-
+declare var window: any;
 @Component({
   selector: 'app-login',
   imports: [CommonModule, ReactiveFormsModule, FormsModule],
@@ -14,6 +14,10 @@ import { FormsModule } from '@angular/forms';
   styleUrl: './login.css'
 })
 export class Login {
+
+  turnstileLoginToken: string | null = null;
+  turnstileRegisterToken: string | null = null;
+
   error = '';
   isLoading = false;
   showRegister = signal(false);
@@ -33,6 +37,15 @@ export class Login {
     public pwa:PwaInstall,
     private deviceService: DeviceService 
   ) {
+ (window as any).onTurnstileLoginSuccess = (token: string) => {
+      this.turnstileLoginToken = token;
+    };
+
+    (window as any).onTurnstileRegisterSuccess = (token: string) => {
+      this.turnstileRegisterToken = token;
+    };
+
+
     this.loginForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required, Validators.minLength(6)]]
@@ -114,13 +127,17 @@ isIOS(): boolean {
       this.loginForm.markAllAsTouched();
       return;
     }
+if (!this.turnstileLoginToken) {
+    this.error = 'Por favor completa la verificación de seguridad.';
+    return;
+  }
 
     this.isLoading = true;
     this.error = '';
 
     const { email, password } = this.loginForm.value;
 
-    this.auth.login(email!, password!).subscribe({
+    this.auth.login(email!, password!, this.turnstileLoginToken).subscribe({
       next: (res: any) => {
         this.isLoading = false;
         
@@ -177,6 +194,11 @@ isIOS(): boolean {
       return;
     }
 
+    if (!this.turnstileRegisterToken) {
+    this.error = 'Por favor completa la verificación de seguridad.';
+    return;
+  }
+
     this.isLoading = true;
     this.error = '';
 
@@ -195,7 +217,8 @@ isIOS(): boolean {
       
       organization_code: this.isJoiningOrg() && formValue.organization_code 
         ? formValue.organization_code.trim() 
-        : undefined
+        : undefined,
+        turnstile_token: this.turnstileRegisterToken
     };
 
     this.auth.register(userData).subscribe({

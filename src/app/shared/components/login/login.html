@@ -74,6 +74,13 @@
           {{ isLoading ? 'Ingresando...' : 'Ingresar' }}
         </button>
 
+
+        <div
+    class="cf-turnstile my-3"
+    data-sitekey="0x4AAAAAACFgUSXMFYfQXvuf-vSWRulIK6o"
+    data-callback="onTurnstileLoginSuccess"
+  ></div>
+
         <!-- Toggle to register -->
         <div class="text-center pt-4">
            <button
@@ -257,6 +264,13 @@
           </svg>
           {{ isLoading ? 'Registrando...' : 'Registrarse' }}
         </button>
+
+
+         <div
+    class="cf-turnstile my-3"
+    data-sitekey="0x4AAAAAACFgUSXMFYfQXvuf-vSWRulIK6o"
+    data-callback="onTurnstileRegisterSuccess"
+  ></div>
         
         <!-- Toggle to login -->
         <div class="text-center pt-2 pb-4">
