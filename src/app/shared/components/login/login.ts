@@ -235,25 +235,27 @@ if (!this.turnstileLoginToken) {
   }
 
   onRegister() {
+    if (!this.turnstileRegisterToken) {
+    this.error = 'Por favor completa la verificación de seguridad.';
+    return;
+  }
+
     if (this.registerForm.invalid) return;
     this.isLoading = true;
     this.error = '';
 
     const formValue = this.registerForm.value;
     const userData: RegisterRequest = {
-      name: formValue.name!,
-      apellido_paterno: formValue.apellido_paterno!,
-      apellido_materno: formValue.apellido_materno!,
-      email: formValue.email!,
-      telefono: formValue.telefono!,
-      password: formValue.password!,
-      role: formValue.role! as 'jefe' | 'profesor',
-      
-      organization_name: this.isJoiningOrg() ? undefined : formValue.organization_name!,
-      
-      organization_code: this.isJoiningOrg() && formValue.organization_code 
-        ? formValue.organization_code.trim() 
-        : undefined
+        name: formValue.name!,
+        apellido_paterno: formValue.apellido_paterno!,
+        apellido_materno: formValue.apellido_materno!,
+        email: formValue.email!,
+        telefono: formValue.telefono!,
+        password: formValue.password!,
+        role: formValue.role! as 'jefe' | 'profesor',
+        organization_name: this.isJoiningOrg() ? undefined : formValue.organization_name!,
+        turnstile_token: this.turnstileRegisterToken,
+        organization_code: this.isJoiningOrg() && formValue.organization_code ? formValue.organization_code.trim() : undefined
     };
 
     this.auth.register(userData).subscribe({
