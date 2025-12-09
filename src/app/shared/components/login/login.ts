@@ -168,6 +168,9 @@ isIOS(): boolean {
   toggleForm() {
     this.showRegister.set(!this.showRegister());
     this.error = '';
+
+
+    
     if (this.showRegister()) {
         this.toggleOrgMode(false); 
     }
@@ -232,6 +235,7 @@ if (!this.turnstileLoginToken) {
     const isMobile = this.deviceService.isMobile();
 
     if (!isMobile && (role === 'Alumno' || role === 'User' || role === 'student')) {
+      window.location.reload();
       this.error = 'Acceso restringido: Los alumnos solo pueden ingresar desde la aplicación móvil.';
       localStorage.removeItem('token');
       localStorage.removeItem('user');
