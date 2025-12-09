@@ -29,7 +29,7 @@
         <h2 class="text-2xl md:text-3xl font-extrabold text-black">Inicia sesión</h2>
       </div>
 
-      <form *ngIf="!show2FA()" [formGroup]="loginForm" (ngSubmit)="onLogin()" class="space-y-5">
+      <form *ngIf="!show2FA() && !showEmailVerification()" [formGroup]="loginForm" (ngSubmit)="onLogin()" class="space-y-5">
         
         <!-- Error message -->
         <div *ngIf="error" class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm">
@@ -119,11 +119,32 @@
         </button>
       </div>
 
-      <div *ngIf="!show2FA()" class="text-center pt-4">
-          <button type="button" (click)="toggleForm()" class="text-black hover:text-gray-700 text-sm underline py-2">
-            ¿No tienes cuenta? Regístrate aquí
-          </button>
+      <div *ngIf="showEmailVerification()" class="space-y-5">
+        <div class="text-center mb-4">
+          <h3 class="text-lg font-bold text-gray-800">Verifica tu Correo</h3>
+          <p class="text-sm text-gray-500">Enviamos un código a {{ tempEmail }}</p>
         </div>
+
+        <div *ngIf="error" class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm">
+          {{ error }}
+        </div>
+
+        <input 
+          type="text" 
+          [(ngModel)]="verificationCode" 
+          class="w-full border-b-2 border-gray-300 focus:outline-none focus:border-black text-black bg-white py-3 px-1 text-center text-2xl tracking-widest" 
+          placeholder="000000" 
+          maxlength="6"
+        />
+
+        <button 
+          (click)="onVerifyEmail()"
+          [disabled]="!verificationCode || isLoading"
+          class="w-full bg-black hover:bg-gray-800 disabled:bg-gray-400 text-white py-3.5 rounded-xl font-semibold transition duration-300 shadow-lg flex items-center justify-center gap-2 mt-6">
+          {{ isLoading ? 'Verificando...' : 'Activar Cuenta' }}
+        </button>
+      </div>
+
     </div>
 
     <div *ngIf="showRegister()" class="p-5 sm:p-6 md:p-10 bg-white">

@@ -26,6 +26,10 @@ export class Login {
   loginForm;
   registerForm;
 
+  showEmailVerification = signal(false); 
+  tempEmail: string = ''; 
+  verificationCode = ''; 
+
   constructor(
     private auth: AuthService, 
     private router: Router, 
@@ -172,60 +176,57 @@ isIOS(): boolean {
   }
 
   onRegister() {
-    if (this.registerForm.invalid) {
-      this.registerForm.markAllAsTouched();
-      return;
-    }
-
+    if (this.registerForm.invalid) return;
     this.isLoading = true;
     this.error = '';
 
     const formValue = this.registerForm.value;
-
     const userData: RegisterRequest = {
-      name: formValue.name!,
-      apellido_paterno: formValue.apellido_paterno!,
-      apellido_materno: formValue.apellido_materno!,
-      email: formValue.email!,
-      telefono: formValue.telefono!,
-      password: formValue.password!,
-      role: formValue.role! as 'jefe' | 'profesor',
-      
-      organization_name: this.isJoiningOrg() ? undefined : formValue.organization_name!,
-      
-      organization_code: this.isJoiningOrg() && formValue.organization_code 
-        ? formValue.organization_code.trim() 
-        : undefined
+        name: formValue.name!,
+        apellido_paterno: formValue.apellido_paterno!,
+        apellido_materno: formValue.apellido_materno!,
+        email: formValue.email!,
+        telefono: formValue.telefono!,
+        password: formValue.password!,
+        role: formValue.role! as 'jefe' | 'profesor',
+        organization_name: this.isJoiningOrg() ? undefined : formValue.organization_name!,
+        organization_code: this.isJoiningOrg() && formValue.organization_code ? formValue.organization_code.trim() : undefined
     };
 
     this.auth.register(userData).subscribe({
       next: (res: any) => {
-        const user = res.user || JSON.parse(localStorage.getItem('user') || '{}');
-        const role = user.profile?.role || user.role;
-        const isMobile = this.deviceService.isMobile();
-
-        if (!isMobile && (role === 'Alumno' || role === 'User' || role === 'student')) {
-          this.isLoading = false;
-          this.error = 'Registro exitoso, pero el acceso está restringido: Los alumnos solo pueden ingresar desde la aplicación móvil.';
-          
-          localStorage.removeItem('token');
-          localStorage.removeItem('user');
-          
-          this.toggleForm(); 
-          return;
-        }
-
         this.isLoading = false;
-        this.router.navigate(['/home']);
+        if (res.require_email_verification) {
+          this.tempEmail = res.email;
+          this.showEmailVerification.set(true); 
+          this.showRegister.set(false); 
+        }
       },
       error: (err) => {
         this.isLoading = false;
         if (err.error?.errors) {
-          const errors = Object.values(err.error.errors).flat();
-          this.error = errors.join(', '); 
+            const errors = Object.values(err.error.errors).flat();
+            this.error = errors.join(', '); 
         } else {
-          this.error = err.error?.message || 'Error al registrar usuario';
+            this.error = err.error?.message || 'Error al registrar';
         }
+      }
+    });
+  }
+
+  onVerifyEmail() {
+    if (!this.verificationCode) return;
+    this.isLoading = true;
+    
+    this.auth.verifyEmail(this.tempEmail, this.verificationCode).subscribe({
+      next: (res) => {
+        this.isLoading = false;
+        this.showEmailVerification.set(false);
+        this.handleLoginSuccess(res);
+      },
+      error: (err) => {
+        this.isLoading = false;
+        this.error = err.error?.message || 'Código incorrecto';
       }
     });
   }
