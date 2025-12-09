@@ -43,6 +43,20 @@ export class TaskGrading implements OnInit {
     });
   }
 
+  parseSubmission(content: string): any {
+    try {
+      return JSON.parse(content);
+    } catch (e) {
+      return { text: content, supabase_url: null };
+    }
+  }
+
+  openFile(url: string) {
+    if (url) {
+      window.open(url, '_blank');
+    }
+  }
+
   saveGrade(student: any) {
     if (student.pivot.grade < 0 || student.pivot.grade > 100) {
       alert('La calificación debe ser entre 0 y 100');

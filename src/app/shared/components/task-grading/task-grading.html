@@ -43,8 +43,21 @@
             </td>
             <td class="p-4 text-sm text-gray-600">
               <div *ngIf="student.pivot.submission_content">
-                {{ student.pivot.submission_content }}
-                <div class="text-xs text-gray-400 mt-1">{{ student.pivot.submitted_at | date:'short' }}</div>
+                
+                <ng-container *ngIf="parseSubmission(student.pivot.submission_content) as sub">
+                  <p *ngIf="sub.text" class="mb-2 font-medium text-gray-800">"{{ sub.text }}"</p>
+                  
+                  <button *ngIf="sub.supabase_url" 
+                          (click)="openFile(sub.supabase_url)"
+                          class="flex items-center gap-2 bg-gray-100 hover:bg-gray-200 text-blue-600 px-3 py-1.5 rounded-lg text-xs font-bold transition">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" />
+                    </svg>
+                    Ver Archivo Adjunto
+                  </button>
+                </ng-container>
+
+                <div class="text-xs text-gray-400 mt-2">{{ student.pivot.submitted_at | date:'short' }}</div>
               </div>
               <span *ngIf="!student.pivot.submission_content" class="text-gray-400 italic">Sin entrega</span>
             </td>
